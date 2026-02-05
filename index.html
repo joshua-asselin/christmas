@@ -1,349 +1,333 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Les 300 Défis de Noël</title>
-   <style>
-       body, html {
-           margin: 0; padding: 0; height: 100%; width: 100%;
-           display: flex; justify-content: center; align-items: center;
-           overflow: hidden;
-           background-image: url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
-           background-size: cover; background-position: center;
-       }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les 300 Défis de Noël</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            background-image: url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
+            background-size: cover; background-position: center;
+        }
 
+        .container { position: relative; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; }
+        .parchemin-img { height: 102vh; width: auto; max-width: 95vw; object-fit: contain; filter: drop-shadow(0px 12px 25px rgba(0,0,0,0.5)); }
 
-       .container { position: relative; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; }
-       .parchemin-img { height: 102vh; width: auto; max-width: 95vw; object-fit: contain; filter: drop-shadow(0px 12px 25px rgba(0,0,0,0.5)); }
+        .nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            font-size: 2.5rem; color: #b30000; cursor: pointer;
+            background: rgba(255, 255, 255, 0.5); border-radius: 50%;
+            width: 55px; height: 55px; display: flex; justify-content: center; align-items: center;
+            z-index: 10; transition: all 0.4s ease; border: 2px solid #b30000; user-select: none;
+        }
+        .nav-arrow:hover { background: white; transform: translateY(-50%) scale(1.05); }
+        .arrow-left { left: 5vw; } .arrow-right { right: 5vw; }
 
+        .scroll-box {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 40%; height: 60%; overflow-y: scroll; padding: 20px;
+            text-align: center; font-family: 'Georgia', serif;
+            scrollbar-width: none; -ms-overflow-style: none; z-index: 5;
+        }
+        .scroll-box::-webkit-scrollbar { display: none; }
 
-       .nav-arrow {
-           position: absolute; top: 50%; transform: translateY(-50%);
-           font-size: 2.5rem; color: #b30000; cursor: pointer;
-           background: rgba(255, 255, 255, 0.5); border-radius: 50%;
-           width: 55px; height: 55px; display: flex; justify-content: center; align-items: center;
-           z-index: 10; transition: all 0.4s ease; border: 2px solid #b30000; user-select: none;
-       }
-       .nav-arrow:hover { background: white; transform: translateY(-50%) scale(1.05); }
-       .arrow-left { left: 5vw; } .arrow-right { right: 5vw; }
+        h1 { font-size: 2.2rem; margin-bottom: 30px; text-shadow: 1px 1px 0px #fff; transition: color 0.6s ease; }
 
+        /* STYLE DE BASE : DESSUS BLANC BEIGE POUR TOUS */
+        .btn-question {
+            display: block; width: 85%; margin: 12px auto; padding: 15px;
+            background-color: #f4e4bc !important; /* Force le dessus blanc beige */
+            color: #3d240b; border: 2px solid #8e5a31;
+            border-radius: 8px; font-size: 1.1rem; font-weight: bold;
+            cursor: pointer; transition: all 0.3s ease-out; position: relative;
+        }
+        
+        /* ANIMATIONS DE SURVOL */
+        .btn-question:hover { transform: translateY(-3px) scale(1.03); }
+        
+        /* THÈMES DE BOUTONS (COULEUR DU BAS ET BORDURES SEULEMENT) */
+        .btn-silver { 
+            box-shadow: 3px 3px 0px #A9A9A9; 
+            border-color: #A9A9A9;
+        }
+        .btn-silver:hover { background-color: #C0C0C0 !important; color: #333; border-color: #808080; }
 
-       .scroll-box {
-           position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-           width: 40%; height: 60%; overflow-y: scroll; padding: 20px;
-           text-align: center; font-family: 'Georgia', serif;
-           scrollbar-width: none; -ms-overflow-style: none; z-index: 5;
-       }
-       .scroll-box::-webkit-scrollbar { display: none; }
+        .btn-green { 
+            box-shadow: 3px 3px 0px #2d5a27; 
+            border-color: #2d5a27;
+        }
+        .btn-green:hover { background-color: #2d5a27 !important; color: white; border-color: #1e3d1a; }
 
+        .btn-gold { 
+            box-shadow: 3px 3px 0px #d4a017; 
+            border-color: #d4a017;
+        }
+        .btn-gold:hover { background-color: #d4a017 !important; color: white; border-color: #a37a11; }
 
-       h1 { font-size: 2.2rem; margin-bottom: 30px; text-shadow: 1px 1px 0px #fff; transition: color 0.6s ease; }
+        .btn-red { 
+            box-shadow: 3px 3px 0px #b30000; 
+            border-color: #b30000;
+        }
+        .btn-red:hover { background-color: #b30000 !important; color: white; border-color: #800000; }
 
+        /* ÉTAT COMPLÉTÉ */
+        .btn-question.completed { opacity: 0.6; background-color: #d2b48c !important; cursor: default; box-shadow: none !important; }
+        .btn-question.completed::after { content: " ✅"; }
 
-       .btn-question {
-           display: block; width: 85%; margin: 12px auto; padding: 15px;
-           background-color: #f4e4bc; color: #3d240b; border: 2px solid #8e5a31;
-           border-radius: 8px; font-size: 1.1rem; font-weight: bold;
-           cursor: pointer; transition: all 0.4s ease-out; position: relative;
-       }
-       .btn-question:hover { transform: translateY(-2px) scale(1.03); }
-       .btn-question.completed { opacity: 0.6; background-color: #d2b48c; cursor: default; }
-       .btn-question.completed::after { content: " ✅"; }
+        .view-section { display: none; flex-direction: column; align-items: center; }
+        .active-view { display: flex; }
 
+        /* VUE QUESTION */
+        #question-view {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            justify-content: center; align-items: center; z-index: 20;
+        }
+        .question-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 35%; text-align: center; font-family: 'Georgia', serif; color: #3d240b;
+        }
+        .answer-input { 
+            padding: 12px; width: 80%; border-radius: 8px; border: 2px solid #8e5a31; 
+            margin: 20px 0; font-size: 1.1rem; text-align: center; background: #fdf5e6;
+        }
 
-       /* Styles de la vue Question */
-       #question-view {
-           display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-           justify-content: center; align-items: center; z-index: 20;
-       }
-       .question-container {
-           position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-           width: 35%; text-align: center; font-family: 'Georgia', serif; color: #3d240b;
-       }
-       .answer-input {
-           padding: 12px; width: 80%; border-radius: 8px; border: 2px solid #8e5a31;
-           margin: 20px 0; font-size: 1.1rem; text-align: center; background: #fdf5e6;
-       }
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 90%; margin: 0 auto; }
+        .btn-action {
+            width: 100%; padding: 15px 0; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: bold; font-family: 'Georgia';
+            font-size: 1rem; transition: transform 0.2s;
+        }
+        .btn-action:hover { transform: scale(1.05); }
 
+        .btn-check { background: #2d5a27; color: white; }
+        .btn-back { background: #b30000; color: white; }
+        .btn-show { background: #d4a017; color: white; display: none; }
+        .btn-regen { background: #ffffff; color: #3d240b; box-shadow: 0px 2px 5px rgba(0,0,0,0.2); display: none; }
 
-       .action-grid {
-           display: grid;
-           grid-template-columns: 1fr 1fr;
-           gap: 10px; width: 90%; margin: 0 auto;
-       }
+        #hint-text { display: block; height: 1.5rem; margin-top: 10px; font-weight: bold; color: #b30000; visibility: hidden; }
 
-
-       .btn-action {
-           width: 100%; padding: 15px 0; border: none; border-radius: 8px;
-           cursor: pointer; font-weight: bold; font-family: 'Georgia';
-           font-size: 1rem; transition: transform 0.2s;
-       }
-       .btn-action:hover { transform: scale(1.05); }
-
-
-       .btn-check { background: #2d5a27; color: white; }
-       .btn-back { background: #b30000; color: white; }
-       .btn-show { background: #d4a017; color: white; display: none; }
-       .btn-regen {
-           background: #ffffff; color: #3d240b; border: none !important;
-           box-shadow: 0px 2px 5px rgba(0,0,0,0.2); display: none;
-       }
-
-
-       #hint-text {
-           display: block; height: 1.5rem; margin-top: 10px; font-weight: bold; color: #b30000;
-           visibility: hidden;
-       }
-
-
-       /* Thèmes de couleurs */
-       .theme-vert .btn-question { box-shadow: 3px 3px 0px #2d5a27; }
-       .theme-vert .btn-question:hover:not(.completed) { background-color: #2d5a27; color: white; }
-       .theme-vert h1 { color: #2d5a27; }
-      
-       .theme-or .btn-question { box-shadow: 3px 3px 0px #d4a017; }
-       .theme-or .btn-question:hover:not(.completed) { background-color: #d4a017; color: white; }
-       .theme-or h1 { color: #d4a017; }
-      
-       .theme-rouge .btn-question { box-shadow: 3px 3px 0px #b30000; }
-       .theme-rouge .btn-question:hover:not(.completed) { background-color: #b30000; color: white; }
-       .theme-rouge h1 { color: #b30000; }
-
-
-       /* Menu Principal spécial */
-       .menu-layout { display: none; flex-direction: column; align-items: center; }
-       .theme-menu h1 { color: #3d240b; text-decoration: underline; }
-   </style>
+        /* TITRES DE NIVEAUX */
+        .theme-vert h1 { color: #2d5a27; }
+        .theme-or h1 { color: #d4a017; }
+        .theme-rouge h1 { color: #b30000; }
+        .theme-menu h1 { color: #696969; }
+    </style>
 </head>
-<body class="theme-vert">
-
+<body class="theme-menu">
 
 <div class="container" id="main-container">
-   <div id="list-view">
-       <div id="nav-arrows">
-           <div class="nav-arrow arrow-left" onclick="changeLevel(-1)">❮</div>
-           <div class="nav-arrow arrow-right" onclick="changeLevel(1)">❯</div>
-       </div>
-       <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
-      
-       <div class="scroll-box">
-           <div id="dynamic-content">
-               <h1 id="level-title">📜 DÉFIS FACILES</h1>
-               <div id="questions-list"></div>
-           </div>
+    <div id="list-view">
+        <div id="nav-arrows" style="display: none;">
+            <div class="nav-arrow arrow-left" onclick="changeLevel(-1)">❮</div>
+            <div class="nav-arrow arrow-right" onclick="changeLevel(1)">❯</div>
+        </div>
 
+        <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
+        
+        <div class="scroll-box">
+            
+            <div id="view-main-menu" class="view-section active-view">
+                <h1>MENU PRINCIPAL</h1>
+                <button class="btn-question btn-silver" onclick="showSubMenu('questions')">🎁 QUESTIONS</button>
+                <button class="btn-question btn-silver" onclick="showSubMenu('avantages')">✨ AVANTAGES</button>
+            </div>
 
-           <div id="menu-content" class="menu-layout">
-               <h1>MENU PRINCIPAL</h1>
-               <button class="btn-question" onclick="goToLevel(0)">🟢 DÉFIS FACILES</button>
-               <button class="btn-question" onclick="goToLevel(1)">🟡 DÉFIS MOYENS</button>
-               <button class="btn-question" onclick="goToLevel(2)">🔴 DÉFIS DIFFICILES</button>
-               <button class="btn-question" onclick="devUnlock()">🔓 DEV UNLOCK</button>
-           </div>
-       </div>
-   </div>
+            <div id="view-submenu-questions" class="view-section">
+                <h1>CHOISIR UN NIVEAU</h1>
+                <button class="btn-question btn-green" onclick="goToLevel(0)">🟢 DÉFIS FACILES</button>
+                <button class="btn-question btn-gold" onclick="goToLevel(1)">🟡 DÉFIS MOYENS</button>
+                <button class="btn-question btn-red" onclick="goToLevel(2)">🔴 DÉFIS DIFFICILES</button>
+                <button class="btn-question btn-silver" onclick="devUnlock()">🔓 DEV UNLOCK</button>
+                <button class="btn-question btn-silver" style="margin-top:20px;" onclick="backToMain()">RETOUR</button>
+            </div>
 
+            <div id="view-submenu-avantages" class="view-section">
+                <h1>AVANTAGES</h1>
+                <p>Section bientôt disponible...</p>
+                <button class="btn-question btn-silver" style="margin-top:20px;" onclick="backToMain()">RETOUR</button>
+            </div>
 
-   <div id="question-view">
-       <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
-       <div class="question-container">
-           <h2 id="current-q-text">Chargement...</h2>
-           <div id="hint-text">REPONSE ICI</div>
-           <input type="text" id="user-ans-input" class="answer-input" placeholder="Ta réponse..." autocomplete="off">
-          
-           <div class="action-grid">
-               <button id="btn-show-id" class="btn-action btn-show" onclick="revealHint()">Voir la réponse</button>
-               <button id="btn-regen-id" class="btn-action btn-regen" onclick="regenerateAi()">Régénérer</button>
-               <button class="btn-action btn-check" onclick="checkAnswer()">Valider</button>
-               <button class="btn-action btn-back" onclick="hideQuestion()">Retour</button>
-           </div>
-       </div>
-   </div>
+            <div id="view-questions-list" class="view-section">
+                <h1 id="level-title">📜 LISTE</h1>
+                <div id="questions-container-inner" style="width: 100%;"></div>
+                <button class="btn-question btn-silver" onclick="backToMain()">🏠 MENU PRINCIPAL</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="question-view">
+        <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
+        <div class="question-container">
+            <h2 id="current-q-text">...</h2>
+            <div id="hint-text">REPONSE ICI</div>
+            <input type="text" id="user-ans-input" class="answer-input" placeholder="Ta réponse..." autocomplete="off">
+            <div class="action-grid">
+                <button id="btn-show-id" class="btn-action btn-show" onclick="revealHint()">Voir la réponse</button>
+                <button id="btn-regen-id" class="btn-action btn-regen" onclick="regenerateAi()">Régénérer</button>
+                <button class="btn-action btn-check" onclick="checkAnswer()">Valider</button>
+                <button class="btn-action btn-back" onclick="hideQuestion()">Retour</button>
+            </div>
+        </div>
+    </div>
 </div>
 
-
 <script>
-  
-   // --- LES 300 QUESTIONS FIXES ---
-  const allData = [
-      // FACILES (0-99)
-      ["Quelle est la capitale de la France ?", "Paris"], ["Combien de couleurs y a-t-il dans l'arc-en-ciel ?", "7"], ["Quel animal fait 'meuh' ?", "La vache"], ["Quelle est la couleur de l'émeraude ?", "Vert"], ["Combien de doigts a l'homme sur une main ?", "5"], ["Quel est l'inverse de 'chaud' ?", "Froid"], ["Qui est le compagnon de Mickey Mouse ?", "Minnie"], ["Quel fruit donne le pommier ?", "La pomme"], ["Dans quel pays se trouve la Tour de Pise ?", "Italie"], ["Quel est le plus grand mammifère du monde ?", "La baleine bleue"], ["Combien y a-t-il de mois dans une année ?", "12"], ["Quel astre nous éclaire durant la journée ?", "Le Soleil"], ["Comment appelle-t-on le petit du cheval ?", "Le poulain"], ["Quelle est la langue parlée au Brésil ?", "Le portugais"], ["De quelle couleur sont les Schtroumpfs ?", "Bleu"], ["Combien font 5 + 5 ?", "10"], ["Quel est le nom de notre galaxie ?", "La Voie lactée"], ["Quel super-héros a été mordu par une araignée ?", "Spider-Man"], ["Quelle est la capitale de l'Angleterre ?", "Londres"], ["Quel est l'organe qui pompe le sang ?", "Le cœur"], ["Comment appelle-t-on un polygone à 3 côtés ?", "Un triangle"], ["Quelle est la capitale de l'Italie ?", "Rome"], ["Quel métal est attiré par un aimant ?", "Le fer"], ["Quel est le nom du célèbre paquebot qui a coulé en 1912 ?", "Le Titanic"], ["Dans quel sport utilise-t-on un panier ?", "Le basket-ball"], ["Quel est le cri du chien ?", "L'aboiement"], ["Quelle fée a perdu sa chaussure de verre ?", "Cendrillon"], ["Combien de minutes y a-t-il dans une heure ?", "60"], ["Quel est le pays du Soleil-Levant ?", "Le Japon"], ["Qui a peint la Joconde ?", "Léonard de Vinci"], ["Quel gaz respirons-nous pour vivre ?", "L'oxygène"], ["Quelle est la capitale de l'Espagne ?", "Madrid"], ["Quel instrument joue Mozart ?", "Le piano"], ["Comment s'appelle le bébé du chien ?", "Le chiot"], ["Quel océan sépare l'Europe de l'Amérique ?", "L'océan Atlantique"], ["De quelle couleur est le ciel par temps clair ?", "Bleu"], ["Quel animal pond des œufs ?", "La poule"], ["Combien y a-t-il de saisons ?", "4"], ["Quel est le nom du plus haut sommet du monde ?", "L'Everest"], ["Dans quel film trouve-t-on Simba ?", "Le Roi Lion"], ["Comment appelle-t-on l'eau sous forme solide ?", "La glace"], ["Quel est le jour qui suit le samedi ?", "Dimanche"], ["Quel bois utilise-t-on pour faire des frites ?", "La pomme de terre"], ["Quelle est la capitale des États-Unis ?", "Washington D.C."], ["Comment appelle-t-on le docteur des animaux ?", "Un vétérinaire"], ["Quelle est la femelle du taureau ?", "La vache"], ["Dans quelle ville se trouve la Statue de la Liberté ?", "New York"], ["Quel est le premier jour de la semaine ?", "Lundi"], ["Quel organe sert à entendre ?", "L'oreille"], ["Combien y a-t-il de lettres dans l'alphabet français ?", "26"], ["Quel est le continent où se trouve l'Égypte ?", "L'Afrique"], ["Quelle est la couleur de la neige ?", "Blanc"], ["Comment appelle-t-on les habitants de la Chine ?", "Les Chinois"], ["Quel est l'animal le plus rapide au monde ?", "Le guépard"], ["Quelle est la capitale de l'Allemagne ?", "Berlin"], ["Qui est le père de Pinocchio ?", "Geppetto"], ["Combien de faces a un dé classique ?", "6"], ["Quelle est la monnaie utilisée en France ?", "L'Euro"], ["Quel est le contraire de 'gagner' ?", "Perdre"], ["Quelle planète est la plus proche du soleil ?", "Mercure"], ["Où vivent les poissons ?", "Dans l'eau"], ["Qui est l'ennemi de Batman ?", "Le Joker"], ["Quel est le nom de la tour célèbre de Paris ?", "La Tour Eiffel"], ["Comment s'appelle le nez de l'éléphant ?", "La trompe"], ["Quel fruit est utilisé pour faire du vin ?", "Le raisin"], ["Quel est le sport de Kylian Mbappé ?", "Le football"], ["Quelle est la capitale du Canada ?", "Ottawa"], ["Combien de pattes a une araignée ?", "8"], ["Quelle est la plus grande forêt du monde ?", "L'Amazonie"], ["Quel est le nom de la femelle du lion ?", "La lionne"], ["Quel mois vient après juillet ?", "Août"], ["Où se trouve la Grande Muraille ?", "En Chine"], ["Quelle matière produit l'abeille ?", "Le miel"], ["Quelle est la forme d'un ballon de foot ?", "Sphérique"], ["Quel est le petit de la vache ?", "Le veau"], ["Comment appelle-t-on le logement des oiseaux ?", "Un nid"], ["Quel personnage porte un bonnet rouge et vit au pôle Nord ?", "Le Père Noël"], ["Quel est le nom de la planète où nous vivons ?", "La Terre"], ["Quelle langue parle-t-on au Mexique ?", "L'espagnol"], ["Quel outil utilise-t-on pour taper des clous ?", "Un marteau"], ["De quelle couleur est un flamant rose ?", "Rose"], ["Quel est le nom du bébé chat ?", "Le chaton"], ["Quel fleuve traverse l'Égypte ?", "Le Nil"], ["Quelle est la boisson produite par les vaches ?", "Le lait"], ["Qui a découvert l'Amérique en 1492 ?", "Christophe Colomb"], ["Quel est le nom du triangle avec deux côtés égaux ?", "Isocèle"], ["Quel vêtement porte-t-on sur la tête ?", "Un chapeau"], ["Comment s'appelle l'étoile la plus proche de la Terre ?", "Le Soleil"], ["Quel animal a un long cou pour manger des feuilles ?", "La girafe"], ["Quelle est la capitale de la Russie ?", "Moscou"], ["Quel est le résultat de 10 x 10 ?", "100"], ["Qui a écrit 'Le Petit Prince' ?", "Antoine de Saint-Exupéry"], ["Quel sens utilise-t-on avec le nez ?", "L'odorat"], ["Comment appelle-t-on un film de dessins ?", "Un dessin animé"], ["Quel est l'animal qui porte sa maison sur son dos ?", "L'escargot"], ["De quel pays vient le sushi ?", "Le Japon"], ["Quel est le nom du liquide dans nos veines ?", "Le sang"], ["Quel mois fête-t-on Noël ?", "Décembre"], ["Quelle est la capitale de la Belgique ?", "Bruxelles"], ["Comment appelle-t-on quelqu'un qui ne mange pas de viande ?", "Un végétarien"],
+    
+    // --- LES 300 QUESTIONS FIXES ---
+   const allData = [
+   // FACILES (0-99)
+   ["Quelle est la capitale de la France ?", "Paris"], ["Combien de couleurs y a-t-il dans l'arc-en-ciel ?", "7"], ["Quel animal fait 'meuh' ?", "La vache"], ["Quelle est la couleur de l'émeraude ?", "Vert"], ["Combien de doigts a l'homme sur une main ?", "5"], ["Quel est l'inverse de 'chaud' ?", "Froid"], ["Qui est le compagnon de Mickey Mouse ?", "Minnie"], ["Quel fruit donne le pommier ?", "La pomme"], ["Dans quel pays se trouve la Tour de Pise ?", "Italie"], ["Quel est le plus grand mammifère du monde ?", "La baleine bleue"], ["Combien y a-t-il de mois dans une année ?", "12"], ["Quel astre nous éclaire durant la journée ?", "Le Soleil"], ["Comment appelle-t-on le petit du cheval ?", "Le poulain"], ["Quelle est la langue parlée au Brésil ?", "Le portugais"], ["De quelle couleur sont les Schtroumpfs ?", "Bleu"], ["Combien font 5 + 5 ?", "10"], ["Quel est le nom de notre galaxie ?", "La Voie lactée"], ["Quel super-héros a été mordu par une araignée ?", "Spider-Man"], ["Quelle est la capitale de l'Angleterre ?", "Londres"], ["Quel est l'organe qui pompe le sang ?", "Le cœur"], ["Comment appelle-t-on un polygone à 3 côtés ?", "Un triangle"], ["Quelle est la capitale de l'Italie ?", "Rome"], ["Quel métal est attiré par un aimant ?", "Le fer"], ["Quel est le nom du célèbre paquebot qui a coulé en 1912 ?", "Le Titanic"], ["Dans quel sport utilise-t-on un panier ?", "Le basket-ball"], ["Quel est le cri du chien ?", "L'aboiement"], ["Quelle fée a perdu sa chaussure de verre ?", "Cendrillon"], ["Combien de minutes y a-t-il dans une heure ?", "60"], ["Quel est le pays du Soleil-Levant ?", "Le Japon"], ["Qui a peint la Joconde ?", "Léonard de Vinci"], ["Quel gaz respirons-nous pour vivre ?", "L'oxygène"], ["Quelle est la capitale de l'Espagne ?", "Madrid"], ["Quel instrument joue Mozart ?", "Le piano"], ["Comment s'appelle le bébé du chien ?", "Le chiot"], ["Quel océan sépare l'Europe de l'Amérique ?", "L'océan Atlantique"], ["De quelle couleur est le ciel par temps clair ?", "Bleu"], ["Quel animal pond des œufs ?", "La poule"], ["Combien y a-t-il de saisons ?", "4"], ["Quel est le nom du plus haut sommet du monde ?", "L'Everest"], ["Dans quel film trouve-t-on Simba ?", "Le Roi Lion"], ["Comment appelle-t-on l'eau sous forme solide ?", "La glace"], ["Quel est le jour qui suit le samedi ?", "Dimanche"], ["Quel bois utilise-t-on pour faire des frites ?", "La pomme de terre"], ["Quelle est la capitale des États-Unis ?", "Washington D.C."], ["Comment appelle-t-on le docteur des animaux ?", "Un vétérinaire"], ["Quelle est la femelle du taureau ?", "La vache"], ["Dans quelle ville se trouve la Statue de la Liberté ?", "New York"], ["Quel est le premier jour de la semaine ?", "Lundi"], ["Quel organe sert à entendre ?", "L'oreille"], ["Combien y a-t-il de lettres dans l'alphabet français ?", "26"], ["Quel est le continent où se trouve l'Égypte ?", "L'Afrique"], ["Quelle est la couleur de la neige ?", "Blanc"], ["Comment appelle-t-on les habitants de la Chine ?", "Les Chinois"], ["Quel est l'animal le plus rapide au monde ?", "Le guépard"], ["Quelle est la capitale de l'Allemagne ?", "Berlin"], ["Qui est le père de Pinocchio ?", "Geppetto"], ["Combien de faces a un dé classique ?", "6"], ["Quelle est la monnaie utilisée en France ?", "L'Euro"], ["Quel est le contraire de 'gagner' ?", "Perdre"], ["Quelle planète est la plus proche du soleil ?", "Mercure"], ["Où vivent les poissons ?", "Dans l'eau"], ["Qui est l'ennemi de Batman ?", "Le Joker"], ["Quel est le nom de la tour célèbre de Paris ?", "La Tour Eiffel"], ["Comment s'appelle le nez de l'éléphant ?", "La trompe"], ["Quel fruit est utilisé pour faire du vin ?", "Le raisin"], ["Quel est le sport de Kylian Mbappé ?", "Le football"], ["Quelle est la capitale du Canada ?", "Ottawa"], ["Combien de pattes a une araignée ?", "8"], ["Quelle est la plus grande forêt du monde ?", "L'Amazonie"], ["Quel est le nom de la femelle du lion ?", "La lionne"], ["Quel mois vient après juillet ?", "Août"], ["Où se trouve la Grande Muraille ?", "En Chine"], ["Quelle matière produit l'abeille ?", "Le miel"], ["Quelle est la forme d'un ballon de foot ?", "Sphérique"], ["Quel est le petit de la vache ?", "Le veau"], ["Comment appelle-t-on le logement des oiseaux ?", "Un nid"], ["Quel personnage porte un bonnet rouge et vit au pôle Nord ?", "Le Père Noël"], ["Quel est le nom de la planète où nous vivons ?", "La Terre"], ["Quelle langue parle-t-on au Mexique ?", "L'espagnol"], ["Quel outil utilise-t-on pour taper des clous ?", "Un marteau"], ["De quelle couleur est un flamant rose ?", "Rose"], ["Quel est le nom du bébé chat ?", "Le chaton"], ["Quel fleuve traverse l'Égypte ?", "Le Nil"], ["Quelle est la boisson produite par les vaches ?", "Le lait"], ["Qui a découvert l'Amérique en 1492 ?", "Christophe Colomb"], ["Quel est le nom du triangle avec deux côtés égaux ?", "Isocèle"], ["Quel vêtement porte-t-on sur la tête ?", "Un chapeau"], ["Comment s'appelle l'étoile la plus proche de la Terre ?", "Le Soleil"], ["Quel animal a un long cou pour manger des feuilles ?", "La girafe"], ["Quelle est la capitale de la Russie ?", "Moscou"], ["Quel est le résultat de 10 x 10 ?", "100"], ["Qui a écrit 'Le Petit Prince' ?", "Antoine de Saint-Exupéry"], ["Quel sens utilise-t-on avec le nez ?", "L'odorat"], ["Comment appelle-t-on un film de dessins ?", "Un dessin animé"], ["Quel est l'animal qui porte sa maison sur son dos ?", "L'escargot"], ["De quel pays vient le sushi ?", "Le Japon"], ["Quel est le nom du liquide dans nos veines ?", "Le sang"], ["Quel mois fête-t-on Noël ?", "Décembre"], ["Quelle est la capitale de la Belgique ?", "Bruxelles"], ["Comment appelle-t-on quelqu'un qui ne mange pas de viande ?", "Un végétarien"],
 
 
+   // MOYENS (100-199)
+   ["Quel pays a la forme d'une botte ?", "L'Italie"], ["Combien y a-t-il de planètes dans le système solaire ?", "8"], ["Qui a écrit les aventures de Tintin ?", "Hergé"], ["Quelle est la capitale de l'Allemagne ?", "Berlin"], ["Quel organe permet de respirer ?", "Les poumons"], ["Dans quelle ville se trouve le Big Ben ?", "Londres"], ["Quel est le plus grand océan du monde ?", "L'océan Pacifique"], ["En quelle année a commencé la Première Guerre mondiale ?", "1914"], ["Quel fruit est utilisé pour fabriquer le cidre ?", "La pomme"], ["Qui était le dieu des éclairs dans la mythologie grecque ?", "Zeus"], ["Quelle est la monnaie du Royaume-Uni ?", "La Livre Sterling"], ["Quel est le nom du célèbre paquebot qui a coulé en 1912 ?", "Le Titanic"], ["Quelle est la capitale de l'Espagne ?", "Madrid"], ["Quel animal est le plus grand du monde ?", "La baleine bleue"], ["De quel pays vient la pizza ?", "Italie"], ["Combien de joueurs y a-t-il dans une équipe de football sur le terrain ?", "11"], ["Quel est le nom de la galaxie où nous vivons ?", "La Voie lactée"], ["Qui a peint la Joconde ?", "Léonard de Vinci"], ["Quelle est la capitale du Portugal ?", "Lisbonne"], ["Quel est le symbole chimique de l'eau ?", "H2O"], ["Dans quel pays se trouvent les pyramides de Gizeh ?", "L'Égypte"], ["Qui est l'auteur du roman 'Les Misérables' ?", "Victor Hugo"], ["Quel gaz les plantes absorbent-elles ?", "Le dioxyde de carbone"], ["Quel est le plus long fleuve du monde ?", "L'Amazone"], ["Quelle est la capitale de la Belgique ?", "Bruxelles"], ["Quel super-héros habite à Gotham City ?", "Batman"], ["Quelle est la langue la plus parlée au Brésil ?", "Le portugais"], ["Qui a découvert la loi de la gravité ?", "Isaac Newton"], ["Quel est le nom du premier homme sur la Lune ?", "Neil Armstrong"], ["Quelle est la capitale de la Grèce ?", "Athènes"], ["Quel est le métal de la Tour Eiffel ?", "Le fer"], ["Comment appelle-t-on un triangle avec un angle droit ?", "Un triangle rectangle"], ["Quel pays est surnommé le 'Pays du Soleil-Levant' ?", "Le Japon"], ["Quel est le nom du sorcier à lunettes ?", "Harry Potter"], ["Quelle est la capitale du Canada ?", "Ottawa"], ["Quel organe est responsable de la digestion ?", "L'estomac"], ["Qui a écrit 'Le Petit Prince' ?", "Antoine de Saint-Exupéry"], ["Quel est le nom du plus grand désert du monde ?", "Le Sahara"], ["Quelle est la capitale de la Russie ?", "Moscou"], ["Quel instrument possède 88 touches ?", "Le piano"], ["De quelle couleur est le drapeau de la Chine ?", "Rouge et jaune"], ["Quel est le nom de la montagne la plus haute du monde ?", "L'Everest"], ["Qui était le président des USA pendant la 2nde Guerre mondiale ?", "Franklin D. Roosevelt"], ["Quelle est la capitale de la Suisse ?", "Berne"], ["Dans quel pays se trouve le Taj Mahal ?", "L'Inde"], ["Quelle est la monnaie utilisée au Japon ?", "Le Yen"], ["Quel explorateur a découvert l'Amérique en 1492 ?", "Christophe Colomb"], ["Quelle est la capitale de la Turquie ?", "Ankara"], ["Quel est l'animal terrestre le plus rapide ?", "Le guépard"], ["Qui a inventé l'ampoule électrique ?", "Thomas Edison"], ["Quel fleuve traverse Paris ?", "La Seine"], ["Quelle est la capitale des Pays-Bas ?", "Amsterdam"], ["Quel pays a remporté la Coupe du Monde en 1998 et 2018 ?", "La France"], ["Comment appelle-t-on le petit du mouton ?", "L'agneau"], ["Quelle est la capitale du Mexique ?", "Mexico"], ["Qui était le chef de l'Empire français au début du XIXe ?", "Napoléon Bonaparte"], ["Quelle est la plus grande planète du système solaire ?", "Jupiter"], ["Quelle est la capitale de l'Irlande ?", "Dublin"], ["Quel est le nom de l'étoile la plus proche de la Terre ?", "Le Soleil"], ["Quel fruit est utilisé pour faire du vin ?", "Le raisin"], ["Qui a peint les plafonds de la Chapelle Sixtine ?", "Michel-Ange"], ["Quelle est la capitale de la Pologne ?", "Varsovie"], ["Combien d'États y a-t-il aux États-Unis ?", "50"], ["Quel est le nom de la peur des espaces clos ?", "La claustrophobie"], ["Quelle est la capitale de la Suède ?", "Stockholm"], ["Quel oiseau est le symbole de la paix ?", "La colombe"], ["Quel est le nom de l'os de la cuisse ?", "Le fémur"], ["Quelle est la capitale de la Thaïlande ?", "Bangkok"], ["Qui a inventé le vaccin contre la rage ?", "Louis Pasteur"], ["Quelle est la mer entre l'Europe et l'Afrique ?", "La mer Méditerranée"], ["Quelle est la capitale du Maroc ?", "Rabat"], ["Quel métal est utilisé pour fabriquer les canettes ?", "L'aluminium"], ["Quel écrivain a créé Sherlock Holmes ?", "Arthur Conan Doyle"], ["Quelle est la capitale de l'Argentine ?", "Buenos Aires"], ["Quel est le nom du continent au pôle Sud ?", "L'Antarctique"], ["Quelle est la capitale de l'Autriche ?", "Vienne"], ["Quel est le gaz que nous respirons le plus dans l'air ?", "L'azote"], ["Qui a chanté 'Bohemian Rhapsody' ?", "Freddie Mercury"], ["Quelle est la capitale de la Hongrie ?", "Budapest"], ["Quel est le nom du monument célèbre de New York ?", "La Statue de la Liberté"], ["Combien de jours y a-t-il dans une année bissextile ?", "366"], ["Quelle est la capitale de la Corée du Sud ?", "Séoul"], ["Quel animal pond les plus gros œufs ?", "L'autruche"], ["Qui a fondé la compagnie Apple ?", "Steve Jobs"], ["Quelle est la capitale de l'Égypte ?", "Le Caire"], ["Quel est le nom de la force qui nous retient au sol ?", "La gravité"], ["Quel est le pays le plus peuplé au monde ?", "L'Inde"], ["Quelle est la capitale du Danemark ?", "Copenhague"], ["Quel est le nom du repas du midi ?", "Le déjeuner"], ["Qui a écrit 'Hamlet' ?", "William Shakespeare"], ["Quelle est la capitale de la Norvège ?", "Oslo"], ["Quel mur séparait l'Allemagne en deux ?", "Le mur de Berlin"], ["Quelle est la capitale du Vietnam ?", "Hanoï"], ["Quel animal vit le plus longtemps ?", "La tortue géante"], ["Quelle est la capitale de l'Australie ?", "Canberra"], ["De quelle couleur sont les veines à travers la peau ?", "Bleues"], ["Quelle est la capitale de la République Tchèque ?", "Prague"], ["Quelle science étudie les étoiles ?", "L'astronomie"], ["Quelle est la capitale du Chili ?", "Santiago"], ["Comment appelle-t-on le passage de solide à liquide ?", "La fusion"],
 
 
-      // MOYENS (100-199)
-      ["Quel pays a la forme d'une botte ?", "L'Italie"], ["Combien y a-t-il de planètes dans le système solaire ?", "8"], ["Qui a écrit les aventures de Tintin ?", "Hergé"], ["Quelle est la capitale de l'Allemagne ?", "Berlin"], ["Quel organe permet de respirer ?", "Les poumons"], ["Dans quelle ville se trouve le Big Ben ?", "Londres"], ["Quel est le plus grand océan du monde ?", "L'océan Pacifique"], ["En quelle année a commencé la Première Guerre mondiale ?", "1914"], ["Quel fruit est utilisé pour fabriquer le cidre ?", "La pomme"], ["Qui était le dieu des éclairs dans la mythologie grecque ?", "Zeus"], ["Quelle est la monnaie du Royaume-Uni ?", "La Livre Sterling"], ["Quel est le nom du célèbre paquebot qui a coulé en 1912 ?", "Le Titanic"], ["Quelle est la capitale de l'Espagne ?", "Madrid"], ["Quel animal est le plus grand du monde ?", "La baleine bleue"], ["De quel pays vient la pizza ?", "Italie"], ["Combien de joueurs y a-t-il dans une équipe de football sur le terrain ?", "11"], ["Quel est le nom de la galaxie où nous vivons ?", "La Voie lactée"], ["Qui a peint la Joconde ?", "Léonard de Vinci"], ["Quelle est la capitale du Portugal ?", "Lisbonne"], ["Quel est le symbole chimique de l'eau ?", "H2O"], ["Dans quel pays se trouvent les pyramides de Gizeh ?", "L'Égypte"], ["Qui est l'auteur du roman 'Les Misérables' ?", "Victor Hugo"], ["Quel gaz les plantes absorbent-elles ?", "Le dioxyde de carbone"], ["Quel est le plus long fleuve du monde ?", "L'Amazone"], ["Quelle est la capitale de la Belgique ?", "Bruxelles"], ["Quel super-héros habite à Gotham City ?", "Batman"], ["Quelle est la langue la plus parlée au Brésil ?", "Le portugais"], ["Qui a découvert la loi de la gravité ?", "Isaac Newton"], ["Quel est le nom du premier homme sur la Lune ?", "Neil Armstrong"], ["Quelle est la capitale de la Grèce ?", "Athènes"], ["Quel est le métal de la Tour Eiffel ?", "Le fer"], ["Comment appelle-t-on un triangle avec un angle droit ?", "Un triangle rectangle"], ["Quel pays est surnommé le 'Pays du Soleil-Levant' ?", "Le Japon"], ["Quel est le nom du sorcier à lunettes ?", "Harry Potter"], ["Quelle est la capitale du Canada ?", "Ottawa"], ["Quel organe est responsable de la digestion ?", "L'estomac"], ["Qui a écrit 'Le Petit Prince' ?", "Antoine de Saint-Exupéry"], ["Quel est le nom du plus grand désert du monde ?", "Le Sahara"], ["Quelle est la capitale de la Russie ?", "Moscou"], ["Quel instrument possède 88 touches ?", "Le piano"], ["De quelle couleur est le drapeau de la Chine ?", "Rouge et jaune"], ["Quel est le nom de la montagne la plus haute du monde ?", "L'Everest"], ["Qui était le président des USA pendant la 2nde Guerre mondiale ?", "Franklin D. Roosevelt"], ["Quelle est la capitale de la Suisse ?", "Berne"], ["Dans quel pays se trouve le Taj Mahal ?", "L'Inde"], ["Quelle est la monnaie utilisée au Japon ?", "Le Yen"], ["Quel explorateur a découvert l'Amérique en 1492 ?", "Christophe Colomb"], ["Quelle est la capitale de la Turquie ?", "Ankara"], ["Quel est l'animal terrestre le plus rapide ?", "Le guépard"], ["Qui a inventé l'ampoule électrique ?", "Thomas Edison"], ["Quel fleuve traverse Paris ?", "La Seine"], ["Quelle est la capitale des Pays-Bas ?", "Amsterdam"], ["Quel pays a remporté la Coupe du Monde en 1998 et 2018 ?", "La France"], ["Comment appelle-t-on le petit du mouton ?", "L'agneau"], ["Quelle est la capitale du Mexique ?", "Mexico"], ["Qui était le chef de l'Empire français au début du XIXe ?", "Napoléon Bonaparte"], ["Quelle est la plus grande planète du système solaire ?", "Jupiter"], ["Quelle est la capitale de l'Irlande ?", "Dublin"], ["Quel est le nom de l'étoile la plus proche de la Terre ?", "Le Soleil"], ["Quel fruit est utilisé pour faire du vin ?", "Le raisin"], ["Qui a peint les plafonds de la Chapelle Sixtine ?", "Michel-Ange"], ["Quelle est la capitale de la Pologne ?", "Varsovie"], ["Combien d'États y a-t-il aux États-Unis ?", "50"], ["Quel est le nom de la peur des espaces clos ?", "La claustrophobie"], ["Quelle est la capitale de la Suède ?", "Stockholm"], ["Quel oiseau est le symbole de la paix ?", "La colombe"], ["Quel est le nom de l'os de la cuisse ?", "Le fémur"], ["Quelle est la capitale de la Thaïlande ?", "Bangkok"], ["Qui a inventé le vaccin contre la rage ?", "Louis Pasteur"], ["Quelle est la mer entre l'Europe et l'Afrique ?", "La mer Méditerranée"], ["Quelle est la capitale du Maroc ?", "Rabat"], ["Quel métal est utilisé pour fabriquer les canettes ?", "L'aluminium"], ["Quel écrivain a créé Sherlock Holmes ?", "Arthur Conan Doyle"], ["Quelle est la capitale de l'Argentine ?", "Buenos Aires"], ["Quel est le nom du continent au pôle Sud ?", "L'Antarctique"], ["Quelle est la capitale de l'Autriche ?", "Vienne"], ["Quel est le gaz que nous respirons le plus dans l'air ?", "L'azote"], ["Qui a chanté 'Bohemian Rhapsody' ?", "Freddie Mercury"], ["Quelle est la capitale de la Hongrie ?", "Budapest"], ["Quel est le nom du monument célèbre de New York ?", "La Statue de la Liberté"], ["Combien de jours y a-t-il dans une année bissextile ?", "366"], ["Quelle est la capitale de la Corée du Sud ?", "Séoul"], ["Quel animal pond les plus gros œufs ?", "L'autruche"], ["Qui a fondé la compagnie Apple ?", "Steve Jobs"], ["Quelle est la capitale de l'Égypte ?", "Le Caire"], ["Quel est le nom de la force qui nous retient au sol ?", "La gravité"], ["Quel est le pays le plus peuplé au monde ?", "L'Inde"], ["Quelle est la capitale du Danemark ?", "Copenhague"], ["Quel est le nom du repas du midi ?", "Le déjeuner"], ["Qui a écrit 'Hamlet' ?", "William Shakespeare"], ["Quelle est la capitale de la Norvège ?", "Oslo"], ["Quel mur séparait l'Allemagne en deux ?", "Le mur de Berlin"], ["Quelle est la capitale du Vietnam ?", "Hanoï"], ["Quel animal vit le plus longtemps ?", "La tortue géante"], ["Quelle est la capitale de l'Australie ?", "Canberra"], ["De quelle couleur sont les veines à travers la peau ?", "Bleues"], ["Quelle est la capitale de la République Tchèque ?", "Prague"], ["Quelle science étudie les étoiles ?", "L'astronomie"], ["Quelle est la capitale du Chili ?", "Santiago"], ["Comment appelle-t-on le passage de solide à liquide ?", "La fusion"],
+   // DIFFICILES (200-299)
+   ["Quel pays a remporté la Coupe du Monde de football en 2022 ?", "L'Argentine"], ["Quelle est la capitale de la Turquie ?", "Ankara"], ["Où se trouve le siège de Disney en Floride ?", "Orlando"], ["Dans quel pays se trouve la ville de Dubaï ?", "Les Émirats arabes unis"], ["Qui a écrit les livres 'Harry Potter' ?", "J.K. Rowling"], ["Quel paquebot a coulé en 1912 ?", "Le Titanic"], ["Quelle est la monnaie utilisée aux États-Unis ?", "Le Dollar américain"], ["Quelle est la capitale du Canada ?", "Ottawa"], ["Quel acteur joue Jack Sparrow ?", "Johnny Depp"], ["Dans quel océan se trouve l'île de la Réunion ?", "L'océan Indien"], ["Quel animal représente Lacoste ?", "Le crocodile"], ["Comment s'appelle le fondateur de Facebook ?", "Mark Zuckerberg"], ["Quelle est la capitale de l'Australie ?", "Canberra"], ["Combien y a-t-il de secondes dans une heure ?", "3600"], ["Quelle est la montagne la plus haute d'Europe ?", "Le Mont Blanc"], ["Quelle est la capitale du Japon ?", "Tokyo"], ["Qui a peint la chapelle Sixtine ?", "Michel-Ange"], ["Quel est le nom de l'agent 007 ?", "James Bond"], ["Où peut-on voir le Christ Rédempteur ?", "Rio de Janeiro"], ["Quel fruit est utilisé pour faire de la moutarde ?", "Aucun"], ["Quelle est la capitale de l'Espagne ?", "Madrid"], ["Qui est le 'King of Pop' ?", "Michael Jackson"], ["Quel pays est célèbre pour ses pyramides ?", "L'Égypte"], ["Quelle force nous fait tomber ?", "La gravité"], ["Quelle est la capitale de l'Italie ?", "Rome"], ["Quel est le plus grand océan ?", "L'océan Pacifique"], ["Quel sport utilise un 'palet' ?", "Le hockey sur glace"], ["Quel est le nom de la tour de Londres ?", "Big Ben"], ["Quelle est la capitale de l'Allemagne ?", "Berlin"], ["Qui a découvert l'Amérique en 1492 ?", "Christophe Colomb"], ["Quel animal est le plus rapide ?", "Le guépard"], ["Quelle est la capitale de la Russie ?", "Moscou"], ["Quelle est notre galaxie ?", "La Voie lactée"], ["Qui a écrit 'Le Petit Prince' ?", "Antoine de Saint-Exupéry"], ["Quelle est la capitale du Portugal ?", "Lisbonne"], ["Quel organe pompe le sang ?", "Le cœur"], ["Où se trouve la Maison Blanche ?", "Washington D.C."], ["Quel est le plus grand désert chaud ?", "Le Sahara"], ["Quelle est la capitale de la Grèce ?", "Athènes"], ["Quel super-héros a été mordu par une araignée ?", "Spider-Man"], ["Quelle est la monnaie du Japon ?", "Le Yen"], ["Quel est le premier homme sur la Lune ?", "Neil Armstrong"], ["Quelle est la capitale de la Chine ?", "Pékin"], ["Quel instrument a 88 touches ?", "Le piano"], ["Qui a peint la Joconde ?", "Léonard de Vinci"], ["Quelle est la capitale de la Belgique ?", "Bruxelles"], ["Dans quel pays se trouve le Taj Mahal ?", "L'Inde"], ["Quel mur a été détruit en 1989 ?", "Le mur de Berlin"], ["Quelle est la capitale de la Suisse ?", "Berne"], ["Quel métal est attiré par un aimant ?", "Le fer"], ["Quelle est la plus grande forêt ?", "L'Amazonie"], ["Quelle est la capitale des Pays-Bas ?", "Amsterdam"], ["Qui a créé Mickey Mouse ?", "Walt Disney"], ["Quel pays est l'Hexagone ?", "La France"], ["Quelle est la capitale de l'Irlande ?", "Dublin"], ["Quel est le chien de Tintin ?", "Milou"], ["Combien de couleurs dans l'arc-en-ciel ?", "7"], ["Quelle est la capitale de l'Argentine ?", "Buenos Aires"], ["Quelle est la planète rouge ?", "Mars"], ["Qui a écrit 'Les Misérables' ?", "Victor Hugo"], ["Quelle est la capitale de la Suède ?", "Stockholm"], ["Quel est le plus long fleuve ?", "L'Amazone"], ["Quel est le petit de la vache ?", "Le veau"], ["Quelle est la capitale de l'Égypte ?", "Le Caire"], ["Quel sport pratique Rafael Nadal ?", "Le tennis"], ["Quel sorcier a des lunettes ?", "Harry Potter"], ["Quelle est la capitale de la Thaïlande ?", "Bangkok"], ["Quel est l'animal national de l'Australie ?", "Le kangourou"], ["Quelle est la capitale du Mexique ?", "Mexico"], ["Qui a inventé l'ampoule électrique ?", "Thomas Edison"], ["Quelle est la capitale de la Corée du Sud ?", "Séoul"], ["Quelle montagne est la plus haute ?", "L'Everest"], ["Quelle est la capitale du Maroc ?", "Rabat"], ["Combien de jours dans une année ?", "365"], ["Quelle est la capitale de la Norvège ?", "Oslo"], ["Quel pirate a une jambe de bois ?", "Long John Silver"], ["Quelle est la capitale de la Pologne ?", "Varsovie"], ["Qui a inventé les JO ?", "La Grèce"], ["Quelle est la capitale de l'Autriche ?", "Vienne"], ["Où est la Statue de la Liberté ?", "New York"], ["Quelle est la capitale du Danemark ?", "Copenhague"], ["Quelle reine est décédée en 2022 ?", "Elizabeth II"], ["Quelle est la capitale de la Finlande ?", "Helsinki"], ["Quel bateau a découvert l'Amérique ?", "La Santa Maria"], ["Quelle est la capitale de l'Islande ?", "Reykjavik"], ["Quel animal est le plus lourd ?", "La baleine bleue"], ["Quelle est la capitale de la République Tchèque ?", "Prague"], ["Quelle étoile est proche de nous ?", "Le Soleil"], ["Quelle est la capitale de la Hongrie ?", "Budapest"], ["Quel détective vit au 221B Baker Street ?", "Sherlock Holmes"], ["Quelle est la capitale du Portugal ?", "Lisbonne"], ["Quelle couche nous protège du soleil ?", "La couche d'ozone"], ["Quelle est la capitale du Chili ?", "Santiago"], ["Qui est le héros de 'Star Wars' ?", "Luke Skywalker"], ["Quelle est la capitale de la Roumanie ?", "Bucarest"], ["Quel est le plus grand océan ?", "L'océan Pacifique"], ["Quelle est la capitale du Vietnam ?", "Hanoï"], ["Qui a découvert la gravité ?", "Isaac Newton"], ["Quelle est la capitale de la Nouvelle-Zélande ?", "Wellington"], ["Qui a écrit 'Le tour du monde en 80 jours' ?", "Jules Verne"]
+];
 
 
+    let currentLevel = 0;
+    let activeIndex = -1;
+    let isAiMode = false;
+    let currentAiQ = ["", ""];
 
+    const levels = [
+        { name: "DÉFIS FACILES", class: "theme-vert", btnClass: "btn-green", start: 0 },
+        { name: "DÉFIS MOYENS", class: "theme-or", btnClass: "btn-gold", start: 100 },
+        { name: "DÉFIS DIFFICILES", class: "theme-rouge", btnClass: "btn-red", start: 200 }
+    ];
 
-      // DIFFICILES (200-299)
-      ["Quel pays a remporté la Coupe du Monde de football en 2022 ?", "L'Argentine"], ["Quelle est la capitale de la Turquie ?", "Ankara"], ["Où se trouve le siège de Disney en Floride ?", "Orlando"], ["Dans quel pays se trouve la ville de Dubaï ?", "Les Émirats arabes unis"], ["Qui a écrit les livres 'Harry Potter' ?", "J.K. Rowling"], ["Quel paquebot a coulé en 1912 ?", "Le Titanic"], ["Quelle est la monnaie utilisée aux États-Unis ?", "Le Dollar américain"], ["Quelle est la capitale du Canada ?", "Ottawa"], ["Quel acteur joue Jack Sparrow ?", "Johnny Depp"], ["Dans quel océan se trouve l'île de la Réunion ?", "L'océan Indien"], ["Quel animal représente Lacoste ?", "Le crocodile"], ["Comment s'appelle le fondateur de Facebook ?", "Mark Zuckerberg"], ["Quelle est la capitale de l'Australie ?", "Canberra"], ["Combien y a-t-il de secondes dans une heure ?", "3600"], ["Quelle est la montagne la plus haute d'Europe ?", "Le Mont Blanc"], ["Quelle est la capitale du Japon ?", "Tokyo"], ["Qui a peint la chapelle Sixtine ?", "Michel-Ange"], ["Quel est le nom de l'agent 007 ?", "James Bond"], ["Où peut-on voir le Christ Rédempteur ?", "Rio de Janeiro"], ["Quel fruit est utilisé pour faire de la moutarde ?", "Aucun"], ["Quelle est la capitale de l'Espagne ?", "Madrid"], ["Qui est le 'King of Pop' ?", "Michael Jackson"], ["Quel pays est célèbre pour ses pyramides ?", "L'Égypte"], ["Quelle force nous fait tomber ?", "La gravité"], ["Quelle est la capitale de l'Italie ?", "Rome"], ["Quel est le plus grand océan ?", "L'océan Pacifique"], ["Quel sport utilise un 'palet' ?", "Le hockey sur glace"], ["Quel est le nom de la tour de Londres ?", "Big Ben"], ["Quelle est la capitale de l'Allemagne ?", "Berlin"], ["Qui a découvert l'Amérique en 1492 ?", "Christophe Colomb"], ["Quel animal est le plus rapide ?", "Le guépard"], ["Quelle est la capitale de la Russie ?", "Moscou"], ["Quelle est notre galaxie ?", "La Voie lactée"], ["Qui a écrit 'Le Petit Prince' ?", "Antoine de Saint-Exupéry"], ["Quelle est la capitale du Portugal ?", "Lisbonne"], ["Quel organe pompe le sang ?", "Le cœur"], ["Où se trouve la Maison Blanche ?", "Washington D.C."], ["Quel est le plus grand désert chaud ?", "Le Sahara"], ["Quelle est la capitale de la Grèce ?", "Athènes"], ["Quel super-héros a été mordu par une araignée ?", "Spider-Man"], ["Quelle est la monnaie du Japon ?", "Le Yen"], ["Quel est le premier homme sur la Lune ?", "Neil Armstrong"], ["Quelle est la capitale de la Chine ?", "Pékin"], ["Quel instrument a 88 touches ?", "Le piano"], ["Qui a peint la Joconde ?", "Léonard de Vinci"], ["Quelle est la capitale de la Belgique ?", "Bruxelles"], ["Dans quel pays se trouve le Taj Mahal ?", "L'Inde"], ["Quel mur a été détruit en 1989 ?", "Le mur de Berlin"], ["Quelle est la capitale de la Suisse ?", "Berne"], ["Quel métal est attiré par un aimant ?", "Le fer"], ["Quelle est la plus grande forêt ?", "L'Amazonie"], ["Quelle est la capitale des Pays-Bas ?", "Amsterdam"], ["Qui a créé Mickey Mouse ?", "Walt Disney"], ["Quel pays est l'Hexagone ?", "La France"], ["Quelle est la capitale de l'Irlande ?", "Dublin"], ["Quel est le chien de Tintin ?", "Milou"], ["Combien de couleurs dans l'arc-en-ciel ?", "7"], ["Quelle est la capitale de l'Argentine ?", "Buenos Aires"], ["Quelle est la planète rouge ?", "Mars"], ["Qui a écrit 'Les Misérables' ?", "Victor Hugo"], ["Quelle est la capitale de la Suède ?", "Stockholm"], ["Quel est le plus long fleuve ?", "L'Amazone"], ["Quel est le petit de la vache ?", "Le veau"], ["Quelle est la capitale de l'Égypte ?", "Le Caire"], ["Quel sport pratique Rafael Nadal ?", "Le tennis"], ["Quel sorcier a des lunettes ?", "Harry Potter"], ["Quelle est la capitale de la Thaïlande ?", "Bangkok"], ["Quel est l'animal national de l'Australie ?", "Le kangourou"], ["Quelle est la capitale du Mexique ?", "Mexico"], ["Qui a inventé l'ampoule électrique ?", "Thomas Edison"], ["Quelle est la capitale de la Corée du Sud ?", "Séoul"], ["Quelle montagne est la plus haute ?", "L'Everest"], ["Quelle est la capitale du Maroc ?", "Rabat"], ["Combien de jours dans une année ?", "365"], ["Quelle est la capitale de la Norvège ?", "Oslo"], ["Quel pirate a une jambe de bois ?", "Long John Silver"], ["Quelle est la capitale de la Pologne ?", "Varsovie"], ["Qui a inventé les JO ?", "La Grèce"], ["Quelle est la capitale de l'Autriche ?", "Vienne"], ["Où est la Statue de la Liberté ?", "New York"], ["Quelle est la capitale du Danemark ?", "Copenhague"], ["Quelle reine est décédée en 2022 ?", "Elizabeth II"], ["Quelle est la capitale de la Finlande ?", "Helsinki"], ["Quel bateau a découvert l'Amérique ?", "La Santa Maria"], ["Quelle est la capitale de l'Islande ?", "Reykjavik"], ["Quel animal est le plus lourd ?", "La baleine bleue"], ["Quelle est la capitale de la République Tchèque ?", "Prague"], ["Quelle étoile est proche de nous ?", "Le Soleil"], ["Quelle est la capitale de la Hongrie ?", "Budapest"], ["Quel détective vit au 221B Baker Street ?", "Sherlock Holmes"], ["Quelle est la capitale du Portugal ?", "Lisbonne"], ["Quelle couche nous protège du soleil ?", "La couche d'ozone"], ["Quelle est la capitale du Chili ?", "Santiago"], ["Qui est le héros de 'Star Wars' ?", "Luke Skywalker"], ["Quelle est la capitale de la Roumanie ?", "Bucarest"], ["Quel est le plus grand océan ?", "L'océan Pacifique"], ["Quelle est la capitale du Vietnam ?", "Hanoï"], ["Qui a découvert la gravité ?", "Isaac Newton"], ["Quelle est la capitale de la Nouvelle-Zélande ?", "Wellington"], ["Qui a écrit 'Le tour du monde en 80 jours' ?", "Jules Verne"]
-  ];
+    function normalize(str) {
+        if(!str) return "";
+        return str.toString().toLowerCase()
+            .replace(/[éèêë]/g, 'e').replace(/[àâ]/g, 'a').replace(/[îï]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ûù]/g, 'u')
+            .replace(/^(le |la |les |l\'|un |une |des )/, "")
+            .replace(/\s/g, "").trim();
+    }
 
+    function switchView(viewId) {
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active-view'));
+        document.getElementById(viewId).classList.add('active-view');
+        document.getElementById('nav-arrows').style.display = (viewId === 'view-questions-list') ? 'block' : 'none';
+        document.querySelector('.scroll-box').scrollTop = 0;
+    }
 
+    function showSubMenu(type) {
+        document.body.className = "theme-menu";
+        if(type === 'questions') switchView('view-submenu-questions');
+        if(type === 'avantages') switchView('view-submenu-avantages');
+    }
 
+    function backToMain() {
+        document.body.className = "theme-menu";
+        switchView('view-main-menu');
+    }
 
-   let currentLevel = 0;
-   let activeIndex = -1;
-   let isAiMode = false;
-   let currentAiQ = ["", ""];
+    function goToLevel(idx) {
+        currentLevel = idx;
+        renderQuestionsList();
+        switchView('view-questions-list');
+    }
 
+    function renderQuestionsList() {
+        const listInner = document.getElementById('questions-container-inner');
+        const level = levels[currentLevel];
+        document.getElementById('level-title').innerText = "📜 " + level.name;
+        document.body.className = level.class;
+        listInner.innerHTML = "";
+        
+        const solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
 
-   const levels = [
-       { name: "DÉFIS FACILES", class: "theme-vert", start: 0 },
-       { name: "DÉFIS MOYENS", class: "theme-or", start: 100 },
-       { name: "DÉFIS DIFFICILES", class: "theme-rouge", start: 200 }
-   ];
+        for (let i = 1; i <= 100; i++) {
+            const qID = level.start + i - 1;
+            const isDone = solved.includes(qID);
+            let btn = document.createElement('button');
+            btn.className = `btn-question ${level.btnClass} ${isDone ? 'completed' : ''}`;
+            btn.innerText = isDone ? `DÉFI RÉUSSI` : `QUESTION ${i}`;
+            btn.onclick = () => showQuestion(qID, false);
+            listInner.appendChild(btn);
+        }
 
+        let btnAi = document.createElement('button');
+        btnAi.className = `btn-question btn-silver`;
+        btnAi.innerText = `QUESTION IA ✨`;
+        btnAi.onclick = () => showQuestion(-1, true);
+        listInner.appendChild(btnAi);
+    }
 
-   function normalize(str) {
-       if(!str) return "";
-       return str.toString().toLowerCase()
-           .replace(/[éèêë]/g, 'e').replace(/[àâ]/g, 'a').replace(/[îï]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ûù]/g, 'u')
-           .replace(/^(le |la |les |l\'|un |une |des )/, "")
-           .replace(/\s/g, "").trim();
-   }
+    function showQuestion(id, isAi) {
+        isAiMode = isAi;
+        document.getElementById('hint-text').style.visibility = "hidden";
+        if (isAi) {
+            document.getElementById('btn-show-id').style.display = "block";
+            document.getElementById('btn-regen-id').style.display = "block";
+            const pool = allData.slice(levels[currentLevel].start, levels[currentLevel].start + 100);
+            currentAiQ = pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : ["Pas de question", ""];
+            document.getElementById('current-q-text').innerText = "[IA] " + currentAiQ[0];
+        } else {
+            document.getElementById('btn-show-id').style.display = "none";
+            document.getElementById('btn-regen-id').style.display = "none";
+            activeIndex = id;
+            document.getElementById('current-q-text').innerText = allData[id] ? allData[id][0] : "Question vide";
+        }
+        document.getElementById('user-ans-input').value = "";
+        document.getElementById('list-view').style.display = 'none';
+        document.getElementById('question-view').style.display = 'flex';
+        document.getElementById('user-ans-input').focus();
+    }
 
+    function hideQuestion() {
+        document.getElementById('question-view').style.display = 'none';
+        document.getElementById('list-view').style.display = 'block';
+        renderQuestionsList();
+    }
 
-   function renderQuestions() {
-       // Mode normal : on montre la liste et les flèches
-       document.getElementById('dynamic-content').style.display = "block";
-       document.getElementById('menu-content').style.display = "none";
-       document.getElementById('nav-arrows').style.display = "block";
+    function checkAnswer() {
+        const userAns = normalize(document.getElementById('user-ans-input').value);
+        const correctAns = normalize(isAiMode ? currentAiQ[1] : (allData[activeIndex] ? allData[activeIndex][1] : ""));
+        if (userAns !== "" && userAns === correctAns) {
+            alert("Bravo ! ✨");
+            if (!isAiMode) {
+                let solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
+                if (!solved.includes(activeIndex)) solved.push(activeIndex);
+                localStorage.setItem('noel_solved', JSON.stringify(solved));
+            }
+            hideQuestion();
+        } else {
+            alert("Oh non ! ❄️");
+        }
+    }
 
+    function devUnlock() {
+        if(confirm("Réinitialiser la progression ?")) {
+            localStorage.removeItem('noel_solved');
+            alert("Progression réinitialisée !");
+        }
+    }
 
-       const list = document.getElementById('questions-list');
-       const level = levels[currentLevel];
-       document.getElementById('level-title').innerText = "📜 " + level.name;
-       document.body.className = level.class;
-       list.innerHTML = "";
-      
-       const solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
+    function changeLevel(dir) {
+        currentLevel = (currentLevel + dir + 3) % 3;
+        renderQuestionsList();
+    }
 
+    function revealHint() {
+        const hText = document.getElementById('hint-text');
+        hText.innerText = currentAiQ[1];
+        hText.style.visibility = "visible";
+        setTimeout(() => { hText.style.visibility = "hidden"; }, 1000);
+    }
 
-       for (let i = 1; i <= 100; i++) {
-           const qID = level.start + i - 1;
-           const isDone = solved.includes(qID);
-           let btn = document.createElement('button');
-           btn.className = `btn-question ${isDone ? 'completed' : ''}`;
-           btn.innerText = isDone ? `DÉFI RÉUSSI` : `QUESTION ${i}`;
-           btn.onclick = () => showQuestion(qID, false);
-           list.appendChild(btn);
-       }
+    function regenerateAi() { showQuestion(-1, true); }
 
-
-       // Bouton IA
-       let btnAi = document.createElement('button');
-       btnAi.className = `btn-question`;
-       btnAi.innerText = `QUESTION IA ✨`;
-       btnAi.onclick = () => showQuestion(-1, true);
-       list.appendChild(btnAi);
-
-
-       // BOUTON MENU PRINCIPAL (Tout en bas)
-       let btnMenu = document.createElement('button');
-       btnMenu.className = `btn-question`;
-       btnMenu.innerText = `🏠 MENU PRINCIPAL`;
-       btnMenu.onclick = showMainMenu;
-       list.appendChild(btnMenu);
-   }
-
-
-   function showMainMenu() {
-       document.getElementById('dynamic-content').style.display = "none";
-       document.getElementById('nav-arrows').style.display = "none";
-       document.getElementById('menu-content').style.display = "flex";
-       document.body.className = "theme-menu";
-   }
-
-
-   function goToLevel(idx) {
-       currentLevel = idx;
-       renderQuestions();
-       document.querySelector('.scroll-box').scrollTop = 0;
-   }
-
-
-   function devUnlock() {
-       if(confirm("Réinitialiser la progression ?")) {
-           localStorage.removeItem('noel_solved');
-           goToLevel(0);
-       }
-   }
-
-
-   function showQuestion(id, isAi) {
-       isAiMode = isAi;
-       document.getElementById('hint-text').style.visibility = "hidden";
-       if (isAi) {
-           document.getElementById('btn-show-id').style.display = "block";
-           document.getElementById('btn-regen-id').style.display = "block";
-           const pool = allData.slice(levels[currentLevel].start, levels[currentLevel].start + 100);
-           currentAiQ = pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : ["Pas de question", ""];
-           document.getElementById('current-q-text').innerText = "[IA] " + currentAiQ[0];
-       } else {
-           document.getElementById('btn-show-id').style.display = "none";
-           document.getElementById('btn-regen-id').style.display = "none";
-           activeIndex = id;
-           document.getElementById('current-q-text').innerText = allData[id] ? allData[id][0] : "Question vide";
-       }
-       document.getElementById('user-ans-input').value = "";
-       document.getElementById('list-view').style.display = 'none';
-       document.getElementById('question-view').style.display = 'flex';
-       document.getElementById('user-ans-input').focus();
-   }
-
-
-   function hideQuestion() {
-       document.getElementById('question-view').style.display = 'none';
-       document.getElementById('list-view').style.display = 'block';
-       renderQuestions();
-   }
-
-
-   function checkAnswer() {
-       const userAns = normalize(document.getElementById('user-ans-input').value);
-       const correctAns = normalize(isAiMode ? currentAiQ[1] : (allData[activeIndex] ? allData[activeIndex][1] : ""));
-       if (userAns !== "" && userAns === correctAns) {
-           alert("Bravo ! ✨");
-           if (!isAiMode) {
-               let solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
-               if (!solved.includes(activeIndex)) solved.push(activeIndex);
-               localStorage.setItem('noel_solved', JSON.stringify(solved));
-           }
-           hideQuestion();
-       } else {
-           alert("Oh non ! ❄️");
-       }
-   }
-
-
-   function revealHint() {
-       const hText = document.getElementById('hint-text');
-       hText.innerText = currentAiQ[1];
-       hText.style.visibility = "visible";
-       setTimeout(() => { hText.style.visibility = "hidden"; }, 1000);
-   }
-
-
-   function regenerateAi() { showQuestion(-1, true); }
-
-
-   function changeLevel(dir) {
-       currentLevel = (currentLevel + dir + 3) % 3;
-       renderQuestions();
-   }
-
-
-   document.getElementById('user-ans-input').addEventListener('keypress', (e) => {
-       if (e.key === 'Enter') checkAnswer();
-   });
-
-
-   renderQuestions();
+    document.getElementById('user-ans-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
+    });
 </script>
 </body>
 </html>
