@@ -14,7 +14,7 @@
         }
 
         .container { position: relative; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; }
-        .parchemin-img { height: 102vh; width: auto; max-width: 95vw; object-fit: contain; filter: drop-shadow(0px 12px 25px rgba(0,0,0,0.5)); }
+        .parchemin-img { height: 102vh; width: auto; max-width: 95vw; object-fit: contain; filter: drop-shadow(0px 12px 25px rgba(0,0,0,0.5)); transition: opacity 0.5s; }
 
         .nav-arrow {
             position: absolute; top: 50%; transform: translateY(-50%);
@@ -36,51 +36,38 @@
 
         h1 { font-size: 2.2rem; margin-bottom: 30px; text-shadow: 1px 1px 0px #fff; transition: color 0.6s ease; }
 
-        /* STYLE DE BASE : DESSUS BLANC BEIGE POUR TOUS */
+        /* TITRE AVANTAGE OR STYLÉ */
+        .titre-or {
+            color: #d4a017; font-size: 2.5rem; font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 12px rgba(212, 160, 23, 0.5);
+            margin-bottom: 10px; font-family: 'Georgia', serif;
+        }
+
         .btn-question {
             display: block; width: 85%; margin: 12px auto; padding: 15px;
-            background-color: #f4e4bc !important; /* Force le dessus blanc beige */
+            background-color: #f4e4bc !important; 
             color: #3d240b; border: 2px solid #8e5a31;
             border-radius: 8px; font-size: 1.1rem; font-weight: bold;
             cursor: pointer; transition: all 0.3s ease-out; position: relative;
         }
         
-        /* ANIMATIONS DE SURVOL */
         .btn-question:hover { transform: translateY(-3px) scale(1.03); }
         
-        /* THÈMES DE BOUTONS (COULEUR DU BAS ET BORDURES SEULEMENT) */
-        .btn-silver { 
-            box-shadow: 3px 3px 0px #A9A9A9; 
-            border-color: #A9A9A9;
-        }
+        .btn-silver { box-shadow: 3px 3px 0px #A9A9A9; border-color: #A9A9A9; }
         .btn-silver:hover { background-color: #C0C0C0 !important; color: #333; border-color: #808080; }
-
-        .btn-green { 
-            box-shadow: 3px 3px 0px #2d5a27; 
-            border-color: #2d5a27;
-        }
+        .btn-green { box-shadow: 3px 3px 0px #2d5a27; border-color: #2d5a27; }
         .btn-green:hover { background-color: #2d5a27 !important; color: white; border-color: #1e3d1a; }
-
-        .btn-gold { 
-            box-shadow: 3px 3px 0px #d4a017; 
-            border-color: #d4a017;
-        }
+        .btn-gold { box-shadow: 3px 3px 0px #d4a017; border-color: #d4a017; }
         .btn-gold:hover { background-color: #d4a017 !important; color: white; border-color: #a37a11; }
-
-        .btn-red { 
-            box-shadow: 3px 3px 0px #b30000; 
-            border-color: #b30000;
-        }
+        .btn-red { box-shadow: 3px 3px 0px #b30000; border-color: #b30000; }
         .btn-red:hover { background-color: #b30000 !important; color: white; border-color: #800000; }
 
-        /* ÉTAT COMPLÉTÉ */
         .btn-question.completed { opacity: 0.6; background-color: #d2b48c !important; cursor: default; box-shadow: none !important; }
         .btn-question.completed::after { content: " ✅"; }
 
         .view-section { display: none; flex-direction: column; align-items: center; }
         .active-view { display: flex; }
 
-        /* VUE QUESTION */
         #question-view {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             justify-content: center; align-items: center; z-index: 20;
@@ -109,7 +96,6 @@
 
         #hint-text { display: block; height: 1.5rem; margin-top: 10px; font-weight: bold; color: #b30000; visibility: hidden; }
 
-        /* TITRES DE NIVEAUX */
         .theme-vert h1 { color: #2d5a27; }
         .theme-or h1 { color: #d4a017; }
         .theme-rouge h1 { color: #b30000; }
@@ -121,11 +107,11 @@
 <div class="container" id="main-container">
     <div id="list-view">
         <div id="nav-arrows" style="display: none;">
-            <div class="nav-arrow arrow-left" onclick="changeLevel(-1)">❮</div>
-            <div class="nav-arrow arrow-right" onclick="changeLevel(1)">❯</div>
+            <div class="nav-arrow arrow-left" id="btn-arrow-L">❮</div>
+            <div class="nav-arrow arrow-right" id="btn-arrow-R">❯</div>
         </div>
 
-        <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
+        <img id="main-scroll-bg" src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
         
         <div class="scroll-box">
             
@@ -145,8 +131,8 @@
             </div>
 
             <div id="view-submenu-avantages" class="view-section">
-                <h1>AVANTAGES</h1>
-                <p>Section bientôt disponible...</p>
+                <h1 id="avantage-title" class="titre-or">AVANTAGE 1</h1>
+                <img id="avantage-scroll-img" src="https://i.postimg.cc/mrYm0SXf/Capture-d-e-cran-le-2026-02-09-a-17-25-24-removebg-preview.png" style="width: 130%; max-width: 600px; filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.5));">
                 <button class="btn-question btn-silver" style="margin-top:20px;" onclick="backToMain()">RETOUR</button>
             </div>
 
@@ -193,6 +179,7 @@
 
 
     let currentLevel = 0;
+    let currentAvantage = 1; // Suivi des avantages
     let activeIndex = -1;
     let isAiMode = false;
     let currentAiQ = ["", ""];
@@ -214,8 +201,41 @@
     function switchView(viewId) {
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active-view'));
         document.getElementById(viewId).classList.add('active-view');
-        document.getElementById('nav-arrows').style.display = (viewId === 'view-questions-list') ? 'block' : 'none';
+        
+        const nav = document.getElementById('nav-arrows');
+        const bg = document.getElementById('main-scroll-bg');
+        const arrowL = document.getElementById('btn-arrow-L');
+        const arrowR = document.getElementById('btn-arrow-R');
+
+        if (viewId === 'view-questions-list') {
+            nav.style.display = 'block';
+            bg.style.opacity = "1";
+            arrowL.onclick = () => changeLevel(-1);
+            arrowR.onclick = () => changeLevel(1);
+        } 
+        else if (viewId === 'view-submenu-avantages') {
+            nav.style.display = 'block';
+            bg.style.opacity = "0"; // Cache le parchemin de fond
+            arrowL.onclick = () => moveAvantage(-1);
+            arrowR.onclick = () => moveAvantage(1);
+            updateAvantageUI();
+        }
+        else {
+            nav.style.display = 'none';
+            bg.style.opacity = "1";
+        }
         document.querySelector('.scroll-box').scrollTop = 0;
+    }
+
+    function moveAvantage(dir) {
+        currentAvantage += dir;
+        if(currentAvantage < 1) currentAvantage = 20;
+        if(currentAvantage > 20) currentAvantage = 1;
+        updateAvantageUI();
+    }
+
+    function updateAvantageUI() {
+        document.getElementById('avantage-title').innerText = "AVANTAGE " + currentAvantage;
     }
 
     function showSubMenu(type) {
