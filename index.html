@@ -101,9 +101,9 @@
   </div>
 
   <script>
-    // Configuration Supabase avec tes vraies données
+    // Configuration Supabase avec tes identifiants
     const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_H3aGonNQ-FxziZENkqPYBA_aICuZ4eD';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjA0MDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
 
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -124,7 +124,7 @@
       window.location.reload();
     }
 
-    // Vérification automatique au chargement
+    // Vérification automatique au chargement de la page
     async function checkUser() {
       const { data: { user } } = await supabase.auth.getUser();
 
