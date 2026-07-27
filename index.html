@@ -29,16 +29,6 @@
       width: 90%;
     }
 
-    h1 {
-      margin-top: 0;
-      font-size: 1.8rem;
-    }
-
-    p {
-      color: #94a3b8;
-      font-size: 0.95rem;
-    }
-
     .btn-google {
       background-color: white;
       color: #333;
@@ -59,7 +49,6 @@
       background-color: #f1f5f9;
     }
 
-    /* Style du profil une fois connecté */
     .profile-box {
       display: flex;
       flex-direction: column;
@@ -72,6 +61,7 @@
       height: 64px;
       border-radius: 50%;
       border: 2px solid #38bdf8;
+      object-fit: cover;
     }
 
     .avatar-circle {
@@ -87,11 +77,6 @@
       font-weight: bold;
     }
 
-    .user-name {
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
     .btn-logout {
       background-color: #ef4444;
       color: white;
@@ -100,6 +85,11 @@
       border-radius: 6px;
       cursor: pointer;
       margin-top: 10px;
+      font-weight: 600;
+    }
+
+    .btn-logout:hover {
+      background-color: #dc2626;
     }
   </style>
 </head>
@@ -117,12 +107,13 @@
   <div id="user-profile" class="card" style="display: none;"></div>
 
   <script>
+    // Configuration de ton projet Supabase
     const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
-    // Colles ta clé Publishable Supabase complète entre les guillemets :
-    const SUPABASE_ANON_KEY = 'sb_publishable_H3aGonNQ-FxziZENkqPYBA_aICuZ...'; 
+    const SUPABASE_ANON_KEY = 'sb_publishable_H3aGonNQ-FxziZENkqPYBA_aICuZ4eD'; 
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Fonction de connexion avec Google
     async function loginWithGoogle() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -130,25 +121,38 @@
           redirectTo: 'https://christmasss2026.vercel.app'
         }
       });
-      if (error) console.error('Erreur:', error.message);
+      if (error) {
+        alert('Erreur lors de la connexion : ' + error.message);
+      }
     }
 
+    // Gestion de l'état d'authentification au chargement
     window.addEventListener('DOMContentLoaded', async () => {
+      // 1. Vérifier si l'utilisateur est déjà connecté
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         showUserProfile(session.user);
       }
+
+      // 2. Écouter le retour de connexion OAuth de Google
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (session) {
+          showUserProfile(session.user);
+        }
+      });
     });
 
+    // Affichage des informations de profil
     function showUserProfile(user) {
       document.getElementById('login-card').style.display = 'none';
       const profileContainer = document.getElementById('user-profile');
       profileContainer.style.display = 'block';
 
       const metadata = user.user_metadata || {};
-      const name = metadata.full_name || metadata.name || 'Joueur';
+      const name = metadata.full_name || metadata.name || user.email || 'Joueur';
       const avatarUrl = metadata.avatar_url || metadata.picture;
 
+      // Afficher l'image du compte Google ou l'initiale par défaut
       const avatarHTML = avatarUrl 
         ? `<img src="${avatarUrl}" class="avatar-img" alt="Avatar">`
         : `<div class="avatar-circle">${name.charAt(0).toUpperCase()}</div>`;
@@ -156,12 +160,14 @@
       profileContainer.innerHTML = `
         <div class="profile-box">
           ${avatarHTML}
-          <div class="user-name">${name}</div>
+          <h3>Connecté en tant que :</h3>
+          <div style="font-size: 1.2rem; font-weight: bold;">${name}</div>
           <button onclick="logout()" class="btn-logout">Déconnexion</button>
         </div>
       `;
     }
 
+    // Fonction de déconnexion
     async function logout() {
       await supabase.auth.signOut();
       window.location.reload();
