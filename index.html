@@ -1,65 +1,171 @@
-// 1. Initialisation de Supabase avec les bonnes identifiants
-const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_H3aGonNQ-FxziZENkqPYBA_aICuZ...'; // Remplace par ta vraie clé publishable de Supabase
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// 2. Fonction appelée lors du clic sur "Continuer avec Google"
-async function loginWithGoogle() {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      // Redirige directement vers ton domaine Vercel configuré
-      redirectTo: 'https://christmasss2026.vercel.app'
-    }
-  });
-
-  if (error) {
-    console.error('Erreur lors de la connexion :', error.message);
-  }
-}
-
-// 3. Vérification de la session au chargement de la page
-window.addEventListener('DOMContentLoaded', async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (session) {
-    // L'utilisateur est connecté !
-    showUserProfile(session.user);
-  }
-});
-
-// 4. Fonction pour afficher les infos de l'utilisateur (nom + avatar)
-function showUserProfile(user) {
-  const userMetadata = user.user_metadata;
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue 🎄</title>
   
-  const userName = userMetadata.full_name || userMetadata.name || 'Joueur';
-  const userAvatarUrl = userMetadata.avatar_url || userMetadata.picture;
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  // Masquer l'écran de connexion
-  const loginCard = document.querySelector('.login-card');
-  if (loginCard) loginCard.style.display = 'none';
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
 
-  // Afficher la section du profil / jeu
-  const profileContainer = document.getElementById('user-profile');
-  if (profileContainer) {
-    profileContainer.style.display = 'flex';
-    
-    // Si Google fournit une image, on l'affiche ; sinon on met un avatar avec l'initiale
-    const avatarHTML = userAvatarUrl 
-      ? `<img src="${userAvatarUrl}" alt="Avatar" class="avatar-img" />`
-      : `<div class="avatar-circle">${userName.charAt(0).toUpperCase()}</div>`;
+    .card {
+      background-color: #1e293b;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
 
-    profileContainer.innerHTML = `
-      ${avatarHTML}
-      <span class="user-name">${userName}</span>
-      <button onclick="logout()" class="btn-logout">DÉCONNEXION</button>
-    `;
-  }
-}
+    h1 {
+      margin-top: 0;
+      font-size: 1.8rem;
+    }
 
-// 5. Fonction pour se déconnecter
-async function logout() {
-  await supabase.auth.signOut();
-  window.location.reload();
-}
+    p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .btn-google {
+      background-color: white;
+      color: #333;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-google:hover {
+      background-color: #f1f5f9;
+    }
+
+    /* Style du profil une fois connecté */
+    .profile-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar-img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid #38bdf8;
+    }
+
+    .avatar-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background-color: #0284c7;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .user-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .btn-logout {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="login-card" class="card">
+    <h1>Bienvenue 🎄</h1>
+    <p>Connecte-toi avec Google pour continuer.</p>
+    <button onclick="loginWithGoogle()" class="btn-google">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google">
+      Continuer avec Google
+    </button>
+  </div>
+
+  <div id="user-profile" class="card" style="display: none;"></div>
+
+  <script>
+    const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
+    // Colles ta clé Publishable Supabase complète entre les guillemets :
+    const SUPABASE_ANON_KEY = 'sb_publishable_H3aGonNQ-FxziZENkqPYBA_aICuZ...'; 
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function loginWithGoogle() {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'https://christmasss2026.vercel.app'
+        }
+      });
+      if (error) console.error('Erreur:', error.message);
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        showUserProfile(session.user);
+      }
+    });
+
+    function showUserProfile(user) {
+      document.getElementById('login-card').style.display = 'none';
+      const profileContainer = document.getElementById('user-profile');
+      profileContainer.style.display = 'block';
+
+      const metadata = user.user_metadata || {};
+      const name = metadata.full_name || metadata.name || 'Joueur';
+      const avatarUrl = metadata.avatar_url || metadata.picture;
+
+      const avatarHTML = avatarUrl 
+        ? `<img src="${avatarUrl}" class="avatar-img" alt="Avatar">`
+        : `<div class="avatar-circle">${name.charAt(0).toUpperCase()}</div>`;
+
+      profileContainer.innerHTML = `
+        <div class="profile-box">
+          ${avatarHTML}
+          <div class="user-name">${name}</div>
+          <button onclick="logout()" class="btn-logout">Déconnexion</button>
+        </div>
+      `;
+    }
+
+    async function logout() {
+      await supabase.auth.signOut();
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>
