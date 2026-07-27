@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Connexion Google avec Supabase</title>
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -71,7 +73,7 @@
       border: 2px solid #38bdf8;
     }
     .hidden {
-      display: none;
+      display: none !important;
     }
   </style>
 </head>
@@ -101,43 +103,46 @@
   </div>
 
   <script>
-    // Configuration Supabase avec tes identifiants
+    // 1. Initialisation de Supabase avec tes identifiants
     const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjA0MDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
 
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Fonction pour lancer la connexion Google
+    // 2. Fonction pour lancer la connexion avec Google
     async function loginWithGoogle() {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: window.location.origin
         }
       });
-      if (error) alert('Erreur : ' + error.message);
+      if (error) {
+        alert('Erreur de connexion : ' + error.message);
+      }
     }
 
-    // Fonction de déconnexion
+    // 3. Fonction pour se déconnecter
     async function logout() {
-      await supabase.auth.signOut();
+      await supabaseClient.auth.signOut();
       window.location.reload();
     }
 
-    // Vérification automatique au chargement de la page
+    // 4. Vérifier si l'utilisateur est déjà connecté au chargement de la page
     async function checkUser() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await supabaseClient.auth.getUser();
 
       if (user) {
         document.getElementById('login-section').classList.add('hidden');
         document.getElementById('user-section').classList.remove('hidden');
 
         document.getElementById('user-name').innerText = user.user_metadata.full_name || 'Utilisateur';
-        document.getElementById('user-email').innerText = user.email;
-        document.getElementById('user-avatar').src = user.user_metadata.avatar_url;
+        document.getElementById('user-email').innerText = user.email || '';
+        document.getElementById('user-avatar').src = user.user_metadata.avatar_url || 'https://via.placeholder.com/80';
       }
     }
 
+    // Exécuter la vérification au chargement
     checkUser();
   </script>
 
