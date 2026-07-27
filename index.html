@@ -109,40 +109,51 @@
   <script>
     // Configuration de ton projet Supabase
     const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_H3aGonNQ-FxziZENkqPYBA_aICuZ4eD'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjEwMDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Initialisation sécurisée du client Supabase
+    const supabaseClient = window.supabase
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
 
-    // Fonction de connexion avec Google
+    // Fonction de connexion Google
     async function loginWithGoogle() {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      if (!supabaseClient) {
+        alert("Erreur: Le SDK Supabase n'est pas chargé correctement.");
+        return;
+      }
+
+      const { data, error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: 'https://christmasss2026.vercel.app'
         }
       });
+
       if (error) {
-        alert('Erreur lors de la connexion : ' + error.message);
+        alert('Erreur de connexion : ' + error.message);
       }
     }
 
-    // Gestion de l'état d'authentification au chargement
+    // Gestion automatique de la session utilisateur
     window.addEventListener('DOMContentLoaded', async () => {
-      // 1. Vérifier si l'utilisateur est déjà connecté
-      const { data: { session } } = await supabase.auth.getSession();
+      if (!supabaseClient) return;
+
+      // 1. Vérifie si l'utilisateur est déjà connecté
+      const { data: { session } } = await supabaseClient.auth.getSession();
       if (session) {
         showUserProfile(session.user);
       }
 
-      // 2. Écouter le retour de connexion OAuth de Google
-      supabase.auth.onAuthStateChange((event, session) => {
+      // 2. Écoute la réponse au retour de Google OAuth
+      supabaseClient.auth.onAuthStateChange((event, session) => {
         if (session) {
           showUserProfile(session.user);
         }
       });
     });
 
-    // Affichage des informations de profil
+    // Fonction d'affichage du profil connecté
     function showUserProfile(user) {
       document.getElementById('login-card').style.display = 'none';
       const profileContainer = document.getElementById('user-profile');
@@ -152,7 +163,6 @@
       const name = metadata.full_name || metadata.name || user.email || 'Joueur';
       const avatarUrl = metadata.avatar_url || metadata.picture;
 
-      // Afficher l'image du compte Google ou l'initiale par défaut
       const avatarHTML = avatarUrl 
         ? `<img src="${avatarUrl}" class="avatar-img" alt="Avatar">`
         : `<div class="avatar-circle">${name.charAt(0).toUpperCase()}</div>`;
@@ -169,8 +179,10 @@
 
     // Fonction de déconnexion
     async function logout() {
-      await supabase.auth.signOut();
-      window.location.reload();
+      if (supabaseClient) {
+        await supabaseClient.auth.signOut();
+        window.location.reload();
+      }
     }
   </script>
 </body>
