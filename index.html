@@ -17,93 +17,121 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        /* OVERLAY DE CONNEXION GOOGLE */
+        /* --- ECRAN DE CONNEXION GOOGLE THÈME NOËL --- */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(8px);
+            background: rgba(20, 3, 5, 0.88); backdrop-filter: blur(10px);
             z-index: 1000; display: flex; justify-content: center; align-items: center;
+            animation: fadeIn 0.8s ease-in-out;
         }
 
         .login-card {
-            background-color: #1e293b; padding: 2.5rem; border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6); text-align: center;
-            max-width: 380px; width: 85%; border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #700d18 0%, #3d0309 100%);
+            padding: 3rem 2.5rem; border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 20px rgba(212, 160, 23, 0.4);
+            text-align: center; max-width: 420px; width: 85%;
+            border: 2px solid #d4a017; color: white;
+            position: relative;
         }
 
-        .login-card h1 { font-size: 1.8rem; color: white; margin-top: 0; margin-bottom: 8px; }
-        .login-card p { color: #94a3b8; font-size: 0.95rem; margin-bottom: 20px; }
+        .login-card h1 {
+            font-size: 2.2rem; margin-top: 0; margin-bottom: 10px;
+            color: #f7d070; font-family: 'Georgia', serif;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+
+        .login-card p {
+            color: #f0e6d2; font-size: 1rem; margin-bottom: 25px; line-height: 1.4;
+        }
 
         .btn-google {
-            background-color: white; color: #333; border: none; padding: 12px 24px;
-            font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer;
-            display: inline-flex; align-items: center; gap: 10px; transition: background-color 0.2s;
+            background-color: #ffffff; color: #333; border: 2px solid #d4a017;
+            padding: 14px 28px; font-size: 1.1rem; font-weight: bold;
+            border-radius: 30px; cursor: pointer; display: inline-flex;
+            align-items: center; gap: 12px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-        .btn-google:hover { background-color: #f1f5f9; }
+        .btn-google:hover {
+            transform: scale(1.06); background-color: #fffdf5;
+            box-shadow: 0 8px 20px rgba(212, 160, 23, 0.6);
+        }
 
-        /* BADGE UTILISATEUR CONNECTÉ EN HAUT À DROITE */
+        /* --- EN-TÊTE PROFIL UTILISATEUR (NOËL) --- */
         #user-header {
-            position: absolute; top: 15px; right: 15px; display: none;
-            align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px); padding: 6px 14px; border-radius: 30px;
-            color: white; z-index: 100; border: 1px solid rgba(255,255,255,0.2);
+            position: absolute; top: 18px; right: 20px; display: none;
+            align-items: center; gap: 12px; background: rgba(80, 8, 16, 0.85);
+            backdrop-filter: blur(6px); padding: 8px 18px; border-radius: 30px;
+            color: #fce8b2; z-index: 100; border: 1.5px solid #d4a017;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
 
-        .avatar-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .avatar-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #d4a017; }
         .avatar-circle {
-            width: 32px; height: 32px; border-radius: 50%; background: #0284c7;
-            color: white; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 14px;
+            width: 36px; height: 36px; border-radius: 50%; background: #b30000;
+            color: #f7d070; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 16px; border: 1.5px solid #d4a017;
         }
 
         .btn-header-logout {
-            background: #ef4444; color: white; border: none; padding: 5px 12px;
-            border-radius: 15px; cursor: pointer; font-weight: 600; font-size: 0.8rem;
-            transition: background 0.2s; margin-left: 5px;
+            background: #d4a017; color: #42050b; border: none; padding: 6px 14px;
+            border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.85rem;
+            transition: all 0.2s ease; margin-left: 5px;
         }
-        .btn-header-logout:hover { background: #dc2626; }
+        .btn-header-logout:hover { background: #f7d070; transform: scale(1.05); }
 
-        /* JEU PRINCIPAL */
+        /* --- PARCHEMIN ÉLARGI ET ANIMATIONS --- */
         .container { position: relative; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; }
-        .parchemin-img { height: 102vh; width: auto; max-width: 95vw; object-fit: contain; filter: drop-shadow(0px 12px 25px rgba(0,0,0,0.5)); transition: opacity 0.5s; }
 
-        .nav-arrow {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            font-size: 2.5rem; color: #b30000; cursor: pointer;
-            background: rgba(255, 255, 255, 0.5); border-radius: 50%;
-            width: 55px; height: 55px; display: flex; justify-content: center; align-items: center;
-            z-index: 10; transition: all 0.4s ease; border: 2px solid #b30000; user-select: none;
+        /* Parchemin agrandi */
+        .parchemin-img {
+            height: 105vh; width: auto; max-width: 98vw;
+            object-fit: fill; filter: drop-shadow(0px 15px 30px rgba(0,0,0,0.6));
+            transition: transform 0.4s ease, opacity 0.5s ease;
         }
-        .nav-arrow:hover { background: white; transform: translateY(-50%) scale(1.05); }
-        .arrow-left { left: 5vw; } .arrow-right { right: 5vw; }
 
+        /* Zone de défilement du contenu élargie */
         .scroll-box {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 40%; height: 60%; overflow-y: scroll; padding: 20px;
+            width: 58%; height: 68%; overflow-y: scroll; padding: 25px;
             text-align: center; font-family: 'Georgia', serif;
             scrollbar-width: none; -ms-overflow-style: none; z-index: 5;
         }
         .scroll-box::-webkit-scrollbar { display: none; }
 
-        h1 { font-size: 2.2rem; margin-bottom: 30px; text-shadow: 1px 1px 0px #fff; transition: color 0.6s ease; }
+        .nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            font-size: 2.8rem; color: #b30000; cursor: pointer;
+            background: rgba(255, 248, 230, 0.85); border-radius: 50%;
+            width: 60px; height: 60px; display: flex; justify-content: center; align-items: center;
+            z-index: 10; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid #b30000; user-select: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .nav-arrow:hover { background: white; transform: translateY(-50%) scale(1.15); color: #d4a017; border-color: #d4a017; }
+        .arrow-left { left: 3vw; } .arrow-right { right: 3vw; }
+
+        h1 { font-size: 2.4rem; margin-bottom: 25px; text-shadow: 1px 1px 0px #fff; transition: color 0.6s ease; }
 
         .titre-or {
-            color: #d4a017; font-size: 2.5rem; font-weight: bold;
+            color: #d4a017; font-size: 2.6rem; font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 12px rgba(212, 160, 23, 0.5);
             margin-bottom: 10px; font-family: 'Georgia', serif;
         }
 
+        /* Boutons stylisés avec animations */
         .btn-question {
-            display: block; width: 85%; margin: 12px auto; padding: 15px;
+            display: block; width: 90%; margin: 14px auto; padding: 16px;
             background-color: #f4e4bc !important; 
             color: #3d240b; border: 2px solid #8e5a31;
-            border-radius: 8px; font-size: 1.1rem; font-weight: bold;
-            cursor: pointer; transition: all 0.3s ease-out; position: relative;
+            border-radius: 10px; font-size: 1.15rem; font-weight: bold;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
         
-        .btn-question:hover { transform: translateY(-3px) scale(1.03); }
+        .btn-question:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 8px 16px rgba(0,0,0,0.25); }
+        .btn-question:active { transform: translateY(0) scale(0.99); }
         
-        .btn-silver { box-shadow: 3px 3px 0px #A9A9A9; border-color: #A9A9A9; }
-        .btn-silver:hover { background-color: #C0C0C0 !important; color: #333; border-color: #808080; }
+        .btn-silver { box-shadow: 3px 3px 0px #A9A9A9; border-color: #808080; }
+        .btn-silver:hover { background-color: #e2e2e2 !important; color: #111; }
         .btn-green { box-shadow: 3px 3px 0px #2d5a27; border-color: #2d5a27; }
         .btn-green:hover { background-color: #2d5a27 !important; color: white; border-color: #1e3d1a; }
         .btn-gold { box-shadow: 3px 3px 0px #d4a017; border-color: #d4a017; }
@@ -111,37 +139,41 @@
         .btn-red { box-shadow: 3px 3px 0px #b30000; border-color: #b30000; }
         .btn-red:hover { background-color: #b30000 !important; color: white; border-color: #800000; }
 
-        .btn-question.completed { opacity: 0.6; background-color: #d2b48c !important; cursor: default; box-shadow: none !important; }
+        .btn-question.completed { opacity: 0.65; background-color: #d2b48c !important; cursor: default; box-shadow: none !important; transform: none !important; }
         .btn-question.completed::after { content: " ✅"; }
 
-        .view-section { display: none; flex-direction: column; align-items: center; }
-        .active-view { display: flex; }
+        /* VUES ET TRANSITIONS */
+        .view-section { display: none; flex-direction: column; align-items: center; opacity: 0; transition: opacity 0.4s ease; }
+        .active-view { display: flex; opacity: 1; animation: fadeInUp 0.4s ease-out; }
 
         #question-view {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             justify-content: center; align-items: center; z-index: 20;
+            animation: fadeIn 0.3s ease;
         }
         .question-container {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 35%; text-align: center; font-family: 'Georgia', serif; color: #3d240b;
+            width: 50%; text-align: center; font-family: 'Georgia', serif; color: #3d240b;
         }
         .answer-input { 
-            padding: 12px; width: 80%; border-radius: 8px; border: 2px solid #8e5a31; 
-            margin: 20px 0; font-size: 1.1rem; text-align: center; background: #fdf5e6;
+            padding: 14px; width: 85%; border-radius: 10px; border: 2px solid #8e5a31; 
+            margin: 20px 0; font-size: 1.2rem; text-align: center; background: #fdf5e6;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); transition: border-color 0.3s;
         }
+        .answer-input:focus { outline: none; border-color: #d4a017; }
 
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 90%; margin: 0 auto; }
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 90%; margin: 0 auto; }
         .btn-action {
-            width: 100%; padding: 15px 0; border: none; border-radius: 8px;
+            width: 100%; padding: 15px 0; border: none; border-radius: 10px;
             cursor: pointer; font-weight: bold; font-family: 'Georgia';
-            font-size: 1rem; transition: transform 0.2s;
+            font-size: 1.05rem; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.15);
         }
-        .btn-action:hover { transform: scale(1.05); }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.25); }
 
         .btn-check { background: #2d5a27; color: white; }
         .btn-back { background: #b30000; color: white; }
         .btn-show { background: #d4a017; color: white; display: none; }
-        .btn-regen { background: #ffffff; color: #3d240b; box-shadow: 0px 2px 5px rgba(0,0,0,0.2); display: none; }
+        .btn-regen { background: #ffffff; color: #3d240b; display: none; }
 
         #hint-text { display: block; height: 1.5rem; margin-top: 10px; font-weight: bold; color: #b30000; visibility: hidden; }
 
@@ -149,16 +181,20 @@
         .theme-or h1 { color: #d4a017; }
         .theme-rouge h1 { color: #b30000; }
         .theme-menu h1 { color: #696969; }
+
+        /* ANIMATIONS KEYFRAMES */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="theme-menu">
 
 <div id="login-overlay">
     <div class="login-card">
-        <h1>Bienvenue 🎄</h1>
-        <p>Connecte-toi avec Google pour accéder aux 300 Défis de Noël.</p>
+        <h1>🎄 Joyeux Noël 🎄</h1>
+        <p>Connecte-toi avec ton compte Google pour débloquer les 300 Défis de Noël !</p>
         <button onclick="loginWithGoogle()" class="btn-google">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="22" alt="Google">
             Continuer avec Google
         </button>
     </div>
@@ -166,7 +202,7 @@
 
 <div id="user-header">
     <div id="user-avatar-slot"></div>
-    <span id="user-name-slot" style="font-weight: 600; font-size: 0.9rem;"></span>
+    <span id="user-name-slot" style="font-weight: 600; font-size: 0.95rem;"></span>
     <button onclick="logout()" class="btn-header-logout">Déconnexion</button>
 </div>
 
@@ -198,7 +234,7 @@
 
             <div id="view-submenu-avantages" class="view-section">
                 <h1 id="avantage-title" class="titre-or">AVANTAGE 1</h1>
-                <img id="avantage-scroll-img" src="https://i.postimg.cc/mrYm0SXf/Capture-d-e-cran-le-2026-02-09-a-17-25-24-removebg-preview.png" style="width: 130%; max-width: 600px; filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.5));">
+                <img id="avantage-scroll-img" src="https://i.postimg.cc/mrYm0SXf/Capture-d-e-cran-le-2026-02-09-a-17-25-24-removebg-preview.png" style="width: 120%; max-width: 650px; filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.5));">
                 <button class="btn-question btn-silver" style="margin-top:20px;" onclick="backToMain()">RETOUR</button>
             </div>
 
@@ -214,7 +250,7 @@
     <div id="question-view">
         <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
         <div class="question-container">
-            <h2 id="current-q-text">...</h2>
+            <h2 id="current-q-text" style="font-size: 1.5rem; line-height: 1.3;">...</h2>
             <div id="hint-text">REPONSE ICI</div>
             <input type="text" id="user-ans-input" class="answer-input" placeholder="Ta réponse..." autocomplete="off">
             <div class="action-grid">
@@ -302,6 +338,8 @@
 
    // DIFFICILES (200-299)
    ["Quel pays a remporté la Coupe du Monde de football en 2022 ?", "L'Argentine"], ["Quelle est la capitale de la Turquie ?", "Ankara"], ["Où se trouve le siège de Disney en Floride ?", "Orlando"], ["Dans quel pays se trouve la ville de Dubaï ?", "Les Émirats arabes unis"], ["Qui a écrit les livres 'Harry Potter' ?", "J.K. Rowling"], ["Quel paquebot a coulé en 1912 ?", "Le Titanic"], ["Quelle est la monnaie utilisée aux États-Unis ?", "Le Dollar américain"], ["Quelle est la capitale du Canada ?", "Ottawa"], ["Quel acteur joue Jack Sparrow ?", "Johnny Depp"], ["Dans quel océan se trouve l'île de la Réunion ?", "L'océan Indien"], ["Quel animal représente Lacoste ?", "Le crocodile"], ["Comment s'appelle le fondateur de Facebook ?", "Mark Zuckerberg"], ["Quelle est la capitale de l'Australie ?", "Canberra"], ["Combien y a-t-il de secondes dans une heure ?", "3600"], ["Quelle est la montagne la plus haute d'Europe ?", "Le Mont Blanc"], ["Quelle est la capitale du Japon ?", "Tokyo"], ["Qui a peint la chapelle Sixtine ?", "Michel-Ange"], ["Quel est le nom de l'agent 007 ?", "James Bond"], ["Où peut-on voir le Christ Rédempteur ?", "Rio de Janeiro"], ["Quel fruit est utilisé pour faire de la moutarde ?", "Aucun"], ["Quelle est la capitale de l'Espagne ?", "Madrid"], ["Qui est le 'King of Pop' ?", "Michael Jackson"], ["Quel pays est célèbre pour ses pyramides ?", "L'Égypte"], ["Quelle force nous fait tomber ?", "La gravité"], ["Quelle est la capitale de l'Italie ?", "Rome"], ["Quel est le plus grand océan ?", "L'océan Pacifique"], ["Quel sport utilise un 'palet' ?", "Le hockey sur glace"], ["Quel est le nom de la tour de Londres ?", "Big Ben"], ["Quelle est la capitale de l'Allemagne ?", "Berlin"], ["Qui a découvert l'Amérique en 1492 ?", "Christophe Colomb"], ["Quel animal est le plus rapide ?", "Le guépard"], ["Quelle est la capitale de la Russie ?", "Moscou"], ["Quelle est notre galaxie ?", "La Voie lactée"], ["Qui a écrit 'Le Petit Prince' ?", "Antoine de Saint-Exupéry"], ["Quelle est la capitale du Portugal ?", "Lisbonne"], ["Quel organe pompe le sang ?", "Le cœur"], ["Où se trouve la Maison Blanche ?", "Washington D.C."], ["Quel est le plus grand désert chaud ?", "Le Sahara"], ["Quelle est la capitale de la Grèce ?", "Athènes"], ["Quel super-héros a été mordu par une araignée ?", "Spider-Man"], ["Quelle est la monnaie du Japon ?", "Le Yen"], ["Quel est le premier homme sur la Lune ?", "Neil Armstrong"], ["Quelle est la capitale de la Chine ?", "Pékin"], ["Quel instrument a 88 touches ?", "Le piano"], ["Qui a peint la Joconde ?", "Léonard de Vinci"], ["Quelle est la capitale de la Belgique ?", "Bruxelles"], ["Dans quel pays se trouve le Taj Mahal ?", "L'Inde"], ["Quel mur a été détruit en 1989 ?", "Le mur de Berlin"], ["Quelle est la capitale de la Suisse ?", "Berne"], ["Quel métal est attiré par un aimant ?", "Le fer"], ["Quelle est la plus grande forêt ?", "L'Amazonie"], ["Quelle est la capitale des Pays-Bas ?", "Amsterdam"], ["Qui a créé Mickey Mouse ?", "Walt Disney"], ["Quel pays est l'Hexagone ?", "La France"], ["Quelle est la capitale de l'Irlande ?", "Dublin"], ["Quel est le chien de Tintin ?", "Milou"], ["Combien de couleurs dans l'arc-en-ciel ?", "7"], ["Quelle est la capitale de l'Argentine ?", "Buenos Aires"], ["Quelle est la planète rouge ?", "Mars"], ["Qui a écrit 'Les Misérables' ?", "Victor Hugo"], ["Quelle est la capitale de la Suède ?", "Stockholm"], ["Quel est le plus long fleuve ?", "L'Amazone"], ["Quel est le petit de la vache ?", "Le veau"], ["Quelle est la capitale de l'Égypte ?", "Le Caire"], ["Quel sport pratique Rafael Nadal ?", "Le tennis"], ["Quel sorcier a des lunettes ?", "Harry Potter"], ["Quelle est la capitale de la Thaïlande ?", "Bangkok"], ["Quel est l'animal national de l'Australie ?", "Le kangourou"], ["Quelle est la capitale du Mexique ?", "Mexico"], ["Qui a inventé l'ampoule électrique ?", "Thomas Edison"], ["Quelle est la capitale de la Corée du Sud ?", "Séoul"], ["Quelle montagne est la plus haute ?", "L'Everest"], ["Quelle est la capitale du Maroc ?", "Rabat"], ["Combien de jours dans une année ?", "365"], ["Quelle est la capitale de la Norvège ?", "Oslo"], ["Quel pirate a une jambe de bois ?", "Long John Silver"], ["Quelle est la capitale de la Pologne ?", "Varsovie"], ["Qui a inventé les JO ?", "La Grèce"], ["Quelle est la capitale de l'Autriche ?", "Vienne"], ["Où est la Statue de la Liberté ?", "New York"], ["Quelle est la capitale du Danemark ?", "Copenhague"], ["Quelle reine est décédée en 2022 ?", "Elizabeth II"], ["Quelle est la capitale de la Finlande ?", "Helsinki"], ["Quel bateau a découvert l'Amérique ?", "La Santa Maria"], ["Quelle est la capitale de l'Islande ?", "Reykjavik"], ["Quel animal est le plus lourd ?", "La baleine bleue"], ["Quelle est la capitale de la République Tchèque ?", "Prague"], ["Quelle étoile est proche de nous ?", "Le Soleil"], ["Quelle est la capitale de la Hongrie ?", "Budapest"], ["Quel détective vit au 221B Baker Street ?", "Sherlock Holmes"], ["Quelle est la capitale du Portugal ?", "Lisbonne"], ["Quelle couche nous protège du soleil ?", "La couche d'ozone"], ["Quelle est la capitale du Chili ?", "Santiago"], ["Qui est le héros de 'Star Wars' ?", "Luke Skywalker"], ["Quelle est la capitale de la Roumanie ?", "Bucarest"], ["Quel est le plus grand océan ?", "L'océan Pacifique"], ["Quelle est la capitale du Vietnam ?", "Hanoï"], ["Qui a découvert la gravité ?", "Isaac Newton"], ["Quelle est la capitale de la Nouvelle-Zélande ?", "Wellington"], ["Qui a écrit 'Le tour du monde en 80 jours' ?", "Jules Verne"]
+    ];
+      
     ];
 
     let currentLevel = 0;
