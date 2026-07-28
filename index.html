@@ -8,212 +8,211 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@300;400;600&display=swap');
+
         body, html {
             margin: 0; padding: 0; height: 100%; width: 100%;
             display: flex; justify-content: center; align-items: center;
             overflow: hidden;
             background-image: url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
             background-size: cover; background-position: center;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
-        /* --- ÉCRAN DE CONNEXION GOOGLE AMÉLIORÉ --- */
+        /* --- ÉCRAN DE CONNEXION GOOGLE MODERNE & CHIC --- */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at center, rgba(30, 5, 10, 0.85) 0%, rgba(10, 2, 4, 0.95) 100%);
+            background: radial-gradient(circle at center, rgba(20, 5, 8, 0.8) 0%, rgba(5, 1, 2, 0.92) 100%);
             backdrop-filter: blur(12px);
             z-index: 1000; display: flex; justify-content: center; align-items: center;
-            animation: fadeIn 0.8s ease-in-out;
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .login-card {
-            background: linear-gradient(145deg, rgba(112, 13, 24, 0.95) 0%, rgba(50, 4, 10, 0.98) 100%);
-            padding: 3.5rem 3rem; border-radius: 28px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(212, 160, 23, 0.35);
-            text-align: center; max-width: 440px; width: 88%;
-            border: 2px solid rgba(212, 160, 23, 0.8); color: white;
+            background: rgba(45, 10, 15, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 2.8rem 2.2rem; border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 40px rgba(212, 160, 23, 0.25), inset 0 1px 1px rgba(255,255,255,0.2);
+            text-align: center; max-width: 380px; width: 85%;
+            border: 1px solid rgba(212, 160, 23, 0.5); color: white;
             position: relative;
-            transform: translateY(0);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: floatCard 4s ease-in-out infinite;
-        }
-
-        .login-card::before {
-            content: "✨ 🎄 ✨";
-            font-size: 1.8rem;
-            display: block;
-            margin-bottom: 10px;
-            letter-spacing: 5px;
+            animation: floatCard 5s ease-in-out infinite, cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .login-card h1 {
-            font-size: 2.3rem; margin-top: 0; margin-bottom: 12px;
-            color: #f7d070; font-family: 'Georgia', serif;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 15px rgba(247, 208, 112, 0.4);
+            font-size: 2rem; margin-top: 0; margin-bottom: 8px;
+            color: #f7d070; font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(212, 160, 23, 0.3);
         }
 
         .login-card p {
-            color: #fce8b2; font-size: 1.05rem; margin-bottom: 30px; line-height: 1.5;
+            color: #e0d0c0; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.5;
             font-weight: 300;
         }
 
         .btn-google {
-            background: linear-gradient(180deg, #ffffff 0%, #f1f1f1 100%);
-            color: #222; border: 2px solid #d4a017;
-            padding: 15px 32px; font-size: 1.15rem; font-weight: 700;
+            background: #ffffff;
+            color: #222; border: 1px solid rgba(212, 160, 23, 0.6);
+            padding: 12px 24px; font-size: 1rem; font-weight: 600;
             border-radius: 50px; cursor: pointer; display: inline-flex;
-            align-items: center; justify-content: center; gap: 14px;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 15px rgba(212, 160, 23, 0.3);
+            align-items: center; justify-content: center; gap: 12px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
             width: 100%;
             box-sizing: border-box;
         }
 
         .btn-google:hover {
-            transform: scale(1.05) translateY(-2px);
-            background: #ffffff;
-            box-shadow: 0 12px 28px rgba(0,0,0,0.5), 0 0 25px rgba(247, 208, 112, 0.7);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4), 0 0 20px rgba(247, 208, 112, 0.5);
             border-color: #f7d070;
-        }
-
-        .btn-google:active {
-            transform: scale(0.98) translateY(1px);
         }
 
         /* --- EN-TÊTE PROFIL UTILISATEUR --- */
         #user-header {
-            position: absolute; top: 18px; right: 20px; display: none;
-            align-items: center; gap: 12px; background: rgba(60, 6, 12, 0.9);
-            backdrop-filter: blur(8px); padding: 8px 20px; border-radius: 30px;
-            color: #fce8b2; z-index: 100; border: 1.5px solid #d4a017;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: absolute; top: 20px; right: 25px; display: none;
+            align-items: center; gap: 12px; background: rgba(30, 5, 10, 0.7);
+            backdrop-filter: blur(10px); padding: 6px 16px; border-radius: 40px;
+            color: #fce8b2; z-index: 100; border: 1px solid rgba(212, 160, 23, 0.4);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            animation: fadeInDown 0.6s ease;
         }
 
-        .avatar-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #d4a017; }
+        .avatar-img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1.5px solid #d4a017; }
         .avatar-circle {
-            width: 38px; height: 38px; border-radius: 50%; background: #b30000;
+            width: 34px; height: 34px; border-radius: 50%; background: #900c1c;
             color: #f7d070; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 17px; border: 2px solid #d4a017;
+            font-weight: bold; font-size: 15px; border: 1.5px solid #d4a017;
         }
 
         .btn-header-logout {
-            background: #d4a017; color: #3d0309; border: none; padding: 7px 16px;
-            border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.85rem;
-            transition: all 0.2s ease; margin-left: 5px;
+            background: linear-gradient(135deg, #d4a017, #aa7c11); color: #200407; border: none; padding: 6px 14px;
+            border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.8rem;
+            transition: all 0.3s ease; margin-left: 5px;
         }
-        .btn-header-logout:hover { background: #f7d070; transform: scale(1.06); }
+        .btn-header-logout:hover { transform: scale(1.08); box-shadow: 0 0 10px rgba(212, 160, 23, 0.6); }
 
-        /* --- PARCHEMIN ÉLARGI & CONTENEUR --- */
+        /* --- PARCHEMIN ET JEU --- */
         .container { position: relative; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; }
 
-        /* Image du parchemin étirée horizontalement pour plus de largeur */
         .parchemin-img {
-            height: 102vh;
-            width: 85vw; /* Élargissement explicite */
-            max-width: 1200px;
+            height: 98vh;
+            width: 82vw;
+            max-width: 1100px;
             object-fit: fill; 
-            filter: drop-shadow(0px 15px 35px rgba(0,0,0,0.7));
-            transition: transform 0.4s ease, opacity 0.5s ease;
+            filter: drop-shadow(0px 20px 40px rgba(0,0,0,0.6));
+            transition: all 0.5s ease;
         }
 
-        /* Zone de défilement élargie pour matcher le parchemin */
+        /* ZONE DÉFILEMENT COMPACTE ET SOIGNÉE */
         .scroll-box {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 68%; /* Élargi de 58% à 68% */
-            height: 68%; overflow-y: scroll; padding: 25px;
-            text-align: center; font-family: 'Georgia', serif;
+            width: 55%; 
+            height: 62%; overflow-y: scroll; padding: 10px 20px;
+            text-align: center; font-family: 'Cinzel', serif;
             scrollbar-width: none; -ms-overflow-style: none; z-index: 5;
         }
         .scroll-box::-webkit-scrollbar { display: none; }
 
         .nav-arrow {
             position: absolute; top: 50%; transform: translateY(-50%);
-            font-size: 2.8rem; color: #b30000; cursor: pointer;
-            background: rgba(255, 248, 230, 0.9); border-radius: 50%;
-            width: 62px; height: 62px; display: flex; justify-content: center; align-items: center;
-            z-index: 10; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid #b30000; user-select: none; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            font-size: 2.2rem; color: #800c19; cursor: pointer;
+            background: rgba(255, 252, 245, 0.85); border-radius: 50%;
+            width: 52px; height: 52px; display: flex; justify-content: center; align-items: center;
+            z-index: 10; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 2px solid #800c19; user-select: none; box-shadow: 0 8px 16px rgba(0,0,0,0.3);
         }
-        .nav-arrow:hover { background: white; transform: translateY(-50%) scale(1.15); color: #d4a017; border-color: #d4a017; }
-        .arrow-left { left: 2vw; } .arrow-right { right: 2vw; }
+        .nav-arrow:hover { background: #ffffff; transform: translateY(-50%) scale(1.15); color: #d4a017; border-color: #d4a017; box-shadow: 0 0 15px rgba(212, 160, 23, 0.5); }
+        .arrow-left { left: 4vw; } .arrow-right { right: 4vw; }
 
-        h1 { font-size: 2.5rem; margin-bottom: 25px; text-shadow: 1px 1px 0px #fff; transition: color 0.6s ease; }
+        h1 { font-size: 2.1rem; margin-bottom: 20px; text-shadow: 1px 1px 0px rgba(255,255,255,0.8); transition: color 0.5s ease; letter-spacing: 1px; }
 
         .titre-or {
-            color: #d4a017; font-size: 2.7rem; font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 12px rgba(212, 160, 23, 0.5);
-            margin-bottom: 10px; font-family: 'Georgia', serif;
+            color: #d4a017; font-size: 2.2rem; font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 0 0 15px rgba(212, 160, 23, 0.4);
+            margin-bottom: 10px;
         }
 
-        /* Boutons stylisés */
+        /* BOUTONS PLUS PETITS ET ÉLÉGANTS */
         .btn-question {
-            display: block; width: 85%; margin: 14px auto; padding: 16px;
-            background-color: #f4e4bc !important; 
-            color: #3d240b; border: 2px solid #8e5a31;
-            border-radius: 10px; font-size: 1.2rem; font-weight: bold;
+            display: block; 
+            width: 75%; 
+            max-width: 360px;
+            margin: 8px auto; 
+            padding: 10px 16px; /* Taille réduite */
+            background: linear-gradient(180deg, #fceecb 0%, #e8d098 100%) !important; 
+            color: #3d240b; border: 1.5px solid #a3723f;
+            border-radius: 12px; font-size: 0.95rem; font-weight: 600;
+            font-family: 'Poppins', sans-serif;
             cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         
-        .btn-question:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 8px 16px rgba(0,0,0,0.25); }
-        .btn-question:active { transform: translateY(0) scale(0.99); }
+        .btn-question:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+        .btn-question:active { transform: translateY(0) scale(0.98); }
         
-        .btn-silver { box-shadow: 3px 3px 0px #A9A9A9; border-color: #808080; }
-        .btn-silver:hover { background-color: #e2e2e2 !important; color: #111; }
-        .btn-green { box-shadow: 3px 3px 0px #2d5a27; border-color: #2d5a27; }
-        .btn-green:hover { background-color: #2d5a27 !important; color: white; border-color: #1e3d1a; }
-        .btn-gold { box-shadow: 3px 3px 0px #d4a017; border-color: #d4a017; }
-        .btn-gold:hover { background-color: #d4a017 !important; color: white; border-color: #a37a11; }
-        .btn-red { box-shadow: 3px 3px 0px #b30000; border-color: #b30000; }
-        .btn-red:hover { background-color: #b30000 !important; color: white; border-color: #800000; }
+        .btn-silver { border-color: #999; }
+        .btn-silver:hover { background: linear-gradient(180deg, #ffffff 0%, #dcdcdc 100%) !important; }
+        .btn-green { border-color: #2d5a27; }
+        .btn-green:hover { background: #2d5a27 !important; color: white; }
+        .btn-gold { border-color: #d4a017; }
+        .btn-gold:hover { background: #d4a017 !important; color: white; }
+        .btn-red { border-color: #b30000; }
+        .btn-red:hover { background: #b30000 !important; color: white; }
 
-        .btn-question.completed { opacity: 0.65; background-color: #d2b48c !important; cursor: default; box-shadow: none !important; transform: none !important; }
-        .btn-question.completed::after { content: " ✅"; }
+        .btn-question.completed { opacity: 0.6; background: #cbb290 !important; cursor: default; box-shadow: none !important; transform: none !important; }
+        .btn-question.completed::after { content: " ✨"; }
 
-        /* VUES ET TRANSITIONS */
-        .view-section { display: none; flex-direction: column; align-items: center; opacity: 0; transition: opacity 0.4s ease; }
-        .active-view { display: flex; opacity: 1; animation: fadeInUp 0.4s ease-out; }
+        /* VUES ET TRANSITIONS SOPHISTIQUÉES */
+        .view-section { display: none; flex-direction: column; align-items: center; opacity: 0; }
+        .active-view { display: flex; opacity: 1; animation: smoothSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
         #question-view {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             justify-content: center; align-items: center; z-index: 20;
-            animation: fadeIn 0.3s ease;
         }
         .question-container {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 60%; text-align: center; font-family: 'Georgia', serif; color: #3d240b;
+            width: 50%; text-align: center; font-family: 'Cinzel', serif; color: #3d240b;
+            animation: zoomIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .answer-input { 
-            padding: 14px; width: 85%; border-radius: 10px; border: 2px solid #8e5a31; 
-            margin: 20px 0; font-size: 1.25rem; text-align: center; background: #fdf5e6;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); transition: border-color 0.3s;
+            padding: 10px 16px; width: 75%; border-radius: 10px; border: 1.5px solid #8e5a31; 
+            margin: 15px 0; font-size: 1rem; text-align: center; background: #fffdf8;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.08); transition: all 0.3s ease;
         }
-        .answer-input:focus { outline: none; border-color: #d4a017; }
+        .answer-input:focus { outline: none; border-color: #d4a017; box-shadow: 0 0 10px rgba(212, 160, 23, 0.4); }
 
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 85%; margin: 0 auto; }
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 80%; margin: 0 auto; }
         .btn-action {
-            width: 100%; padding: 15px 0; border: none; border-radius: 10px;
-            cursor: pointer; font-weight: bold; font-family: 'Georgia';
-            font-size: 1.1rem; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            width: 100%; padding: 10px 0; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.12);
         }
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.25); }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.2); }
 
         .btn-check { background: #2d5a27; color: white; }
-        .btn-back { background: #b30000; color: white; }
+        .btn-back { background: #900c1c; color: white; }
         .btn-show { background: #d4a017; color: white; display: none; }
         .btn-regen { background: #ffffff; color: #3d240b; display: none; }
 
-        #hint-text { display: block; height: 1.5rem; margin-top: 10px; font-weight: bold; color: #b30000; visibility: hidden; }
+        #hint-text { display: block; height: 1.2rem; margin-top: 5px; font-weight: bold; color: #b30000; visibility: hidden; font-family: 'Poppins', sans-serif; font-size: 0.9rem; }
 
         .theme-vert h1 { color: #2d5a27; }
         .theme-or h1 { color: #d4a017; }
-        .theme-rouge h1 { color: #b30000; }
-        .theme-menu h1 { color: #696969; }
+        .theme-rouge h1 { color: #900c1c; }
+        .theme-menu h1 { color: #555555; }
 
-        /* ANIMATIONS KEYFRAMES */
+        /* ANIMATIONS */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes floatCard { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes cardEntrance { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes floatCard { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes smoothSlideUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { opacity: 0; transform: translate(-50%, -46%) scale(0.95); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
     </style>
 </head>
 <body class="theme-menu">
@@ -221,9 +220,9 @@
 <div id="login-overlay">
     <div class="login-card">
         <h1>Joyeux Noël</h1>
-        <p>Connecte-toi avec ton compte Google pour débloquer la suite des 300 Défis de Noël !</p>
+        <p>Connecte-toi avec ton compte Google pour débloquer les 300 Défis de Noël !</p>
         <button onclick="loginWithGoogle()" class="btn-google">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="22" alt="Google">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google">
             Continuer avec Google
         </button>
     </div>
@@ -231,7 +230,7 @@
 
 <div id="user-header">
     <div id="user-avatar-slot"></div>
-    <span id="user-name-slot" style="font-weight: 600; font-size: 0.95rem;"></span>
+    <span id="user-name-slot" style="font-weight: 500; font-size: 0.9rem;"></span>
     <button onclick="logout()" class="btn-header-logout">Déconnexion</button>
 </div>
 
@@ -258,19 +257,19 @@
                 <button class="btn-question btn-gold" onclick="goToLevel(1)">🟡 DÉFIS MOYENS</button>
                 <button class="btn-question btn-red" onclick="goToLevel(2)">🔴 DÉFIS DIFFICILES</button>
                 <button class="btn-question btn-silver" onclick="devUnlock()">🔓 DEV UNLOCK</button>
-                <button class="btn-question btn-silver" style="margin-top:20px;" onclick="backToMain()">RETOUR</button>
+                <button class="btn-question btn-silver" style="margin-top:15px;" onclick="backToMain()">RETOUR</button>
             </div>
 
             <div id="view-submenu-avantages" class="view-section">
                 <h1 id="avantage-title" class="titre-or">AVANTAGE 1</h1>
-                <img id="avantage-scroll-img" src="https://i.postimg.cc/mrYm0SXf/Capture-d-e-cran-le-2026-02-09-a-17-25-24-removebg-preview.png" style="width: 100%; max-width: 650px; filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.5));">
-                <button class="btn-question btn-silver" style="margin-top:20px;" onclick="backToMain()">RETOUR</button>
+                <img id="avantage-scroll-img" src="https://i.postimg.cc/mrYm0SXf/Capture-d-e-cran-le-2026-02-09-a-17-25-24-removebg-preview.png" style="width: 100%; max-width: 500px; filter: drop-shadow(0px 8px 15px rgba(0,0,0,0.4)); border-radius: 8px;">
+                <button class="btn-question btn-silver" style="margin-top:15px;" onclick="backToMain()">RETOUR</button>
             </div>
 
             <div id="view-questions-list" class="view-section">
                 <h1 id="level-title">📜 LISTE</h1>
                 <div id="questions-container-inner" style="width: 100%;"></div>
-                <button class="btn-question btn-silver" onclick="backToMain()">🏠 MENU PRINCIPAL</button>
+                <button class="btn-question btn-silver" style="margin-top:15px;" onclick="backToMain()">🏠 MENU PRINCIPAL</button>
             </div>
 
         </div>
@@ -279,7 +278,7 @@
     <div id="question-view">
         <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
         <div class="question-container">
-            <h2 id="current-q-text" style="font-size: 1.6rem; line-height: 1.3;">...</h2>
+            <h2 id="current-q-text" style="font-size: 1.3rem; line-height: 1.4;">...</h2>
             <div id="hint-text">REPONSE ICI</div>
             <input type="text" id="user-ans-input" class="answer-input" placeholder="Ta réponse..." autocomplete="off">
             <div class="action-grid">
