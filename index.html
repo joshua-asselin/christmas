@@ -6,9 +6,11 @@
     <title>Les 300 Défis de Noël</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@300;400;600&family=Great+Vibes&display=swap');
 
         body, html {
             margin: 0; padding: 0; height: 100%; width: 100%;
@@ -19,7 +21,7 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* --- ÉCRAN DE CONNEXION GOOGLE AMÉLIORÉ --- */
+        /* --- ÉCRAN DE CONNEXION GOOGLE --- */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: radial-gradient(circle at center, rgba(20, 5, 8, 0.82) 0%, rgba(5, 1, 2, 0.94) 100%);
@@ -178,6 +180,19 @@
         .btn-question.completed { opacity: 0.6; background: #cbb290 !important; cursor: default; box-shadow: none !important; transform: none !important; }
         .btn-question.completed::after { content: " ✨"; }
 
+        /* STYLE MANUSCRIT A L'ENCRE ANCIENNE SUR PARCHEMIN */
+        .lettre-ancienne {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2rem;
+            line-height: 1.5;
+            color: #1a0f07; /* Couleur encre de Chine / sépia foncé */
+            text-shadow: 0.5px 0.5px 1px rgba(20, 10, 5, 0.6); /* Effet buvard / encre légèrement imprégnée */
+            margin: 10px auto;
+            padding: 10px 15px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
         /* VUES ET TRANSITIONS */
         .view-section { display: none; flex-direction: column; align-items: center; opacity: 0; }
         .active-view { display: flex; opacity: 1; animation: smoothSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -289,12 +304,15 @@
                 <button class="btn-question btn-silver" style="margin-top:15px;" onclick="backToMain()">🏠 MENU PRINCIPAL</button>
             </div>
 
-            <div id="view-user-letter" class="view-section">
-                <h1>✉️ TA LETTRE DE NOËL</h1>
-                <p id="user-letter-content" style="font-family:'Poppins', sans-serif; font-size:1rem; line-height:1.6; color:#3d240b; background:#fffdf8; padding:15px; border-radius:10px; border:1px solid #d4a017; max-width:85%; margin:15px auto;">
-                    Chargement de ta lettre...
-                </p>
-                <button class="btn-question btn-silver" onclick="backToMain()">RETOUR</button>
+            <div id="view-user-letter" class="view-section" onclick="launchConfetti(event)">
+                <h1 style="font-family:'Great Vibes', cursive; font-size:2.8rem; color:#800c19; margin-bottom:5px;">Lettre de Noël</h1>
+                <p style="font-size:0.8rem; color:#800c19; font-style:italic; margin-top:0; margin-bottom:15px;">(Clique n'importe où sur l'écran pour lancer des confettis ! ✨)</p>
+                
+                <div id="user-letter-content" class="lettre-ancienne">
+                    Chargement de la lettre...
+                </div>
+                
+                <button class="btn-question btn-silver" style="margin-top:20px;" onclick="backToMain()">RETOUR</button>
             </div>
 
             <div id="view-admin-panel" class="view-section">
@@ -451,9 +469,27 @@
         if (myLetter && myLetter.trim() !== "") {
             displayBox.innerText = myLetter;
         } else {
-            displayBox.innerText = "🎅 Hop hop hop ! Ta lettre de Noël est en cours de préparation par le Père Noël. Reviens très bientôt ! 🎄";
+            displayBox.innerText = "Hop hop hop !\nTa lettre de Noël est actuellement en cours de préparation par le Père Noël...\n\nReviens très bientôt ! 🎄";
         }
         switchView('view-user-letter');
+        
+        // Petit effet de confettis automatique à l'ouverture de la lettre
+        launchConfetti();
+    }
+
+    // --- ANIMATION DE CONFETTIS DE NOËL DEPUIS LE BAS ---
+    function launchConfetti(event) {
+        // Empêcher le clic sur le bouton "RETOUR" d'activer l'effet si souhaité
+        if(event && event.target.tagName === 'BUTTON') return;
+
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 70,
+                spread: 80,
+                origin: { y: 0.9 }, // Pop du bas de l'écran
+                colors: ['#d4a017', '#b30000', '#2d5a27', '#ffffff'] // Couleurs OR, ROUGE, VERT, BLANC
+            });
+        }
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
