@@ -32,8 +32,7 @@
 
         .login-card {
             background: rgba(45, 10, 15, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             padding: 2.8rem 2.2rem; border-radius: 24px;
             box-shadow: 0 30px 60px rgba(0,0,0,0.85), 0 0 40px rgba(212, 160, 23, 0.25), inset 0 1px 1px rgba(255,255,255,0.2);
             text-align: center; max-width: 400px; width: 85%;
@@ -42,35 +41,23 @@
             animation: floatCard 5s ease-in-out infinite, cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .login-card::before {
-            content: "✉️ 🎄 ✨";
-            font-size: 1.8rem;
-            display: block;
-            margin-bottom: 8px;
-        }
+        .login-card::before { content: "✉️ 🎄 ✨"; font-size: 1.8rem; display: block; margin-bottom: 8px; }
 
         .login-card h1 {
             font-size: 2rem; margin-top: 0; margin-bottom: 10px;
             color: #f7d070; font-family: 'Cinzel', serif;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 10px rgba(212, 160, 23, 0.3);
+            letter-spacing: 1px; text-shadow: 0 2px 10px rgba(212, 160, 23, 0.3);
         }
 
-        .login-card p {
-            color: #e0d0c0; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.55;
-            font-weight: 300;
-        }
+        .login-card p { color: #e0d0c0; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.55; font-weight: 300; }
 
         .btn-google {
-            background: #ffffff;
-            color: #222; border: 1.5px solid rgba(212, 160, 23, 0.6);
+            background: #ffffff; color: #222; border: 1.5px solid rgba(212, 160, 23, 0.6);
             padding: 12px 24px; font-size: 1rem; font-weight: 600;
             border-radius: 50px; cursor: pointer; display: inline-flex;
             align-items: center; justify-content: center; gap: 12px;
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            width: 100%;
-            box-sizing: border-box;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); width: 100%; box-sizing: border-box;
         }
 
         .btn-google:hover {
@@ -85,8 +72,7 @@
             align-items: center; gap: 12px; background: rgba(30, 5, 10, 0.85);
             backdrop-filter: blur(10px); padding: 6px 16px; border-radius: 40px;
             color: #fce8b2; z-index: 100; border: 1px solid rgba(212, 160, 23, 0.5);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            animation: fadeInDown 0.6s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); animation: fadeInDown 0.6s ease;
         }
 
         .avatar-img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1.5px solid #d4a017; }
@@ -114,22 +100,19 @@
         .container { position: relative; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; }
 
         .parchemin-img {
-            height: 98vh;
-            width: 82vw;
-            max-width: 1100px;
-            object-fit: fill; 
-            filter: drop-shadow(0px 20px 40px rgba(0,0,0,0.6));
-            transition: all 0.5s ease;
+            height: 98vh; width: 82vw; max-width: 1100px; object-fit: fill; 
+            filter: drop-shadow(0px 20px 40px rgba(0,0,0,0.6)); transition: all 0.5s ease;
         }
 
+        /* SUPPRESSION VISUELLE DE LA SCROLLBAR */
         .scroll-box {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 55%; 
-            height: 62%; overflow-y: scroll; padding: 10px 20px;
-            text-align: center; font-family: 'Cinzel', serif;
-            scrollbar-width: none; -ms-overflow-style: none; z-index: 5;
+            width: 48%; height: 60%; overflow-y: scroll; padding: 10px;
+            text-align: center; font-family: 'Cinzel', serif; z-index: 5;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
         }
-        .scroll-box::-webkit-scrollbar { display: none; }
+        .scroll-box::-webkit-scrollbar { display: none; /* Chrome, Safari, Opera */ }
 
         .nav-arrow {
             position: absolute; top: 50%; transform: translateY(-50%);
@@ -142,26 +125,18 @@
         .nav-arrow:hover { background: #ffffff; transform: translateY(-50%) scale(1.15); color: #d4a017; border-color: #d4a017; box-shadow: 0 0 15px rgba(212, 160, 23, 0.5); }
         .arrow-left { left: 4vw; } .arrow-right { right: 4vw; }
 
-        h1 { font-size: 2.1rem; margin-bottom: 20px; text-shadow: 1px 1px 0px rgba(255,255,255,0.8); transition: color 0.5s ease; letter-spacing: 1px; }
+        h1 { font-size: 2rem; margin-bottom: 15px; text-shadow: 1px 1px 0px rgba(255,255,255,0.8); transition: color 0.5s ease; letter-spacing: 1px; }
 
         .titre-or {
-            color: #d4a017; font-size: 2.2rem; font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 0 0 15px rgba(212, 160, 23, 0.4);
-            margin-bottom: 10px;
+            color: #d4a017; font-size: 2rem; font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 0 0 15px rgba(212, 160, 23, 0.4); margin-bottom: 10px;
         }
 
-        /* BOUTONS COMPACTS & DYNAMIQUES */
         .btn-question {
-            display: block; 
-            width: 75%; 
-            max-width: 360px;
-            margin: 8px auto; 
-            padding: 10px 16px;
+            display: block; width: 85%; max-width: 320px; margin: 8px auto; padding: 10px 16px;
             background: linear-gradient(180deg, #fceecb 0%, #e8d098 100%) !important; 
-            color: #3d240b; border: 1.5px solid #a3723f;
-            border-radius: 12px; font-size: 0.95rem; font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: #3d240b; border: 1.5px solid #a3723f; border-radius: 12px; font-size: 0.9rem; font-weight: 600;
+            font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         
@@ -180,20 +155,30 @@
         .btn-question.completed { opacity: 0.6; background: #cbb290 !important; cursor: default; box-shadow: none !important; transform: none !important; }
         .btn-question.completed::after { content: " ✨"; }
 
-        /* STYLE MANUSCRIT A L'ENCRE ANCIENNE SUR PARCHEMIN */
+        /* TEXTE MODIFIÉ : PLUS ÉTROIT POUR RENTRER DANS LE PARCHEMIN SANS DEBORDER */
         .lettre-ancienne {
             font-family: 'Great Vibes', cursive;
-            font-size: 2rem;
-            line-height: 1.5;
-            color: #1a0f07; /* Couleur encre de Chine / sépia foncé */
-            text-shadow: 0.5px 0.5px 1px rgba(20, 10, 5, 0.6); /* Effet buvard / encre légèrement imprégnée */
-            margin: 10px auto;
-            padding: 10px 15px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            font-size: 1.8rem; line-height: 1.4; color: #1a0f07;
+            text-shadow: 0.5px 0.5px 1px rgba(20, 10, 5, 0.5);
+            max-width: 80%; margin: 0 auto; padding: 5px;
+            white-space: pre-wrap; word-wrap: break-word; text-align: center;
         }
 
-        /* VUES ET TRANSITIONS */
+        .reply-box-container {
+            margin-top: 15px; border-top: 1px dashed #a3723f; padding-top: 10px; width: 85%; margin-left: auto; margin-right: auto;
+        }
+
+        .reply-textarea {
+            width: 100%; height: 70px; border-radius: 8px; border: 1px solid #a3723f;
+            background: #fffef8; font-family: 'Poppins', sans-serif; font-size: 0.85rem; padding: 8px;
+            resize: none; outline: none; box-sizing: border-box;
+        }
+
+        .all-letters-card {
+            background: rgba(255, 253, 245, 0.9); border: 1px solid #a3723f;
+            border-radius: 10px; padding: 10px; margin-bottom: 12px; text-align: left;
+        }
+
         .view-section { display: none; flex-direction: column; align-items: center; opacity: 0; }
         .active-view { display: flex; opacity: 1; animation: smoothSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
@@ -203,39 +188,36 @@
         }
         .question-container {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 50%; text-align: center; font-family: 'Cinzel', serif; color: #3d240b;
+            width: 48%; text-align: center; font-family: 'Cinzel', serif; color: #3d240b;
             animation: zoomIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .answer-input, .admin-textarea, .admin-select { 
-            padding: 10px 16px; width: 80%; border-radius: 10px; border: 1.5px solid #8e5a31; 
-            margin: 10px 0; font-size: 0.95rem; text-align: center; background: #fffdf8;
+            padding: 8px 14px; width: 85%; border-radius: 10px; border: 1.5px solid #8e5a31; 
+            margin: 8px 0; font-size: 0.9rem; text-align: center; background: #fffdf8;
             font-family: 'Poppins', sans-serif; box-sizing: border-box;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.08); transition: all 0.3s ease;
         }
-        .admin-textarea { height: 110px; text-align: left; resize: none; }
-        .answer-input:focus, .admin-textarea:focus, .admin-select:focus { outline: none; border-color: #d4a017; box-shadow: 0 0 10px rgba(212, 160, 23, 0.4); }
+        .admin-textarea { height: 90px; text-align: left; resize: none; }
 
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 80%; margin: 0 auto; }
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 85%; margin: 0 auto; }
         .btn-action {
-            width: 100%; padding: 10px 0; border: none; border-radius: 8px;
+            width: 100%; padding: 8px 0; border: none; border-radius: 8px;
             cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+            font-size: 0.85rem; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.12);
         }
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.2); }
 
         .btn-check { background: #2d5a27; color: white; }
         .btn-back { background: #900c1c; color: white; }
         .btn-show { background: #d4a017; color: white; display: none; }
         .btn-regen { background: #ffffff; color: #3d240b; display: none; }
 
-        #hint-text { display: block; height: 1.2rem; margin-top: 5px; font-weight: bold; color: #b30000; visibility: hidden; font-family: 'Poppins', sans-serif; font-size: 0.9rem; }
+        #hint-text { display: block; height: 1.2rem; margin-top: 5px; font-weight: bold; color: #b30000; visibility: hidden; font-family: 'Poppins', sans-serif; font-size: 0.85rem; }
 
         .theme-vert h1 { color: #2d5a27; }
         .theme-or h1 { color: #d4a017; }
         .theme-rouge h1 { color: #900c1c; }
         .theme-menu h1 { color: #555555; }
 
-        /* ANIMATIONS */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes cardEntrance { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
@@ -249,7 +231,7 @@
 <div id="login-overlay">
     <div class="login-card">
         <h1>Lettre de Noël</h1>
-        <p>Connecte-toi avec ton compte Google pour que l'administrateur puisse t'envoyer ta lettre de Noël personnalisée et t'entraîner aux défis !</p>
+        <p>Connecte-toi avec Google pour recevoir ta lettre personnalisée du Père Noël et tenter les 300 défis !</p>
         <button onclick="loginWithGoogle()" class="btn-google">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google">
             Se connecter avec Google
@@ -259,7 +241,7 @@
 
 <div id="user-header">
     <div id="user-avatar-slot"></div>
-    <span id="user-name-slot" style="font-weight: 500; font-size: 0.9rem;"></span>
+    <span id="user-name-slot" style="font-weight: 500; font-size: 0.85rem;"></span>
     <button id="btn-admin-header" class="btn-admin-badge" onclick="showAdminPanel()">⚙️ ADMIN</button>
     <button onclick="logout()" class="btn-header-logout">Déconnexion</button>
 </div>
@@ -289,44 +271,57 @@
                 <button class="btn-question btn-gold" onclick="goToLevel(1)">🟡 DÉFIS MOYENS</button>
                 <button class="btn-question btn-red" onclick="goToLevel(2)">🔴 DÉFIS DIFFICILES</button>
                 <button class="btn-question btn-silver" onclick="devUnlock()">🔓 DEV UNLOCK</button>
-                <button class="btn-question btn-silver" style="margin-top:15px;" onclick="backToMain()">RETOUR</button>
+                <button class="btn-question btn-silver" style="margin-top:10px;" onclick="backToMain()">RETOUR</button>
             </div>
 
             <div id="view-submenu-avantages" class="view-section">
                 <h1 id="avantage-title" class="titre-or">AVANTAGE 1</h1>
-                <img id="avantage-scroll-img" src="https://i.postimg.cc/mrYm0SXf/Capture-d-e-cran-le-2026-02-09-a-17-25-24-removebg-preview.png" style="width: 100%; max-width: 500px; filter: drop-shadow(0px 8px 15px rgba(0,0,0,0.4)); border-radius: 8px;">
-                <button class="btn-question btn-silver" style="margin-top:15px;" onclick="backToMain()">RETOUR</button>
+                <img id="avantage-scroll-img" src="https://i.postimg.cc/mrYm0SXf/Capture-d-e-cran-le-2026-02-09-a-17-25-24-removebg-preview.png" style="width: 100%; max-width: 450px; filter: drop-shadow(0px 8px 15px rgba(0,0,0,0.4)); border-radius: 8px;">
+                <button class="btn-question btn-silver" style="margin-top:10px;" onclick="backToMain()">RETOUR</button>
             </div>
 
             <div id="view-questions-list" class="view-section">
                 <h1 id="level-title">📜 LISTE</h1>
                 <div id="questions-container-inner" style="width: 100%;"></div>
-                <button class="btn-question btn-silver" style="margin-top:15px;" onclick="backToMain()">🏠 MENU PRINCIPAL</button>
+                <button class="btn-question btn-silver" style="margin-top:10px;" onclick="backToMain()">🏠 MENU PRINCIPAL</button>
             </div>
 
             <div id="view-user-letter" class="view-section" onclick="launchConfetti(event)">
-                <h1 style="font-family:'Great Vibes', cursive; font-size:2.8rem; color:#800c19; margin-bottom:5px;">Lettre de Noël</h1>
-                <p style="font-size:0.8rem; color:#800c19; font-style:italic; margin-top:0; margin-bottom:15px;">(Clique n'importe où sur l'écran pour lancer des confettis ! ✨)</p>
+                <h1 style="font-family:'Great Vibes', cursive; font-size:2.4rem; color:#800c19; margin-bottom:0;">Lettre de Noël</h1>
                 
-                <div id="user-letter-content" class="lettre-ancienne">
-                    Chargement de la lettre...
+                <div id="user-letter-content" class="lettre-ancienne">Chargement...</div>
+                
+                <div class="reply-box-container" onclick="event.stopPropagation();">
+                    <p style="font-size:0.75rem; color:#3d240b; margin:2px 0; font-family:'Poppins', sans-serif;">Répondre au Père Noël :</p>
+                    <textarea id="user-reply-input" class="reply-textarea" placeholder="Écris ta réponse ici..."></textarea>
+                    <button class="btn-question btn-green" style="margin:5px auto; width:100%; font-size:0.8rem; padding:6px;" onclick="sendReplyToAdmin()">✉️ Envoyer ma réponse</button>
                 </div>
                 
-                <button class="btn-question btn-silver" style="margin-top:20px;" onclick="backToMain()">RETOUR</button>
+                <button class="btn-question btn-silver" style="margin-top:10px;" onclick="backToMain()">RETOUR</button>
             </div>
 
             <div id="view-admin-panel" class="view-section">
-                <h1 class="titre-or">⚙️ PANNEAU ADMIN</h1>
-                <p style="font-size:0.85rem; color:#555; margin-bottom:10px;">Rédige et envoie des Lettres de Noël aux utilisateurs.</p>
+                <h1 class="titre-or">⚙️ ADMIN</h1>
                 
-                <select id="admin-user-select" class="admin-select" onchange="loadSelectedUserLetter()">
-                    <option value="">-- Choisir un utilisateur --</option>
-                </select>
+                <button class="btn-question btn-gold" style="margin-bottom:10px;" onclick="toggleAllLettersView()">📜 VOIR / EDITER TOUTES LES LETTRES</button>
 
-                <textarea id="admin-letter-text" class="admin-textarea" placeholder="Rédige la lettre de Noël personnalisée ici..."></textarea>
-                
-                <button class="btn-question btn-green" onclick="saveLetterForUser()">💾 ENREGISTRER & ENVOYER</button>
-                <button class="btn-question btn-silver" onclick="backToMain()">RETOUR</button>
+                <div id="admin-single-edit">
+                    <select id="admin-user-select" class="admin-select" onchange="loadSelectedUserLetter()">
+                        <option value="">-- Choisir un destinataire --</option>
+                    </select>
+                    <textarea id="admin-letter-text" class="admin-textarea" placeholder="Rédige la lettre personnalisée..."></textarea>
+                    
+                    <div id="admin-view-reply" style="font-family:'Poppins', sans-serif; font-size:0.8rem; color:#800c19; margin:5px 0; font-style:italic;"></div>
+
+                    <button class="btn-question btn-green" onclick="saveLetterForUser()">💾 ENREGISTRER & ENVOYER</button>
+                </div>
+
+                <div id="admin-all-letters-list" style="display:none; width:100%;">
+                    <h2 style="font-size:1.1rem; color:#3d240b;">Toutes les lettres :</h2>
+                    <div id="all-letters-container"></div>
+                </div>
+
+                <button class="btn-question btn-silver" style="margin-top:10px;" onclick="backToMain()">RETOUR</button>
             </div>
 
         </div>
@@ -335,7 +330,7 @@
     <div id="question-view">
         <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
         <div class="question-container">
-            <h2 id="current-q-text" style="font-size: 1.3rem; line-height: 1.4;">...</h2>
+            <h2 id="current-q-text" style="font-size: 1.2rem; line-height: 1.3;">...</h2>
             <div id="hint-text">REPONSE ICI</div>
             <input type="text" id="user-ans-input" class="answer-input" placeholder="Ta réponse..." autocomplete="off">
             <div class="action-grid">
@@ -349,38 +344,23 @@
 </div>
 
 <script>
-    // --- LISTE DES ADMINISTRATEURS ---
-    const ADMIN_EMAILS = [
-        "asselinj24@emm.qc.ca",
-        "josh.asselin15@gmail.com"
-    ];
-
+    const ADMIN_EMAILS = ["asselinj24@emm.qc.ca", "josh.asselin15@gmail.com"];
     let currentUserEmail = "";
 
-    // --- GESTION DE L'AUTHENTIFICATION SUPABASE ---
     const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjEwMDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
 
-    const supabaseClient = window.supabase
-      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-      : null;
+    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
     async function loginWithGoogle() {
-      if (!supabaseClient) return alert("Erreur de chargement du module Supabase");
-      const { error } = await supabaseClient.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: 'https://christmasss2026.vercel.app'
-        }
+      if (!supabaseClient) return alert("Erreur Supabase");
+      await supabaseClient.auth.signInWithOAuth({
+        provider: 'google', options: { redirectTo: 'https://christmasss2026.vercel.app' }
       });
-      if (error) alert("Erreur de connexion : " + error.message);
     }
 
     async function logout() {
-      if (supabaseClient) {
-        await supabaseClient.auth.signOut();
-        window.location.reload();
-      }
+      if (supabaseClient) { await supabaseClient.auth.signOut(); window.location.reload(); }
     }
 
     function handleSession(session) {
@@ -406,31 +386,27 @@
           avatarSlot.innerHTML = `<div class="avatar-circle">${name.charAt(0).toUpperCase()}</div>`;
         }
 
-        // VÉRIFICATION COMPTE ADMIN
         const isAdmin = ADMIN_EMAILS.includes(currentUserEmail.toLowerCase());
         document.getElementById('btn-admin-header').style.display = isAdmin ? 'inline-block' : 'none';
         document.getElementById('btn-admin-menu').style.display = isAdmin ? 'block' : 'none';
 
-        // Enregistrer l'utilisateur connecté dans la liste locale pour l'admin
         registerUserLocally(currentUserEmail, name);
-
       } else {
         if (overlay) overlay.style.display = 'flex';
         if (userHeader) userHeader.style.display = 'none';
       }
     }
 
-    // --- FONCTIONS GESTION DES LETTRES ET ADMIN ---
     function registerUserLocally(email, name) {
         let users = JSON.parse(localStorage.getItem('noel_users_list') || "{}");
         users[email] = name;
         localStorage.setItem('noel_users_list', JSON.stringify(users));
     }
 
+    /* --- GESTION ADMIN --- */
     function showAdminPanel() {
         const select = document.getElementById('admin-user-select');
-        select.innerHTML = '<option value="">-- Choisir un utilisateur --</option>';
-        
+        select.innerHTML = '<option value="">-- Choisir un destinataire --</option>';
         let users = JSON.parse(localStorage.getItem('noel_users_list') || "{}");
         for (let email in users) {
             let opt = document.createElement('option');
@@ -438,8 +414,10 @@
             opt.innerText = `${users[email]} (${email})`;
             select.appendChild(opt);
         }
-        
         document.getElementById('admin-letter-text').value = "";
+        document.getElementById('admin-view-reply').innerText = "";
+        document.getElementById('admin-single-edit').style.display = 'block';
+        document.getElementById('admin-all-letters-list').style.display = 'none';
         switchView('view-admin-panel');
     }
 
@@ -447,72 +425,142 @@
         const email = document.getElementById('admin-user-select').value;
         if (!email) return;
         let letters = JSON.parse(localStorage.getItem('noel_letters') || "{}");
+        let replies = JSON.parse(localStorage.getItem('noel_replies') || "{}");
+        
         document.getElementById('admin-letter-text').value = letters[email] || "";
+        
+        const replyText = replies[email];
+        document.getElementById('admin-view-reply').innerText = replyText ? "📩 Réponse reçue : " + replyText : "Aucune réponse reçue pour le moment.";
     }
 
     function saveLetterForUser() {
         const email = document.getElementById('admin-user-select').value;
         const text = document.getElementById('admin-letter-text').value;
-        if (!email) return alert("Sélectionne d'abord un utilisateur !");
+        if (!email) return alert("Choisis un utilisateur !");
 
         let letters = JSON.parse(localStorage.getItem('noel_letters') || "{}");
         letters[email] = text;
         localStorage.setItem('noel_letters', JSON.stringify(letters));
-        alert("Lettre enregistrée avec succès pour " + email + " ! ✨");
+        alert("Lettre enregistrée ✨");
     }
 
+    function toggleAllLettersView() {
+        const listDiv = document.getElementById('admin-all-letters-list');
+        const singleDiv = document.getElementById('admin-single-edit');
+        if (listDiv.style.display === 'none') {
+            listDiv.style.display = 'block';
+            singleDiv.style.display = 'none';
+            renderAllLetters();
+        } else {
+            listDiv.style.display = 'none';
+            singleDiv.style.display = 'block';
+        }
+    }
+
+    function renderAllLetters() {
+        const container = document.getElementById('all-letters-container');
+        container.innerHTML = "";
+        let letters = JSON.parse(localStorage.getItem('noel_letters') || "{}");
+        let users = JSON.parse(localStorage.getItem('noel_users_list') || "{}");
+        let replies = JSON.parse(localStorage.getItem('noel_replies') || "{}");
+
+        for (let email in users) {
+            let card = document.createElement('div');
+            card.className = "all-letters-card";
+            card.innerHTML = `
+                <strong style="color:#800c19;">${users[email]} (${email})</strong><br>
+                <textarea class="admin-textarea" id="edit-let-${email.replace(/[^a-zA-Z0-9]/g, '')}" style="width:100%; height:60px; margin:5px 0;">${letters[email] || ""}</textarea>
+                <button class="btn-question btn-green" style="padding:4px; font-size:0.75rem;" onclick="saveDirectLetter('${email}')">Sauvegarder</button>
+                <div style="font-size:0.75rem; color:#555; margin-top:4px;"><b>Réponse :</b> ${replies[email] || 'Aucune'}</div>
+            `;
+            container.appendChild(card);
+        }
+    }
+
+    function saveDirectLetter(email) {
+        const fieldId = "edit-let-" + email.replace(/[^a-zA-Z0-9]/g, '');
+        const val = document.getElementById(fieldId).value;
+        let letters = JSON.parse(localStorage.getItem('noel_letters') || "{}");
+        letters[email] = val;
+        localStorage.setItem('noel_letters', JSON.stringify(letters));
+        alert("Lettre modifiée pour " + email);
+    }
+
+    /* --- VUE JOUEUR & RÉPONSE --- */
     function showUserLetter() {
         let letters = JSON.parse(localStorage.getItem('noel_letters') || "{}");
+        let replies = JSON.parse(localStorage.getItem('noel_replies') || "{}");
+
         const myLetter = letters[currentUserEmail];
         const displayBox = document.getElementById('user-letter-content');
 
         if (myLetter && myLetter.trim() !== "") {
             displayBox.innerText = myLetter;
         } else {
-            displayBox.innerText = "Hop hop hop !\nTa lettre de Noël est actuellement en cours de préparation par le Père Noël...\n\nReviens très bientôt ! 🎄";
+            displayBox.innerText = "Hop hop hop !\nTa lettre de Noël est en préparation par le Père Noël...\n\nReviens très bientôt ! 🎄";
         }
+
+        document.getElementById('user-reply-input').value = replies[currentUserEmail] || "";
         switchView('view-user-letter');
         
-        // Petit effet de confettis automatique à l'ouverture de la lettre
-        launchConfetti();
+        // Lancer confettis (Mega le 25 Décembre)
+        checkChristmasConfetti();
     }
 
-    // --- ANIMATION DE CONFETTIS DE NOËL DEPUIS LE BAS ---
-    function launchConfetti(event) {
-        // Empêcher le clic sur le bouton "RETOUR" d'activer l'effet si souhaité
-        if(event && event.target.tagName === 'BUTTON') return;
+    function sendReplyToAdmin() {
+        const replyText = document.getElementById('user-reply-input').value;
+        if(!replyText.trim()) return alert("Écris un message avant d'envoyer !");
 
+        let replies = JSON.parse(localStorage.getItem('noel_replies') || "{}");
+        replies[currentUserEmail] = replyText;
+        localStorage.setItem('noel_replies', JSON.stringify(replies));
+        alert("Ta réponse a bien été envoyée au Père Noël ! 🎅✨");
+    }
+
+    /* --- MEGA CONFETTIS DE NOËL --- */
+    function checkChristmasConfetti() {
+        const today = new Date();
+        const isChristmas = (today.getMonth() === 11 && today.getDate() === 25);
+
+        if (isChristmas) {
+            // MÉGA CONFETTIS ENORMES POUR LE 25 DÉCEMBRE
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 100,
+                    startVelocity: 60,
+                    scalar: 3.5, // Taille géante des confettis !
+                    origin: { y: 0.85 },
+                    colors: ['#d4a017', '#b30000', '#2d5a27', '#ffffff']
+                });
+            }
+        } else {
+            // CONFETTIS CLASSIQUES
+            launchConfetti();
+        }
+    }
+
+    function launchConfetti(event) {
+        if(event && (event.target.tagName === 'BUTTON' || event.target.tagName === 'TEXTAREA')) return;
         if (typeof confetti === 'function') {
             confetti({
-                particleCount: 70,
-                spread: 80,
-                origin: { y: 0.9 }, // Pop du bas de l'écran
-                colors: ['#d4a017', '#b30000', '#2d5a27', '#ffffff'] // Couleurs OR, ROUGE, VERT, BLANC
+                particleCount: 60,
+                spread: 70,
+                origin: { y: 0.9 },
+                colors: ['#d4a017', '#b30000', '#2d5a27', '#ffffff']
             });
         }
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
       if (!supabaseClient) return;
-
       const { data: { session } } = await supabaseClient.auth.getSession();
       handleSession(session);
-
-      supabaseClient.auth.onAuthStateChange((_event, session) => {
-        handleSession(session);
-      });
+      supabaseClient.auth.onAuthStateChange((_event, session) => { handleSession(session); });
     });
 
-    // --- LES 300 QUESTIONS FIXES ---
-    const allData = [
-       /* Tes questions ici */
-    ];
-
-    let currentLevel = 0;
-    let currentAvantage = 1;
-    let activeIndex = -1;
-    let isAiMode = false;
-    let currentAiQ = ["", ""];
+    const allData = [];
+    let currentLevel = 0, currentAvantage = 1, activeIndex = -1, isAiMode = false, currentAiQ = ["", ""];
 
     const levels = [
         { name: "DÉFIS FACILES", class: "theme-vert", btnClass: "btn-green", start: 0 },
@@ -524,8 +572,7 @@
         if(!str) return "";
         return str.toString().toLowerCase()
             .replace(/[éèêë]/g, 'e').replace(/[àâ]/g, 'a').replace(/[îï]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ûù]/g, 'u')
-            .replace(/^(le |la |les |l\'|un |une |des )/, "")
-            .replace(/\s/g, "").trim();
+            .replace(/^(le |la |les |l\'|un |une |des )/, "").replace(/\s/g, "").trim();
     }
 
     function switchView(viewId) {
@@ -534,37 +581,24 @@
         
         const nav = document.getElementById('nav-arrows');
         const bg = document.getElementById('main-scroll-bg');
-        const arrowL = document.getElementById('btn-arrow-L');
-        const arrowR = document.getElementById('btn-arrow-R');
 
         if (viewId === 'view-questions-list') {
-            nav.style.display = 'block';
-            bg.style.opacity = "1";
-            arrowL.onclick = () => changeLevel(-1);
-            arrowR.onclick = () => changeLevel(1);
-        } 
-        else if (viewId === 'view-submenu-avantages') {
-            nav.style.display = 'block';
-            bg.style.opacity = "0";
-            arrowL.onclick = () => moveAvantage(-1);
-            arrowR.onclick = () => moveAvantage(1);
-            updateAvantageUI();
-        }
-        else {
-            nav.style.display = 'none';
-            bg.style.opacity = "1";
+            nav.style.display = 'block'; bg.style.opacity = "1";
+            document.getElementById('btn-arrow-L').onclick = () => changeLevel(-1);
+            document.getElementById('btn-arrow-R').onclick = () => changeLevel(1);
+        } else if (viewId === 'view-submenu-avantages') {
+            nav.style.display = 'block'; bg.style.opacity = "0";
+            document.getElementById('btn-arrow-L').onclick = () => moveAvantage(-1);
+            document.getElementById('btn-arrow-R').onclick = () => moveAvantage(1);
+            document.getElementById('avantage-title').innerText = "AVANTAGE " + currentAvantage;
+        } else {
+            nav.style.display = 'none'; bg.style.opacity = "1";
         }
         document.querySelector('.scroll-box').scrollTop = 0;
     }
 
     function moveAvantage(dir) {
-        currentAvantage += dir;
-        if(currentAvantage < 1) currentAvantage = 20;
-        if(currentAvantage > 20) currentAvantage = 1;
-        updateAvantageUI();
-    }
-
-    function updateAvantageUI() {
+        currentAvantage = (currentAvantage + dir - 1 + 20) % 20 + 1;
         document.getElementById('avantage-title').innerText = "AVANTAGE " + currentAvantage;
     }
 
@@ -574,16 +608,9 @@
         if(type === 'avantages') switchView('view-submenu-avantages');
     }
 
-    function backToMain() {
-        document.body.className = "theme-menu";
-        switchView('view-main-menu');
-    }
+    function backToMain() { document.body.className = "theme-menu"; switchView('view-main-menu'); }
 
-    function goToLevel(idx) {
-        currentLevel = idx;
-        renderQuestionsList();
-        switchView('view-questions-list');
-    }
+    function goToLevel(idx) { currentLevel = idx; renderQuestionsList(); switchView('view-questions-list'); }
 
     function renderQuestionsList() {
         const listInner = document.getElementById('questions-container-inner');
@@ -603,29 +630,13 @@
             btn.onclick = () => showQuestion(qID, false);
             listInner.appendChild(btn);
         }
-
-        let btnAi = document.createElement('button');
-        btnAi.className = `btn-question btn-silver`;
-        btnAi.innerText = `QUESTION IA ✨`;
-        btnAi.onclick = () => showQuestion(-1, true);
-        listInner.appendChild(btnAi);
     }
 
     function showQuestion(id, isAi) {
         isAiMode = isAi;
         document.getElementById('hint-text').style.visibility = "hidden";
-        if (isAi) {
-            document.getElementById('btn-show-id').style.display = "block";
-            document.getElementById('btn-regen-id').style.display = "block";
-            const pool = allData.slice(levels[currentLevel].start, levels[currentLevel].start + 100);
-            currentAiQ = pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : ["Pas de question", ""];
-            document.getElementById('current-q-text').innerText = "[IA] " + currentAiQ[0];
-        } else {
-            document.getElementById('btn-show-id').style.display = "none";
-            document.getElementById('btn-regen-id').style.display = "none";
-            activeIndex = id;
-            document.getElementById('current-q-text').innerText = allData[id] ? allData[id][0] : "Question vide";
-        }
+        activeIndex = id;
+        document.getElementById('current-q-text').innerText = allData[id] ? allData[id][0] : "Question vide";
         document.getElementById('user-ans-input').value = "";
         document.getElementById('list-view').style.display = 'none';
         document.getElementById('question-view').style.display = 'flex';
@@ -640,14 +651,12 @@
 
     function checkAnswer() {
         const userAns = normalize(document.getElementById('user-ans-input').value);
-        const correctAns = normalize(isAiMode ? currentAiQ[1] : (allData[activeIndex] ? allData[activeIndex][1] : ""));
+        const correctAns = normalize(allData[activeIndex] ? allData[activeIndex][1] : "");
         if (userAns !== "" && userAns === correctAns) {
             alert("Bravo ! ✨");
-            if (!isAiMode) {
-                let solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
-                if (!solved.includes(activeIndex)) solved.push(activeIndex);
-                localStorage.setItem('noel_solved', JSON.stringify(solved));
-            }
+            let solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
+            if (!solved.includes(activeIndex)) solved.push(activeIndex);
+            localStorage.setItem('noel_solved', JSON.stringify(solved));
             hideQuestion();
         } else {
             alert("Oh non ! ❄️");
@@ -665,15 +674,6 @@
         currentLevel = (currentLevel + dir + 3) % 3;
         renderQuestionsList();
     }
-
-    function revealHint() {
-        const hText = document.getElementById('hint-text');
-        hText.innerText = currentAiQ[1];
-        hText.style.visibility = "visible";
-        setTimeout(() => { hText.style.visibility = "hidden"; }, 1000);
-    }
-
-    function regenerateAi() { showQuestion(-1, true); }
 
     document.getElementById('user-ans-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkAnswer();
