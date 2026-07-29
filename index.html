@@ -386,7 +386,7 @@
         if (userHeader) userHeader.style.display = 'flex';
 
         const user = session.user;
-        currentUserEmail = user.email || "";
+        currentUserEmail = user.email ? user.email.toLowerCase() : "";
         const metadata = user.user_metadata || {};
         const name = metadata.full_name || metadata.name || currentUserEmail;
         const avatarUrl = metadata.avatar_url || metadata.picture;
@@ -400,7 +400,7 @@
           avatarSlot.innerHTML = `<div class="avatar-circle">${name.charAt(0).toUpperCase()}</div>`;
         }
 
-        const isAdmin = ADMIN_EMAILS.includes(currentUserEmail.toLowerCase());
+        const isAdmin = ADMIN_EMAILS.includes(currentUserEmail);
         document.getElementById('btn-admin-menu').style.display = isAdmin ? 'block' : 'none';
 
         registerUserLocally(currentUserEmail, name);
@@ -409,6 +409,7 @@
 
     function registerUserLocally(email, name) {
         let users = JSON.parse(localStorage.getItem('noel_users_list') || "{}");
+        email = email.toLowerCase();
         if (!users[email]) {
             users[email] = name || email;
             localStorage.setItem('noel_users_list', JSON.stringify(users));
@@ -433,7 +434,7 @@
 
         if (data && data.email) {
             isBypassUser = true;
-            currentUserEmail = data.email;
+            currentUserEmail = data.email.toLowerCase();
             document.getElementById('login-overlay').style.display = 'none';
             showUserLetter();
         } else {
@@ -442,7 +443,7 @@
     }
 
     function showAdminUserList() {
-        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) {
+        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) {
             alert("⛔ Accès refusé : Seul l'administrateur principal peut accéder à cette section.");
             return;
         }
@@ -464,24 +465,24 @@
     }
 
     function addNewUserPrompt() {
-        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) return;
+        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) return;
         const email = prompt("Entre l'adresse courriel de la personne :");
         if (!email || !email.includes('@')) return alert("Adresse email invalide !");
         
         const name = prompt("Son nom ou prénom :") || email;
-        registerUserLocally(email, name);
+        registerUserLocally(email.toLowerCase(), name);
         showAdminUserList();
     }
 
     async function openUserEditor(email, name) {
-        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) return;
-        activeEditingEmail = email;
+        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) return;
+        activeEditingEmail = email.toLowerCase();
         document.getElementById('admin-editing-title').innerText = "Lettre pour : " + name;
 
         const { data } = await supabaseClient
             .from('user_letters')
             .select('*')
-            .eq('email', email)
+            .eq('email', activeEditingEmail)
             .maybeSingle();
 
         document.getElementById('admin-letter-text').value = data ? (data.letter_text || "") : "";
@@ -494,7 +495,7 @@
     }
 
     async function saveSelectedUserLetter() {
-        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) return;
+        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) return;
         if (!activeEditingEmail) return;
 
         const letterText = document.getElementById('admin-letter-text').value;
@@ -517,9 +518,8 @@
         }
     }
 
-    /* --- NOUVELLE FONCTION DE SUPPRESSION --- */
     async function deleteUserLetter() {
-        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) return;
+        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) return;
         if (!activeEditingEmail) return;
 
         if (confirm("Es-tu sûr de vouloir supprimer la lettre et le code de cet utilisateur ?")) {
