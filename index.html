@@ -118,20 +118,10 @@
 
         .scroll-box {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 55%; height: 62%; overflow-y: scroll; padding: 10px 20px;
+            width: 50%; height: 60%; overflow: hidden; padding: 10px;
             text-align: center; font-family: 'Cinzel', serif; z-index: 5;
-            scrollbar-width: none; -ms-overflow-style: none;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .scroll-box::-webkit-scrollbar { display: none; }
-
-        .nav-arrow {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            font-size: 2.2rem; color: #800c19; cursor: pointer;
-            background: rgba(255, 252, 245, 0.85); border-radius: 50%;
-            width: 52px; height: 52px; display: flex; justify-content: center; align-items: center;
-            z-index: 10; border: 2px solid #800c19; user-select: none;
-        }
-        .arrow-left { left: 4vw; } .arrow-right { right: 4vw; }
 
         h1 { font-size: 2.1rem; margin-bottom: 20px; text-shadow: 1px 1px 0px rgba(255,255,255,0.8); }
 
@@ -151,19 +141,16 @@
 
         .btn-silver { border-color: #999; }
         .btn-green { border-color: #2d5a27; }
-        .btn-green:hover { background: #2d5a27 !important; color: white; }
         .btn-gold { border-color: #d4a017; }
-        .btn-gold:hover { background: #d4a017 !important; color: white; }
         .btn-red { border-color: #b30000; }
-        .btn-red:hover { background: #b30000 !important; color: white; }
 
         .lettre-ancienne {
             font-family: 'Great Vibes', cursive;
-            font-size: 2rem; line-height: 1.35; color: #1a0f07;
-            text-shadow: 0.5px 0.5px 1px rgba(20, 10, 5, 0.4);
-            max-width: 90%; margin: 0 auto; padding: 5px;
+            font-size: 1.35rem; line-height: 1.25; color: #1a0f07;
+            text-shadow: 0.5px 0.5px 1px rgba(20, 10, 5, 0.3);
+            max-width: 80%; margin: 5px auto; padding: 0;
             white-space: pre-wrap; word-wrap: break-word; text-align: center;
-            overflow: hidden;
+            overflow: hidden; max-height: 42vh;
         }
 
         #reply-modal-overlay {
@@ -179,35 +166,16 @@
             animation: smoothSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .view-section { display: none; flex-direction: column; align-items: center; opacity: 0; }
+        .view-section { display: none; flex-direction: column; align-items: center; width: 100%; opacity: 0; }
         .active-view { display: flex; opacity: 1; animation: smoothSlideUp 0.5s ease forwards; }
 
-        #question-view {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            justify-content: center; align-items: center; z-index: 20;
-        }
-        .question-container {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 50%; text-align: center; font-family: 'Cinzel', serif; color: #3d240b;
-        }
-        .answer-input, .admin-textarea, .admin-input { 
-            padding: 10px 16px; width: 85%; border-radius: 10px; border: 1.5px solid #8e5a31; 
-            margin: 10px 0; font-size: 0.95rem; text-align: center; background: #fffdf8;
+        .admin-textarea, .admin-input { 
+            padding: 8px 12px; width: 85%; border-radius: 10px; border: 1.5px solid #8e5a31; 
+            margin: 4px 0; font-size: 0.88rem; text-align: center; background: #fffdf8;
             font-family: 'Poppins', sans-serif; box-sizing: border-box;
         }
-        .admin-textarea { height: 110px; text-align: left; resize: none; }
+        .admin-textarea { height: 85px; text-align: left; resize: none; }
 
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 80%; margin: 0 auto; }
-        .btn-action {
-            width: 100%; padding: 10px 0; border: none; border-radius: 8px;
-            cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif; font-size: 0.9rem;
-        }
-        .btn-check { background: #2d5a27; color: white; }
-        .btn-back { background: #900c1c; color: white; }
-
-        .theme-vert h1 { color: #2d5a27; }
-        .theme-or h1 { color: #d4a017; }
-        .theme-rouge h1 { color: #900c1c; }
         .theme-menu h1 { color: #555555; }
 
         @keyframes smoothSlideUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
@@ -249,7 +217,7 @@
 <div id="reply-modal-overlay">
     <div class="reply-modal-card">
         <h2 style="font-family:'Cinzel', serif; color:#800c19; margin-top:0;">✉️ Répondre au Père Noël</h2>
-        <textarea id="modal-reply-input" class="admin-textarea" style="width:100%; height:120px; text-align:left;" placeholder="Écris ton message ici..."></textarea>
+        <textarea id="modal-reply-input" class="admin-textarea" style="width:100%; height:110px; text-align:left;" placeholder="Écris ton message ici..."></textarea>
         <button class="btn-question btn-green" style="width:100%; margin-top:10px;" onclick="sendReplyFromModal()">Envoyer mon message</button>
         <button class="btn-question btn-silver" style="width:100%; margin-top:5px;" onclick="closeReplyModal()">Fermer</button>
     </div>
@@ -257,95 +225,62 @@
 
 <div class="container" id="main-container">
     <div id="list-view">
-        <div id="nav-arrows" style="display: none;">
-            <div class="nav-arrow arrow-left" id="btn-arrow-L">❮</div>
-            <div class="nav-arrow arrow-right" id="btn-arrow-R">❯</div>
-        </div>
-
         <img id="main-scroll-bg" src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
         
         <div class="scroll-box">
             
             <div id="view-main-menu" class="view-section active-view">
                 <h1>MENU PRINCIPAL</h1>
-                <button class="btn-question btn-silver" onclick="showSubMenu('questions')">🎁 QUESTIONS</button>
-                <button class="btn-question btn-silver" onclick="showSubMenu('avantages')">✨ AVANTAGES</button>
+                <button class="btn-question btn-silver" onclick="window.location.href='Question.html'">🎁 QUESTIONS</button>
+                <button class="btn-question btn-silver" onclick="window.location.href='Avantage.html'">✨ AVANTAGES</button>
                 <button id="btn-admin-menu" class="btn-question btn-gold" style="display:none;" onclick="showAdminUserList()">⚙️ ADMINISTRATEUR</button>
                 <button class="btn-question btn-gold" onclick="showUserLetter()">✉️ MA LETTRE DE NOËL</button>
             </div>
 
-            <div id="view-submenu-questions" class="view-section">
-                <h1>CHOISIR UN NIVEAU</h1>
-                <button class="btn-question btn-green" onclick="goToLevel(0)">🟢 DÉFIS FACILES</button>
-                <button class="btn-question btn-gold" onclick="goToLevel(1)">🟡 DÉFIS MOYENS</button>
-                <button class="btn-question btn-red" onclick="goToLevel(2)">🔴 DÉFIS DIFFICILES</button>
-                <button class="btn-question btn-silver" onclick="devUnlock()">🔓 DEV UNLOCK</button>
-                <button class="btn-question btn-silver" style="margin-top:10px;" onclick="backToMain()">RETOUR</button>
-            </div>
-
-            <div id="view-submenu-avantages" class="view-section">
-                <h1 id="avantage-title" class="titre-or">AVANTAGE 1</h1>
-                <img id="avantage-scroll-img" src="https://i.postimg.cc/mrYm0SXf/Capture-d-e-cran-le-2026-02-09-a-17-25-24-removebg-preview.png" style="width: 100%; max-width: 450px; border-radius: 8px;">
-                <button class="btn-question btn-silver" style="margin-top:10px;" onclick="backToMain()">RETOUR</button>
-            </div>
-
-            <div id="view-questions-list" class="view-section">
-                <h1 id="level-title">📜 LISTE</h1>
-                <div id="questions-container-inner" style="width: 100%;"></div>
-                <button class="btn-question btn-silver" style="margin-top:10px;" onclick="backToMain()">🏠 MENU PRINCIPAL</button>
-            </div>
-
             <div id="view-user-letter" class="view-section" onclick="launchConfetti(event)">
-                <h1 style="font-family:'Great Vibes', cursive; font-size:2.6rem; color:#800c19; margin-bottom:0;">Lettre de Noël</h1>
+                <h1 style="font-family:'Great Vibes', cursive; font-size:2.2rem; color:#800c19; margin:0 0 5px 0;">Lettre de Noël</h1>
                 
                 <div id="user-letter-content" class="lettre-ancienne">Chargement...</div>
                 
-                <button id="btn-open-reply-modal" class="btn-question btn-green" style="margin-top:15px;" onclick="openReplyModal(event)">✉️ Répondre à la lettre</button>
-                <button id="btn-return-login" class="btn-question btn-gold" style="display:none; margin-top:8px;" onclick="returnToLogin()">🔒 Revenir à la connexion Google</button>
+                <button id="btn-open-reply-modal" class="btn-question btn-green" style="margin-top:10px; padding:8px 14px; font-size:0.85rem;" onclick="openReplyModal(event)">✉️ Répondre à la lettre</button>
+                <button id="btn-return-login" class="btn-question btn-gold" style="display:none; margin-top:5px; padding:8px 14px; font-size:0.85rem;" onclick="returnToLogin()">🔒 Revenir à la connexion Google</button>
 
-                <button class="btn-question btn-silver" style="margin-top:10px;" onclick="backToMain()">RETOUR</button>
+                <button class="btn-question btn-silver" style="margin-top:6px; padding:8px 14px; font-size:0.85rem;" onclick="backToMain()">RETOUR</button>
             </div>
 
             <div id="view-admin-list" class="view-section">
-                <h1 class="titre-or">⚙️ ADMINISTRATEUR</h1>
+                <h1 class="titre-or" style="font-size:1.8rem; margin-bottom:10px;">⚙️ ADMINISTRATEUR</h1>
                 
-                <button class="btn-question btn-gold" style="border: 2px solid #ffd700;" onclick="triggerMegaConfettiTest()">🎉 TESTER MÉGA CONFETTIS</button>
-                <button class="btn-question btn-green" style="margin-bottom:12px;" onclick="addNewUserPrompt()">➕ ÉCRIRE À UN NOUVEL EMAIL</button>
+                <button class="btn-question btn-gold" style="border: 2px solid #ffd700; padding:8px;" onclick="triggerMegaConfettiTest()">🎉 TESTER MÉGA CONFETTIS</button>
+                <button class="btn-question btn-green" style="margin-bottom:10px; padding:8px;" onclick="addNewUserPrompt()">➕ ÉCRIRE À UN NOUVEL EMAIL</button>
                 
-                <div id="admin-user-buttons-container" style="width: 100%;"></div>
+                <div id="admin-user-buttons-container" style="width: 100%; max-height:220px; overflow-y:auto;"></div>
 
-                <button class="btn-question btn-silver" style="margin-top:15px;" onclick="backToMain()">RETOUR</button>
+                <button class="btn-question btn-silver" style="margin-top:10px; padding:8px;" onclick="backToMain()">RETOUR</button>
             </div>
 
             <div id="view-admin-edit-user" class="view-section">
-                <h1 class="titre-or" id="admin-editing-title" style="font-size:1.6rem;">Édition</h1>
+                <h1 class="titre-or" style="font-size:1.4rem; margin-bottom:5px;">Profil & Lettre</h1>
                 
-                <p style="font-size:0.8rem; color:#3d240b; margin:0;">Code de contournement (Bypass code) :</p>
+                <p style="font-size:0.75rem; color:#3d240b; margin:0;">Nom / Prénom :</p>
+                <input type="text" id="admin-edit-name-input" class="admin-input" placeholder="Nom de l'utilisateur">
+
+                <p style="font-size:0.75rem; color:#3d240b; margin:2px 0 0 0;">Adresse Email :</p>
+                <input type="email" id="admin-edit-email-input" class="admin-input" placeholder="email@exemple.com">
+
+                <p style="font-size:0.75rem; color:#3d240b; margin:2px 0 0 0;">Code de contournement (Bypass) :</p>
                 <input type="text" id="admin-code-input" class="admin-input" placeholder="Ex: NOEL123">
 
-                <p style="font-size:0.8rem; color:#3d240b; margin:5px 0 0 0;">Lettre personnalisée :</p>
-                <textarea id="admin-letter-text" class="admin-textarea" placeholder="Rédige la lettre personnalisée ici..."></textarea>
+                <p style="font-size:0.75rem; color:#3d240b; margin:2px 0 0 0;">Lettre personnalisée :</p>
+                <textarea id="admin-letter-text" class="admin-textarea" placeholder="Rédige la lettre ici..."></textarea>
                 
-                <div id="admin-view-reply" style="font-family:'Poppins', sans-serif; font-size:0.85rem; color:#800c19; margin:8px 0; font-style:italic; font-weight:600;"></div>
+                <div id="admin-view-reply" style="font-family:'Poppins', sans-serif; font-size:0.78rem; color:#800c19; margin:4px 0; font-style:italic; font-weight:600;"></div>
 
-                <button class="btn-question btn-green" onclick="saveSelectedUserLetter()">💾 ENREGISTRER</button>
-                <button class="btn-question btn-red" style="margin-top:5px;" onclick="deleteUserLetter()">🗑️ SUPPRIMER CETTE LETTRE</button>
-                <button class="btn-question btn-silver" style="margin-top:5px;" onclick="switchView('view-admin-list')">RETOUR À LA LISTE</button>
+                <button class="btn-question btn-green" style="padding:8px;" onclick="saveSelectedUserLetter()">💾 ENREGISTRER</button>
+                <button class="btn-question btn-red" style="margin-top:4px; padding:8px;" onclick="deleteUserLetter()">🗑️ SUPPRIMER CETTE PERSONNE</button>
+                <button class="btn-question btn-silver" style="margin-top:4px; padding:8px;" onclick="switchView('view-admin-list')">RETOUR À LA LISTE</button>
             </div>
 
-        </div>
-    </div>
-
-    <div id="question-view">
-        <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
-        <div class="question-container">
-            <h2 id="current-q-text" style="font-size: 1.2rem; line-height: 1.3;">...</h2>
-            <div id="hint-text">REPONSE ICI</div>
-            <input type="text" id="user-ans-input" class="answer-input" placeholder="Ta réponse..." autocomplete="off">
-            <div class="action-grid">
-                <button class="btn-action btn-check" onclick="checkAnswer()">Valider</button>
-                <button class="btn-action btn-back" onclick="hideQuestion()">Retour</button>
-            </div>
         </div>
     </div>
 </div>
@@ -373,9 +308,7 @@
       window.location.reload();
     }
 
-    function returnToLogin() {
-        window.location.reload();
-    }
+    function returnToLogin() { window.location.reload(); }
 
     function handleSession(session) {
       const overlay = document.getElementById('login-overlay');
@@ -456,6 +389,7 @@
         for (let email in users) {
             let btn = document.createElement('button');
             btn.className = "btn-question btn-gold";
+            btn.style.padding = "8px";
             btn.innerText = `✉️ ${users[email]}`;
             btn.onclick = () => openUserEditor(email, users[email]);
             container.appendChild(btn);
@@ -477,7 +411,9 @@
     async function openUserEditor(email, name) {
         if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) return;
         activeEditingEmail = email.toLowerCase();
-        document.getElementById('admin-editing-title').innerText = "Lettre pour : " + name;
+        
+        document.getElementById('admin-edit-name-input').value = name;
+        document.getElementById('admin-edit-email-input').value = activeEditingEmail;
 
         const { data } = await supabaseClient
             .from('user_letters')
@@ -498,13 +434,25 @@
         if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) return;
         if (!activeEditingEmail) return;
 
+        const newName = document.getElementById('admin-edit-name-input').value.trim();
+        const newEmail = document.getElementById('admin-edit-email-input').value.trim().toLowerCase();
         const letterText = document.getElementById('admin-letter-text').value;
         const codeText = document.getElementById('admin-code-input').value.trim();
+
+        if (!newEmail || !newEmail.includes('@')) return alert("Adresse courriel invalide !");
+
+        let users = JSON.parse(localStorage.getItem('noel_users_list') || "{}");
+        if (activeEditingEmail !== newEmail) {
+            delete users[activeEditingEmail];
+            await supabaseClient.from('user_letters').delete().eq('email', activeEditingEmail);
+        }
+        users[newEmail] = newName || newEmail;
+        localStorage.setItem('noel_users_list', JSON.stringify(users));
 
         const { error } = await supabaseClient
             .from('user_letters')
             .upsert({
-                email: activeEditingEmail,
+                email: newEmail,
                 letter_text: letterText,
                 bypass_code: codeText,
                 updated_at: new Date()
@@ -513,7 +461,7 @@
         if (error) {
             alert("Erreur d'enregistrement : " + error.message);
         } else {
-            alert("Modifications enregistrées sur Supabase !");
+            alert("Modifications enregistrées avec succès !");
             showAdminUserList();
         }
     }
@@ -522,20 +470,22 @@
         if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) return;
         if (!activeEditingEmail) return;
 
-        if (confirm("Es-tu sûr de vouloir supprimer la lettre et le code de cet utilisateur ?")) {
+        if (confirm("Es-tu sûr de vouloir SUPPRIMER cette personne et sa lettre de la liste ?")) {
             const { error } = await supabaseClient
                 .from('user_letters')
                 .delete()
                 .eq('email', activeEditingEmail);
 
             if (error) {
-                alert("Erreur de suppression : " + error.message);
-            } else {
-                alert("La lettre a été supprimée de Supabase !");
-                document.getElementById('admin-letter-text').value = "";
-                document.getElementById('admin-code-input').value = "";
-                showAdminUserList();
+                console.error("Erreur Supabase : ", error);
             }
+
+            let users = JSON.parse(localStorage.getItem('noel_users_list') || "{}");
+            delete users[activeEditingEmail];
+            localStorage.setItem('noel_users_list', JSON.stringify(users));
+
+            alert("La personne et sa lettre ont été complètement supprimées !");
+            showAdminUserList();
         }
     }
 
@@ -583,9 +533,7 @@
         document.getElementById('reply-modal-overlay').style.display = 'flex';
     }
 
-    function closeReplyModal() {
-        document.getElementById('reply-modal-overlay').style.display = 'none';
-    }
+    function closeReplyModal() { document.getElementById('reply-modal-overlay').style.display = 'none'; }
 
     async function sendReplyFromModal() {
         const text = document.getElementById('modal-reply-input').value.trim();
@@ -624,127 +572,19 @@
         }
     }
 
+    function switchView(viewId) {
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active-view'));
+        document.getElementById(viewId).classList.add('active-view');
+    }
+
+    function backToMain() { switchView('view-main-menu'); }
+
     window.addEventListener('DOMContentLoaded', async () => {
       if (!supabaseClient) return;
       const { data: { session } } = await supabaseClient.auth.getSession();
       handleSession(session);
       supabaseClient.auth.onAuthStateChange((_event, session) => { handleSession(session); });
     });
-
-    const allData = [];
-    let currentLevel = 0, currentAvantage = 1, activeIndex = -1;
-
-    const levels = [
-        { name: "DÉFIS FACILES", class: "theme-vert", btnClass: "btn-green", start: 0 },
-        { name: "DÉFIS MOYENS", class: "theme-or", btnClass: "btn-gold", start: 100 },
-        { name: "DÉFIS DIFFICILES", class: "theme-rouge", btnClass: "btn-red", start: 200 }
-    ];
-
-    function normalize(str) {
-        if(!str) return "";
-        return str.toString().toLowerCase()
-            .replace(/[éèêë]/g, 'e').replace(/[àâ]/g, 'a').replace(/[îï]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ûù]/g, 'u')
-            .replace(/^(le |la |les |l\'|un |une |des )/, "").replace(/\s/g, "").trim();
-    }
-
-    function switchView(viewId) {
-        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active-view'));
-        document.getElementById(viewId).classList.add('active-view');
-        
-        const nav = document.getElementById('nav-arrows');
-        const bg = document.getElementById('main-scroll-bg');
-
-        if (viewId === 'view-questions-list') {
-            nav.style.display = 'block'; bg.style.opacity = "1";
-            document.getElementById('btn-arrow-L').onclick = () => changeLevel(-1);
-            document.getElementById('btn-arrow-R').onclick = () => changeLevel(1);
-        } else if (viewId === 'view-submenu-avantages') {
-            nav.style.display = 'block'; bg.style.opacity = "0";
-            document.getElementById('btn-arrow-L').onclick = () => moveAvantage(-1);
-            document.getElementById('btn-arrow-R').onclick = () => moveAvantage(1);
-            document.getElementById('avantage-title').innerText = "AVANTAGE " + currentAvantage;
-        } else {
-            nav.style.display = 'none'; bg.style.opacity = "1";
-        }
-        document.querySelector('.scroll-box').scrollTop = 0;
-    }
-
-    function moveAvantage(dir) {
-        currentAvantage = (currentAvantage + dir - 1 + 20) % 20 + 1;
-        document.getElementById('avantage-title').innerText = "AVANTAGE " + currentAvantage;
-    }
-
-    function showSubMenu(type) {
-        document.body.className = "theme-menu";
-        if(type === 'questions') switchView('view-submenu-questions');
-        if(type === 'avantages') switchView('view-submenu-avantages');
-    }
-
-    function backToMain() { document.body.className = "theme-menu"; switchView('view-main-menu'); }
-
-    function goToLevel(idx) { currentLevel = idx; renderQuestionsList(); switchView('view-questions-list'); }
-
-    function renderQuestionsList() {
-        const listInner = document.getElementById('questions-container-inner');
-        const level = levels[currentLevel];
-        document.getElementById('level-title').innerText = "📜 " + level.name;
-        document.body.className = level.class;
-        listInner.innerHTML = "";
-        
-        const solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
-
-        for (let i = 1; i <= 100; i++) {
-            const qID = level.start + i - 1;
-            const isDone = solved.includes(qID);
-            let btn = document.createElement('button');
-            btn.className = `btn-question ${level.btnClass} ${isDone ? 'completed' : ''}`;
-            btn.innerText = isDone ? `DÉFI RÉUSSI` : `QUESTION ${i}`;
-            btn.onclick = () => showQuestion(qID);
-            listInner.appendChild(btn);
-        }
-    }
-
-    function showQuestion(id) {
-        document.getElementById('hint-text').style.visibility = "hidden";
-        activeIndex = id;
-        document.getElementById('current-q-text').innerText = allData[id] ? allData[id][0] : "Question vide";
-        document.getElementById('user-ans-input').value = "";
-        document.getElementById('list-view').style.display = 'none';
-        document.getElementById('question-view').style.display = 'flex';
-        document.getElementById('user-ans-input').focus();
-    }
-
-    function hideQuestion() {
-        document.getElementById('question-view').style.display = 'none';
-        document.getElementById('list-view').style.display = 'block';
-        renderQuestionsList();
-    }
-
-    function checkAnswer() {
-        const userAns = normalize(document.getElementById('user-ans-input').value);
-        const correctAns = normalize(allData[activeIndex] ? allData[activeIndex][1] : "");
-        if (userAns !== "" && userAns === correctAns) {
-            alert("Bravo ! ✨");
-            let solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
-            if (!solved.includes(activeIndex)) solved.push(activeIndex);
-            localStorage.setItem('noel_solved', JSON.stringify(solved));
-            hideQuestion();
-        } else {
-            alert("Oh non ! ❄️");
-        }
-    }
-
-    function devUnlock() {
-        if(confirm("Réinitialiser la progression ?")) {
-            localStorage.removeItem('noel_solved');
-            alert("Progression réinitialisée !");
-        }
-    }
-
-    function changeLevel(dir) {
-        currentLevel = (currentLevel + dir + 3) % 3;
-        renderQuestionsList();
-    }
 </script>
 </body>
 </html>
