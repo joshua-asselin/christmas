@@ -1,1 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Défis de Noël - Avantages</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@300;400;600&display=swap');
 
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            background-image: url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
+            background-size: cover; background-position: center;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container { position: relative; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; }
+
+        .parchemin-img {
+            height: 98vh; width: 82vw; max-width: 1100px; object-fit: fill; 
+            filter: drop-shadow(0px 20px 40px rgba(0,0,0,0.6));
+            opacity: 0; /* Caché pour laisser voir l'image de l'avantage */
+        }
+
+        .scroll-box {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 55%; height: 62%; overflow: hidden; padding: 10px;
+            text-align: center; font-family: 'Cinzel', serif; z-index: 5;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            font-size: 2.2rem; color: #800c19; cursor: pointer;
+            background: rgba(255, 252, 245, 0.85); border-radius: 50%;
+            width: 52px; height: 52px; display: flex; justify-content: center; align-items: center;
+            z-index: 10; border: 2px solid #800c19; user-select: none;
+        }
+        .arrow-left { left: 4vw; } .arrow-right { right: 4vw; }
+
+        .titre-or {
+            color: #d4a017; font-size: 2.2rem; font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin-bottom: 10px;
+        }
+
+        .btn-question {
+            display: block; width: 80%; max-width: 360px; margin: 10px auto; padding: 12px 18px;
+            background: linear-gradient(180deg, #fceecb 0%, #e8d098 100%) !important; 
+            color: #3d240b; border: 1.5px solid #a3723f; border-radius: 12px; font-size: 0.95rem; font-weight: 600;
+            font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); box-sizing: border-box;
+        }
+        .btn-question:hover { transform: translateY(-2px) scale(1.02); }
+        .btn-silver { border-color: #999; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="nav-arrow arrow-left" onclick="moveAvantage(-1)">❮</div>
+    <div class="nav-arrow arrow-right" onclick="moveAvantage(1)">❯</div>
+
+    <img class="parchemin-img" src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png">
+    
+    <div class="scroll-box">
+        <h1 id="avantage-title" class="titre-or">AVANTAGE 1</h1>
+        <img id="avantage-scroll-img" src="https://i.postimg.cc/mrYm0SXf/Capture-d-e-cran-le-2026-02-09-a-17-25-24-removebg-preview.png" style="width: 100%; max-width: 450px; border-radius: 8px;">
+        <button class="btn-question btn-silver" style="margin-top:15px;" onclick="window.location.href='index.html'">🏠 MENU PRINCIPAL</button>
+    </div>
+</div>
+
+<script>
+    let currentAvantage = 1;
+
+    function moveAvantage(dir) {
+        currentAvantage = (currentAvantage + dir - 1 + 20) % 20 + 1;
+        document.getElementById('avantage-title').innerText = "AVANTAGE " + currentAvantage;
+    }
+</script>
+</body>
+</html>
