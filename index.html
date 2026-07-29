@@ -144,13 +144,51 @@
         .btn-gold { border-color: #d4a017; }
         .btn-red { border-color: #b30000; }
 
+        /* --- ÉCRITURE DE LA LETTRE PLUS GROSSE --- */
         .lettre-ancienne {
             font-family: 'Great Vibes', cursive;
-            font-size: 1.35rem; line-height: 1.25; color: #1a0f07;
+            font-size: 1.85rem; line-height: 1.35; color: #1a0f07;
             text-shadow: 0.5px 0.5px 1px rgba(20, 10, 5, 0.3);
-            max-width: 80%; margin: 5px auto; padding: 0;
+            max-width: 85%; margin: 5px auto 15px auto; padding: 0;
             white-space: pre-wrap; word-wrap: break-word; text-align: center;
-            overflow: hidden; max-height: 42vh;
+            overflow: hidden; max-height: 38vh; font-weight: 600;
+        }
+
+        /* --- 3 BOUTONS ANIMÉS DE NOËL CÔTE À CÔTE --- */
+        .letter-buttons-row {
+            display: flex; justify-content: center; align-items: center;
+            gap: 10px; width: 95%; max-width: 480px; margin-top: 10px;
+        }
+
+        .btn-christmas-action {
+            flex: 1; padding: 10px 8px; border-radius: 14px; font-size: 0.82rem; font-weight: 700;
+            font-family: 'Poppins', sans-serif; cursor: pointer; border: 2px solid transparent;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.25); transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            animation: christmasPulse 3s infinite ease-in-out;
+        }
+
+        .btn-christmas-green {
+            background: linear-gradient(135deg, #1b4d24, #2d5a27); color: #ffffff;
+            border-color: #82e0aa; animation-delay: 0s;
+        }
+        .btn-christmas-gold {
+            background: linear-gradient(135deg, #d4a017, #f1c40f); color: #1a0f07;
+            border-color: #ffffff; animation-delay: 1s;
+        }
+        .btn-christmas-silver {
+            background: linear-gradient(135deg, #7f8c8d, #bdc3c7); color: #111;
+            border-color: #ffffff; animation-delay: 2s;
+        }
+
+        .btn-christmas-action:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+        }
+
+        @keyframes christmasPulse {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.03); filter: brightness(1.15); }
         }
 
         #reply-modal-overlay {
@@ -235,17 +273,20 @@
                 <button class="btn-question btn-silver" onclick="window.location.href='Avantage.html'">✨ AVANTAGES</button>
                 <button id="btn-admin-menu" class="btn-question btn-gold" style="display:none;" onclick="showAdminUserList()">⚙️ ADMINISTRATEUR</button>
                 <button class="btn-question btn-gold" onclick="showUserLetter()">✉️ MA LETTRE DE NOËL</button>
+                
+                <button class="btn-question btn-red" style="margin-top: 15px;" onclick="returnToLogin()">🔒 Se déconnecter / Connexion Google</button>
             </div>
 
             <div id="view-user-letter" class="view-section" onclick="launchConfetti(event)">
-                <h1 style="font-family:'Great Vibes', cursive; font-size:2.2rem; color:#800c19; margin:0 0 5px 0;">Lettre de Noël</h1>
+                <h1 style="font-family:'Great Vibes', cursive; font-size:2.4rem; color:#800c19; margin:0 0 5px 0;">Lettre de Noël</h1>
                 
                 <div id="user-letter-content" class="lettre-ancienne">Chargement...</div>
                 
-                <button id="btn-open-reply-modal" class="btn-question btn-green" style="margin-top:10px; padding:8px 14px; font-size:0.85rem;" onclick="openReplyModal(event)">✉️ Répondre à la lettre</button>
-                <button id="btn-return-login" class="btn-question btn-gold" style="display:none; margin-top:5px; padding:8px 14px; font-size:0.85rem;" onclick="returnToLogin()">🔒 Revenir à la connexion Google</button>
-
-                <button class="btn-question btn-silver" style="margin-top:6px; padding:8px 14px; font-size:0.85rem;" onclick="backToMain()">RETOUR</button>
+                <div class="letter-buttons-row">
+                    <button class="btn-christmas-action btn-christmas-green" onclick="openReplyModal(event)">✉️ Répondre</button>
+                    <button class="btn-christmas-action btn-christmas-gold" onclick="returnToLogin()">🔒 Connexion</button>
+                    <button class="btn-christmas-action btn-christmas-silver" onclick="backToMain()">⬅️ Retour</button>
+                </div>
             </div>
 
             <div id="view-admin-list" class="view-section">
@@ -308,7 +349,9 @@
       window.location.reload();
     }
 
-    function returnToLogin() { window.location.reload(); }
+    function returnToLogin() {
+      logout();
+    }
 
     function handleSession(session) {
       const overlay = document.getElementById('login-overlay');
@@ -512,12 +555,6 @@
             displayBox.innerText = data.letter_text;
         } else {
             displayBox.innerText = "Hop hop hop !\nTa lettre de Noël est en préparation par le Père Noël...\n\nReviens très bientôt ! 🎄";
-        }
-
-        if (isBypassUser) {
-            document.getElementById('btn-return-login').style.display = 'block';
-        } else {
-            document.getElementById('btn-return-login').style.display = 'none';
         }
 
         switchView('view-user-letter');
