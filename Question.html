@@ -1,1 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Défis de Noël - Questions</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@300;400;600&display=swap');
 
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            background-image: url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
+            background-size: cover; background-position: center;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container { position: relative; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; }
+
+        .parchemin-img {
+            height: 98vh; width: 82vw; max-width: 1100px; object-fit: fill; 
+            filter: drop-shadow(0px 20px 40px rgba(0,0,0,0.6));
+        }
+
+        .scroll-box {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 55%; height: 62%; overflow-y: auto; padding: 10px 20px;
+            text-align: center; font-family: 'Cinzel', serif; z-index: 5;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .scroll-box::-webkit-scrollbar { display: none; }
+
+        .nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            font-size: 2.2rem; color: #800c19; cursor: pointer;
+            background: rgba(255, 252, 245, 0.85); border-radius: 50%;
+            width: 52px; height: 52px; display: flex; justify-content: center; align-items: center;
+            z-index: 10; border: 2px solid #800c19; user-select: none;
+        }
+        .arrow-left { left: 4vw; } .arrow-right { right: 4vw; }
+
+        h1 { font-size: 2.1rem; margin-bottom: 20px; text-shadow: 1px 1px 0px rgba(255,255,255,0.8); }
+
+        .btn-question {
+            display: block; width: 80%; max-width: 360px; margin: 10px auto; padding: 12px 18px;
+            background: linear-gradient(180deg, #fceecb 0%, #e8d098 100%) !important; 
+            color: #3d240b; border: 1.5px solid #a3723f; border-radius: 12px; font-size: 0.95rem; font-weight: 600;
+            font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); box-sizing: border-box;
+        }
+        .btn-question:hover { transform: translateY(-2px) scale(1.02); }
+
+        .btn-silver { border-color: #999; }
+        .btn-green { border-color: #2d5a27; }
+        .btn-gold { border-color: #d4a017; }
+        .btn-red { border-color: #b30000; }
+
+        .view-section { display: none; flex-direction: column; align-items: center; opacity: 0; width: 100%; }
+        .active-view { display: flex; opacity: 1; }
+
+        #question-view {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            justify-content: center; align-items: center; z-index: 20;
+        }
+        .question-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 50%; text-align: center; font-family: 'Cinzel', serif; color: #3d240b;
+        }
+        .answer-input { 
+            padding: 10px 16px; width: 85%; border-radius: 10px; border: 1.5px solid #8e5a31; 
+            margin: 10px 0; font-size: 0.95rem; text-align: center; background: #fffdf8;
+            font-family: 'Poppins', sans-serif; box-sizing: border-box;
+        }
+
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 80%; margin: 0 auto; }
+        .btn-action {
+            width: 100%; padding: 10px 0; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif; font-size: 0.9rem;
+        }
+        .btn-check { background: #2d5a27; color: white; }
+        .btn-back { background: #900c1c; color: white; }
+
+        .theme-vert h1 { color: #2d5a27; }
+        .theme-or h1 { color: #d4a017; }
+        .theme-rouge h1 { color: #900c1c; }
+        .theme-menu h1 { color: #555555; }
+    </style>
+</head>
+<body class="theme-menu">
+
+<div class="container">
+    <div id="list-view">
+        <div id="nav-arrows" style="display: none;">
+            <div class="nav-arrow arrow-left" id="btn-arrow-L">❮</div>
+            <div class="nav-arrow arrow-right" id="btn-arrow-R">❯</div>
+        </div>
+
+        <img id="main-scroll-bg" src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
+        
+        <div class="scroll-box">
+            
+            <div id="view-submenu-questions" class="view-section active-view">
+                <h1>CHOISIR UN NIVEAU</h1>
+                <button class="btn-question btn-green" onclick="goToLevel(0)">🟢 DÉFIS FACILES</button>
+                <button class="btn-question btn-gold" onclick="goToLevel(1)">🟡 DÉFIS MOYENS</button>
+                <button class="btn-question btn-red" onclick="goToLevel(2)">🔴 DÉFIS DIFFICILES</button>
+                <button class="btn-question btn-silver" onclick="devUnlock()">🔓 DEV UNLOCK</button>
+                <button class="btn-question btn-silver" style="margin-top:10px;" onclick="window.location.href='index.html'">🏠 MENU PRINCIPAL</button>
+            </div>
+
+            <div id="view-questions-list" class="view-section">
+                <h1 id="level-title">📜 LISTE</h1>
+                <div id="questions-container-inner" style="width: 100%;"></div>
+                <button class="btn-question btn-silver" style="margin-top:10px;" onclick="switchView('view-submenu-questions')">⬅️ CHOIX NIVEAU</button>
+                <button class="btn-question btn-silver" style="margin-top:5px;" onclick="window.location.href='index.html'">🏠 MENU PRINCIPAL</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="question-view">
+        <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
+        <div class="question-container">
+            <h2 id="current-q-text" style="font-size: 1.2rem; line-height: 1.3;">...</h2>
+            <div id="hint-text" style="visibility: hidden;">REPONSE ICI</div>
+            <input type="text" id="user-ans-input" class="answer-input" placeholder="Ta réponse..." autocomplete="off">
+            <div class="action-grid">
+                <button class="btn-action btn-check" onclick="checkAnswer()">Valider</button>
+                <button class="btn-action btn-back" onclick="hideQuestion()">Retour</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const allData = []; // Remplis ton tableau de questions/réponses ici si besoin
+    let currentLevel = 0, activeIndex = -1;
+
+    const levels = [
+        { name: "DÉFIS FACILES", class: "theme-vert", btnClass: "btn-green", start: 0 },
+        { name: "DÉFIS MOYENS", class: "theme-or", btnClass: "btn-gold", start: 100 },
+        { name: "DÉFIS DIFFICILES", class: "theme-rouge", btnClass: "btn-red", start: 200 }
+    ];
+
+    function normalize(str) {
+        if(!str) return "";
+        return str.toString().toLowerCase()
+            .replace(/[éèêë]/g, 'e').replace(/[àâ]/g, 'a').replace(/[îï]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ûù]/g, 'u')
+            .replace(/^(le |la |les |l\'|un |une |des )/, "").replace(/\s/g, "").trim();
+    }
+
+    function switchView(viewId) {
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active-view'));
+        document.getElementById(viewId).classList.add('active-view');
+        
+        const nav = document.getElementById('nav-arrows');
+        if (viewId === 'view-questions-list') {
+            nav.style.display = 'block';
+            document.getElementById('btn-arrow-L').onclick = () => changeLevel(-1);
+            document.getElementById('btn-arrow-R').onclick = () => changeLevel(1);
+        } else {
+            nav.style.display = 'none';
+        }
+    }
+
+    function goToLevel(idx) { currentLevel = idx; renderQuestionsList(); switchView('view-questions-list'); }
+
+    function renderQuestionsList() {
+        const listInner = document.getElementById('questions-container-inner');
+        const level = levels[currentLevel];
+        document.getElementById('level-title').innerText = "📜 " + level.name;
+        document.body.className = level.class;
+        listInner.innerHTML = "";
+        
+        const solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
+
+        for (let i = 1; i <= 100; i++) {
+            const qID = level.start + i - 1;
+            const isDone = solved.includes(qID);
+            let btn = document.createElement('button');
+            btn.className = `btn-question ${level.btnClass} ${isDone ? 'completed' : ''}`;
+            btn.innerText = isDone ? `DÉFI RÉUSSI` : `QUESTION ${i}`;
+            btn.onclick = () => showQuestion(qID);
+            listInner.appendChild(btn);
+        }
+    }
+
+    function showQuestion(id) {
+        document.getElementById('hint-text').style.visibility = "hidden";
+        activeIndex = id;
+        document.getElementById('current-q-text').innerText = allData[id] ? allData[id][0] : "Question " + (id + 1);
+        document.getElementById('user-ans-input').value = "";
+        document.getElementById('list-view').style.display = 'none';
+        document.getElementById('question-view').style.display = 'flex';
+        document.getElementById('user-ans-input').focus();
+    }
+
+    function hideQuestion() {
+        document.getElementById('question-view').style.display = 'none';
+        document.getElementById('list-view').style.display = 'block';
+        renderQuestionsList();
+    }
+
+    function checkAnswer() {
+        const userAns = normalize(document.getElementById('user-ans-input').value);
+        const correctAns = normalize(allData[activeIndex] ? allData[activeIndex][1] : "");
+        if (userAns !== "" && (userAns === correctAns || correctAns === "")) {
+            alert("Bravo ! ✨");
+            let solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
+            if (!solved.includes(activeIndex)) solved.push(activeIndex);
+            localStorage.setItem('noel_solved', JSON.stringify(solved));
+            hideQuestion();
+        } else {
+            alert("Oh non ! ❄️");
+        }
+    }
+
+    function devUnlock() {
+        if(confirm("Réinitialiser la progression ?")) {
+            localStorage.removeItem('noel_solved');
+            alert("Progression réinitialisée !");
+        }
+    }
+
+    function changeLevel(dir) {
+        currentLevel = (currentLevel + dir + 3) % 3;
+        renderQuestionsList();
+    }
+</script>
+</body>
+</html>
