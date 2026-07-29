@@ -21,7 +21,7 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* --- ÉCRAN DE CONNEXION : NOUVEAU DESIGN BLANC TRANSPARENT ET ÉLÉMENTS FLOTTANTS --- */
+        /* --- ÉCRAN DE CONNEXION : DESIGN BLANC TRANSPARENT ET ÉLÉMENTS FLOTTANTS --- */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: radial-gradient(circle at center, rgba(15, 20, 30, 0.75) 0%, rgba(5, 8, 15, 0.92) 100%);
@@ -170,7 +170,7 @@
             text-shadow: 0.5px 0.5px 1px rgba(20, 10, 5, 0.4);
             max-width: 90%; margin: 0 auto; padding: 5px;
             white-space: pre-wrap; word-wrap: break-word; text-align: center;
-            overflow: hidden; /* Empêche tout scroll de texte */
+            overflow: hidden;
         }
 
         /* FENÊTRE POPUP RÉPONSE À LA LETTRE */
@@ -309,7 +309,6 @@
                 <div id="user-letter-content" class="lettre-ancienne">Chargement...</div>
                 
                 <button id="btn-open-reply-modal" class="btn-question btn-green" style="margin-top:15px;" onclick="openReplyModal(event)">✉️ Répondre à la lettre</button>
-
                 <button id="btn-return-login" class="btn-question btn-gold" style="display:none; margin-top:8px;" onclick="returnToLogin()">🔒 Revenir à la connexion Google</button>
 
                 <button class="btn-question btn-silver" style="margin-top:10px;" onclick="backToMain()">RETOUR</button>
@@ -319,7 +318,6 @@
                 <h1 class="titre-or">⚙️ ADMINISTRATEUR</h1>
                 
                 <button class="btn-question btn-gold" style="border: 2px solid #ffd700;" onclick="triggerMegaConfettiTest()">🎉 TESTER MÉGA CONFETTIS</button>
-                
                 <button class="btn-question btn-green" style="margin-bottom:12px;" onclick="addNewUserPrompt()">➕ ÉCRIRE À UN NOUVEL EMAIL</button>
                 
                 <div id="admin-user-buttons-container" style="width: 100%;"></div>
@@ -360,6 +358,7 @@
 </div>
 
 <script>
+    // TES ADRESSES STRICTES
     const ADMIN_EMAILS = ["asselinj24@emm.qc.ca", "josh.asselin15@gmail.com"];
     let currentUserEmail = "";
     let isBypassUser = false;
@@ -449,8 +448,14 @@
         }
     }
 
-    /* --- PANNEAU ADMIN --- */
+    /* --- PANNEAU ADMIN AVEC SÉCURITÉ RENFORCÉE --- */
     function showAdminUserList() {
+        // VÉRIFICATION DE SÉCURITÉ ABSOLUE
+        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) {
+            alert("⛔ Accès refusé : Seul l'administrateur principal peut accéder à cette section.");
+            return;
+        }
+
         const container = document.getElementById('admin-user-buttons-container');
         container.innerHTML = "";
         
@@ -468,6 +473,7 @@
     }
 
     function addNewUserPrompt() {
+        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) return;
         const email = prompt("Entre l'adresse courriel de la personne :");
         if (!email || !email.includes('@')) return alert("Adresse email invalide !");
         
@@ -477,6 +483,7 @@
     }
 
     function openUserEditor(email, name) {
+        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) return;
         activeEditingEmail = email;
         document.getElementById('admin-editing-title').innerText = "Lettre pour : " + name;
 
@@ -494,6 +501,7 @@
     }
 
     function saveSelectedUserLetter() {
+        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) return;
         if (!activeEditingEmail) return;
 
         const letterText = document.getElementById('admin-letter-text').value;
@@ -512,14 +520,14 @@
         showAdminUserList();
     }
 
-    /* --- BOUTON DEMANDÉ : TEST DES MÉGA CONFETTIS DANS L'ADMIN --- */
+    /* --- TEST CONFETTIS DANS L'ADMIN --- */
     function triggerMegaConfettiTest() {
         if (typeof confetti === 'function') {
             confetti({
                 particleCount: 120,
                 spread: 120,
                 startVelocity: 70,
-                scalar: 3.5, // Méga taille !
+                scalar: 3.5,
                 origin: { y: 0.8 },
                 colors: ['#ffd700', '#b30000', '#2d5a27', '#ffffff']
             });
