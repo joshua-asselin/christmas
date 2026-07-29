@@ -21,7 +21,6 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* --- ÉCRAN DE CONNEXION : DESIGN BLANC TRANSPARENT ET ÉLÉMENTS FLOTTANTS --- */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: radial-gradient(circle at center, rgba(15, 20, 30, 0.75) 0%, rgba(5, 8, 15, 0.92) 100%);
@@ -30,7 +29,6 @@
             overflow: hidden;
         }
 
-        /* Animation d'arrière-plan avec cadeaux et étoiles */
         .floating-bg-item {
             position: absolute; font-size: 2.2rem; pointer-events: none; opacity: 0.6;
             animation: floatAnim 8s infinite ease-in-out;
@@ -92,7 +90,6 @@
             margin-bottom: 10px; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* --- EN-TÊTE PROFIL UTILISATEUR --- */
         #user-header {
             position: absolute; top: 20px; right: 25px; display: none;
             align-items: center; gap: 12px; background: rgba(20, 25, 35, 0.85);
@@ -112,7 +109,6 @@
             border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.8rem;
         }
 
-        /* --- PARCHEMIN ET UI TAILLE PARFAITE --- */
         .container { position: relative; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; }
 
         .parchemin-img {
@@ -161,9 +157,6 @@
         .btn-red { border-color: #b30000; }
         .btn-red:hover { background: #b30000 !important; color: white; }
 
-        .btn-question.completed { opacity: 0.6; background: #cbb290 !important; cursor: default; }
-
-        /* TEXTE DE LA LETTRE : NON SCROLLABLE */
         .lettre-ancienne {
             font-family: 'Great Vibes', cursive;
             font-size: 2rem; line-height: 1.35; color: #1a0f07;
@@ -173,7 +166,6 @@
             overflow: hidden;
         }
 
-        /* FENÊTRE POPUP RÉPONSE À LA LETTRE */
         #reply-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
@@ -337,7 +329,8 @@
                 <div id="admin-view-reply" style="font-family:'Poppins', sans-serif; font-size:0.85rem; color:#800c19; margin:8px 0; font-style:italic; font-weight:600;"></div>
 
                 <button class="btn-question btn-green" onclick="saveSelectedUserLetter()">💾 ENREGISTRER</button>
-                <button class="btn-question btn-silver" onclick="switchView('view-admin-list')">RETOUR À LA LISTE</button>
+                <button class="btn-question btn-red" style="margin-top:5px;" onclick="deleteUserLetter()">🗑️ SUPPRIMER CETTE LETTRE</button>
+                <button class="btn-question btn-silver" style="margin-top:5px;" onclick="switchView('view-admin-list')">RETOUR À LA LISTE</button>
             </div>
 
         </div>
@@ -358,7 +351,6 @@
 </div>
 
 <script>
-    // TES ADRESSES STRICTES
     const ADMIN_EMAILS = ["asselinj24@emm.qc.ca", "josh.asselin15@gmail.com"];
     let currentUserEmail = "";
     let isBypassUser = false;
@@ -423,24 +415,25 @@
         }
     }
 
-    /* --- ACCÈS PAR CODE (BYPASS) --- */
-    function accessByCode() {
+    async function accessByCode() {
         const codeInput = document.getElementById('bypass-code-input').value.trim();
         if (!codeInput) return alert("Entre ton code !");
+        if (!supabaseClient) return alert("Erreur Supabase");
 
-        let codes = JSON.parse(localStorage.getItem('noel_codes') || "{}");
-        let foundEmail = null;
+        const { data, error } = await supabaseClient
+            .from('user_letters')
+            .select('email')
+            .ilike('bypass_code', codeInput)
+            .maybeSingle();
 
-        for (let email in codes) {
-            if (codes[email].toLowerCase() === codeInput.toLowerCase()) {
-                foundEmail = email;
-                break;
-            }
+        if (error) {
+            console.error(error);
+            return alert("Erreur lors de la vérification du code.");
         }
 
-        if (foundEmail) {
+        if (data && data.email) {
             isBypassUser = true;
-            currentUserEmail = foundEmail;
+            currentUserEmail = data.email;
             document.getElementById('login-overlay').style.display = 'none';
             showUserLetter();
         } else {
@@ -448,9 +441,7 @@
         }
     }
 
-    /* --- PANNEAU ADMIN AVEC SÉCURITÉ RENFORCÉE --- */
     function showAdminUserList() {
-        // VÉRIFICATION DE SÉCURITÉ ABSOLUE
         if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) {
             alert("⛔ Accès refusé : Seul l'administrateur principal peut accéder à cette section.");
             return;
@@ -482,66 +473,93 @@
         showAdminUserList();
     }
 
-    function openUserEditor(email, name) {
+    async function openUserEditor(email, name) {
         if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) return;
         activeEditingEmail = email;
         document.getElementById('admin-editing-title').innerText = "Lettre pour : " + name;
 
-        let letters = JSON.parse(localStorage.getItem('noel_letters') || "{}");
-        let codes = JSON.parse(localStorage.getItem('noel_codes') || "{}");
-        let replies = JSON.parse(localStorage.getItem('noel_replies') || "{}");
+        const { data } = await supabaseClient
+            .from('user_letters')
+            .select('*')
+            .eq('email', email)
+            .maybeSingle();
 
-        document.getElementById('admin-letter-text').value = letters[email] || "";
-        document.getElementById('admin-code-input').value = codes[email] || "";
+        document.getElementById('admin-letter-text').value = data ? (data.letter_text || "") : "";
+        document.getElementById('admin-code-input').value = data ? (data.bypass_code || "") : "";
         
-        const replyText = replies[email];
+        const replyText = data ? data.user_reply : null;
         document.getElementById('admin-view-reply').innerText = replyText ? "📩 Réponse reçue : " + replyText : "Aucune réponse reçue.";
 
         switchView('view-admin-edit-user');
     }
 
-    function saveSelectedUserLetter() {
+    async function saveSelectedUserLetter() {
         if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) return;
         if (!activeEditingEmail) return;
 
         const letterText = document.getElementById('admin-letter-text').value;
         const codeText = document.getElementById('admin-code-input').value.trim();
 
-        let letters = JSON.parse(localStorage.getItem('noel_letters') || "{}");
-        let codes = JSON.parse(localStorage.getItem('noel_codes') || "{}");
+        const { error } = await supabaseClient
+            .from('user_letters')
+            .upsert({
+                email: activeEditingEmail,
+                letter_text: letterText,
+                bypass_code: codeText,
+                updated_at: new Date()
+            }, { onConflict: 'email' });
 
-        letters[activeEditingEmail] = letterText;
-        codes[activeEditingEmail] = codeText;
-
-        localStorage.setItem('noel_letters', JSON.stringify(letters));
-        localStorage.setItem('noel_codes', JSON.stringify(codes));
-
-        alert("Modifications enregistrées !");
-        showAdminUserList();
+        if (error) {
+            alert("Erreur d'enregistrement : " + error.message);
+        } else {
+            alert("Modifications enregistrées sur Supabase !");
+            showAdminUserList();
+        }
     }
 
-    /* --- TEST CONFETTIS DANS L'ADMIN --- */
+    /* --- NOUVELLE FONCTION DE SUPPRESSION --- */
+    async function deleteUserLetter() {
+        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail.toLowerCase())) return;
+        if (!activeEditingEmail) return;
+
+        if (confirm("Es-tu sûr de vouloir supprimer la lettre et le code de cet utilisateur ?")) {
+            const { error } = await supabaseClient
+                .from('user_letters')
+                .delete()
+                .eq('email', activeEditingEmail);
+
+            if (error) {
+                alert("Erreur de suppression : " + error.message);
+            } else {
+                alert("La lettre a été supprimée de Supabase !");
+                document.getElementById('admin-letter-text').value = "";
+                document.getElementById('admin-code-input').value = "";
+                showAdminUserList();
+            }
+        }
+    }
+
     function triggerMegaConfettiTest() {
         if (typeof confetti === 'function') {
             confetti({
-                particleCount: 120,
-                spread: 120,
-                startVelocity: 70,
-                scalar: 3.5,
-                origin: { y: 0.8 },
+                particleCount: 120, spread: 120, startVelocity: 70, scalar: 3.5, origin: { y: 0.8 },
                 colors: ['#ffd700', '#b30000', '#2d5a27', '#ffffff']
             });
         }
     }
 
-    /* --- VUE LETTRE & POPUP DE RÉPONSE --- */
-    function showUserLetter() {
-        let letters = JSON.parse(localStorage.getItem('noel_letters') || "{}");
-        const myLetter = letters[currentUserEmail];
+    async function showUserLetter() {
         const displayBox = document.getElementById('user-letter-content');
+        displayBox.innerText = "Chargement depuis le Pôle Nord...";
 
-        if (myLetter && myLetter.trim() !== "") {
-            displayBox.innerText = myLetter;
+        const { data } = await supabaseClient
+            .from('user_letters')
+            .select('letter_text')
+            .eq('email', currentUserEmail)
+            .maybeSingle();
+
+        if (data && data.letter_text && data.letter_text.trim() !== "") {
+            displayBox.innerText = data.letter_text;
         } else {
             displayBox.innerText = "Hop hop hop !\nTa lettre de Noël est en préparation par le Père Noël...\n\nReviens très bientôt ! 🎄";
         }
@@ -561,8 +579,7 @@
         if (isBypassUser) {
             return alert("Tu es connecté via un code. Pour répondre au Père Noël, connecte-toi avec Google !");
         }
-        let replies = JSON.parse(localStorage.getItem('noel_replies') || "{}");
-        document.getElementById('modal-reply-input').value = replies[currentUserEmail] || "";
+        document.getElementById('modal-reply-input').value = "";
         document.getElementById('reply-modal-overlay').style.display = 'flex';
     }
 
@@ -570,16 +587,24 @@
         document.getElementById('reply-modal-overlay').style.display = 'none';
     }
 
-    function sendReplyFromModal() {
+    async function sendReplyFromModal() {
         const text = document.getElementById('modal-reply-input').value.trim();
         if (!text) return alert("Écris un message avant d'envoyer !");
 
-        let replies = JSON.parse(localStorage.getItem('noel_replies') || "{}");
-        replies[currentUserEmail] = text;
-        localStorage.setItem('noel_replies', JSON.stringify(replies));
+        const { error } = await supabaseClient
+            .from('user_letters')
+            .upsert({
+                email: currentUserEmail,
+                user_reply: text,
+                updated_at: new Date()
+            }, { onConflict: 'email' });
 
-        alert("Ta réponse a bien été envoyée au Père Noël ! 🎅✨");
-        closeReplyModal();
+        if (error) {
+            alert("Erreur d'envoi : " + error.message);
+        } else {
+            alert("Ta réponse a bien été envoyée au Père Noël ! 🎅✨");
+            closeReplyModal();
+        }
     }
 
     function checkChristmasConfetti() {
