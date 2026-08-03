@@ -6,7 +6,6 @@
     <title>Les 300 Défis de Noël</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
@@ -131,7 +130,7 @@
         }
 
         .btn-question {
-            display: block; width: 80%; max-width: 360px; margin: 10px auto; padding: 12px 18px;
+            display: block; width: 80%; max-width: 360px; margin: 8px auto; padding: 10px 18px;
             background: linear-gradient(180deg, #fceecb 0%, #e8d098 100%) !important; 
             color: #3d240b; border: 1.5px solid #a3723f; border-radius: 12px; font-size: 0.95rem; font-weight: 600;
             font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.3s ease;
@@ -144,7 +143,6 @@
         .btn-gold { border-color: #d4a017; }
         .btn-red { border-color: #b30000; }
 
-        /* --- ÉCRITURE DE LA LETTRE PLUS GROSSE --- */
         .lettre-ancienne {
             font-family: 'Great Vibes', cursive;
             font-size: 1.85rem; line-height: 1.35; color: #1a0f07;
@@ -154,7 +152,6 @@
             overflow: hidden; max-height: 38vh; font-weight: 600;
         }
 
-        /* --- 3 BOUTONS ANIMÉS DE NOËL CÔTE À CÔTE --- */
         .letter-buttons-row {
             display: flex; justify-content: center; align-items: center;
             gap: 10px; width: 95%; max-width: 480px; margin-top: 10px;
@@ -271,10 +268,11 @@
                 <h1>MENU PRINCIPAL</h1>
                 <button class="btn-question btn-silver" onclick="window.location.href='Question.html'">🎁 QUESTIONS</button>
                 <button class="btn-question btn-silver" onclick="window.location.href='Avantage.html'">✨ AVANTAGES</button>
+                <button class="btn-question btn-silver" onclick="window.location.href='calendrier.html'">📅 CALENDRIER DE L'AVENT</button>
                 <button id="btn-admin-menu" class="btn-question btn-gold" style="display:none;" onclick="showAdminUserList()">⚙️ ADMINISTRATEUR</button>
                 <button class="btn-question btn-gold" onclick="showUserLetter()">✉️ MA LETTRE DE NOËL</button>
                 
-                <button class="btn-question btn-red" style="margin-top: 15px;" onclick="returnToLogin()">🔒 Se déconnecter / Connexion Google</button>
+                <button class="btn-question btn-red" style="margin-top: 10px;" onclick="returnToLogin()">🔒 Se déconnecter / Connexion Google</button>
             </div>
 
             <div id="view-user-letter" class="view-section" onclick="launchConfetti(event)">
