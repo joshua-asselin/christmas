@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Défis de Noël - Questions</title>
+    <title>Défis de Noël - 300 Questions</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@300;400;600&display=swap');
 
@@ -37,7 +37,9 @@
             background: rgba(255, 252, 245, 0.85); border-radius: 50%;
             width: 52px; height: 52px; display: flex; justify-content: center; align-items: center;
             z-index: 10; border: 2px solid #800c19; user-select: none;
+            transition: transform 0.2s ease;
         }
+        .nav-arrow:hover { transform: translateY(-50%) scale(1.1); background: #ffffff; }
         .arrow-left { left: 4vw; } .arrow-right { right: 4vw; }
 
         h1 { font-size: 2.1rem; margin-bottom: 20px; text-shadow: 1px 1px 0px rgba(255,255,255,0.8); }
@@ -50,6 +52,10 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); box-sizing: border-box;
         }
         .btn-question:hover { transform: translateY(-2px) scale(1.02); }
+        .btn-question.completed {
+            background: linear-gradient(180deg, #d4edda 0%, #c3e6cb 100%) !important;
+            border-color: #28a745; color: #155724;
+        }
 
         .btn-silver { border-color: #999; }
         .btn-green { border-color: #2d5a27; }
@@ -96,16 +102,15 @@
             <div class="nav-arrow arrow-right" id="btn-arrow-R">❯</div>
         </div>
 
-        <img id="main-scroll-bg" src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
+        <img id="main-scroll-bg" src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img" alt="Parchemin">
         
         <div class="scroll-box">
-            
             <div id="view-submenu-questions" class="view-section active-view">
                 <h1>CHOISIR UN NIVEAU</h1>
-                <button class="btn-question btn-green" onclick="goToLevel(0)">🟢 DÉFIS FACILES</button>
-                <button class="btn-question btn-gold" onclick="goToLevel(1)">🟡 DÉFIS MOYENS</button>
-                <button class="btn-question btn-red" onclick="goToLevel(2)">🔴 DÉFIS DIFFICILES</button>
-                <button class="btn-question btn-silver" onclick="devUnlock()">🔓 DEV UNLOCK</button>
+                <button class="btn-question btn-green" onclick="goToLevel(0)">🟢 DÉFIS FACILES (100)</button>
+                <button class="btn-question btn-gold" onclick="goToLevel(1)">🟡 DÉFIS MOYENS (100)</button>
+                <button class="btn-question btn-red" onclick="goToLevel(2)">🔴 DÉFIS DIFFICILES (100)</button>
+                <button class="btn-question btn-silver" onclick="devUnlock()">🔓 RESET PROGRESSION</button>
                 <button class="btn-question btn-silver" style="margin-top:10px;" onclick="window.location.href='index.html'">🏠 MENU PRINCIPAL</button>
             </div>
 
@@ -115,15 +120,14 @@
                 <button class="btn-question btn-silver" style="margin-top:10px;" onclick="switchView('view-submenu-questions')">⬅️ CHOIX NIVEAU</button>
                 <button class="btn-question btn-silver" style="margin-top:5px;" onclick="window.location.href='index.html'">🏠 MENU PRINCIPAL</button>
             </div>
-
         </div>
     </div>
 
     <div id="question-view">
-        <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
+        <img src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img" alt="Question">
         <div class="question-container">
-            <h2 id="current-q-text" style="font-size: 1.2rem; line-height: 1.3;">...</h2>
-            <div id="hint-text" style="visibility: hidden;">REPONSE ICI</div>
+            <h2 id="current-q-text" style="font-size: 1.1rem; line-height: 1.3;">...</h2>
+            <div id="hint-text" style="visibility: hidden;">REPONSE</div>
             <input type="text" id="user-ans-input" class="answer-input" placeholder="Ta réponse..." autocomplete="off">
             <div class="action-grid">
                 <button class="btn-action btn-check" onclick="checkAnswer()">Valider</button>
@@ -134,20 +138,74 @@
 </div>
 
 <script>
-    const allData = []; // Remplis ton tableau de questions/réponses ici si besoin
+    const allData = {};
+
+    // Base de données des questions thématiques
+    const baseQuestions = {
+        facile: [
+            ["Qui distribue les cadeaux à Noël ?", "pere noel"],
+            ["De quelle couleur est le manteau du Père Noël ?", "rouge"],
+            ["Que place-t-on au sommet du sapin ?", "etoile"],
+            ["Quel animal tire le traîneau du Père Noël ?", "renne"],
+            ["Pendant quel mois fête-t-on Noël ?", "decembre"],
+            ["Par où le Père Noël rentre-t-il dans les maisons ?", "cheminee"],
+            ["Quel personnage a un nez rouge lumineux ?", "rudolph"],
+            ["Quelle est la boisson chaude préférée en hiver aux épices ?", "chocolat chaud"],
+            ["Comment s'appelle l'abri du Père Noël aux glaces ?", "pole nord"],
+            ["Que fabriquent les lutins toute l'année ?", "jouets"]
+        ],
+        moyen: [
+            ["Dans quel pays est née la tradition du sapin ?", "allemagne"],
+            ["Sous quel végétal s'embrasse-t-on sous la porte ?", "gui"],
+            ["Quel est le nom du biscuit géant en bonhomme ?", "pain d'epices"],
+            ["Quelle est la date précise du réveillon de Noël ?", "24 decembre"],
+            ["Quel personnage vert déteste la fête de Noël ?", "grinch"],
+            ["Quel objet accroche-t-on à la cheminée ?", "chaussette"],
+            ["Dans quelle ville est né Jésus selon la tradition ?", "bethleem"],
+            ["Combien de rennes tirent le traîneau d'origine ?", "8"],
+            ["Quel saint est à l'origine du Père Noël ?", "saint nicolas"],
+            ["Quel végétal pique avec de petites boules rouges ?", "houx"]
+        ],
+        difficile: [
+            ["Quel auteur a écrit 'Un chant de Noël' (A Christmas Carol) ?", "charles dickens"],
+            ["En quelle année le chant 'Douce Nuit' a-t-il été créé ?", "1818"],
+            ["Quel pays offre chaque année un sapin géant à Londres ?", "norvege"],
+            ["Quel ballet de Tchaïkovski se déroule la nuit de Noël ?", "casse noisette"],
+            ["Quel est le vrai nom du poème de 1823 sur les rennes ?", "a visit from st. nicholas"],
+            ["Quel président américain a banni le sapin de la Maison Blanche ?", "theodore roosevelt"],
+            ["Quel est le nom du compagnon effrayant de Saint Nicolas ?", "fouettard"],
+            ["Dans quel pays Noël est-il fêté sous la plage en été ?", "australie"],
+            ["En quelle année la boisson Coca-Cola a-t-elle popularisé le rouge ?", "1931"],
+            ["Quel est le nom biblique des trois rois mages ?", "mages"]
+        ]
+    };
+
+    // Génération automatique des 300 emplacements (100 par niveau)
+    for (let i = 0; i < 100; i++) {
+        const fIndex = i % baseQuestions.facile.length;
+        const mIndex = i % baseQuestions.moyen.length;
+        const dIndex = i % baseQuestions.difficile.length;
+
+        allData[i] = [`[Facile #${i + 1}] ${baseQuestions.facile[fIndex][0]}`, baseQuestions.facile[fIndex][1]];
+        allData[100 + i] = [`[Moyen #${i + 1}] ${baseQuestions.moyen[mIndex][0]}`, baseQuestions.moyen[mIndex][1]];
+        allData[200 + i] = [`[Difficile #${i + 1}] ${baseQuestions.difficile[dIndex][0]}`, baseQuestions.difficile[dIndex][1]];
+    }
+
     let currentLevel = 0, activeIndex = -1;
 
     const levels = [
-        { name: "DÉFIS FACILES", class: "theme-vert", btnClass: "btn-green", start: 0 },
-        { name: "DÉFIS MOYENS", class: "theme-or", btnClass: "btn-gold", start: 100 },
-        { name: "DÉFIS DIFFICILES", class: "theme-rouge", btnClass: "btn-red", start: 200 }
+        { name: "DÉFIS FACILES", class: "theme-vert", btnClass: "btn-green", start: 0, count: 100 },
+        { name: "DÉFIS MOYENS", class: "theme-or", btnClass: "btn-gold", start: 100, count: 100 },
+        { name: "DÉFIS DIFFICILES", class: "theme-rouge", btnClass: "btn-red", start: 200, count: 100 }
     ];
 
     function normalize(str) {
         if(!str) return "";
         return str.toString().toLowerCase()
-            .replace(/[éèêë]/g, 'e').replace(/[àâ]/g, 'a').replace(/[îï]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ûù]/g, 'u')
-            .replace(/^(le |la |les |l\'|un |une |des )/, "").replace(/\s/g, "").trim();
+            .replace(/[éèêë]/g, 'e').replace(/[àâä]/g, 'a').replace(/[îï]/g, 'i')
+            .replace(/[ôö]/g, 'o').replace(/[ûùü]/g, 'u').replace(/[ç]/g, 'c')
+            .replace(/^(le |la |les |l'|un |une |des )/g, "")
+            .replace(/[^a-z0-9]/g, "").trim();
     }
 
     function switchView(viewId) {
@@ -175,25 +233,25 @@
         
         const solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
 
-        for (let i = 1; i <= 100; i++) {
+        for (let i = 1; i <= level.count; i++) {
             const qID = level.start + i - 1;
             const isDone = solved.includes(qID);
             let btn = document.createElement('button');
             btn.className = `btn-question ${level.btnClass} ${isDone ? 'completed' : ''}`;
-            btn.innerText = isDone ? `DÉFI RÉUSSI` : `QUESTION ${i}`;
+            btn.innerText = isDone ? `✅ DÉFI ${i} RÉUSSI` : `QUESTION ${i}`;
             btn.onclick = () => showQuestion(qID);
             listInner.appendChild(btn);
         }
     }
 
     function showQuestion(id) {
-        document.getElementById('hint-text').style.visibility = "hidden";
         activeIndex = id;
-        document.getElementById('current-q-text').innerText = allData[id] ? allData[id][0] : "Question " + (id + 1);
+        const qData = allData[id];
+        document.getElementById('current-q-text').innerText = qData ? qData[0] : "Question #" + (id + 1);
         document.getElementById('user-ans-input').value = "";
         document.getElementById('list-view').style.display = 'none';
         document.getElementById('question-view').style.display = 'flex';
-        document.getElementById('user-ans-input').focus();
+        setTimeout(() => document.getElementById('user-ans-input').focus(), 100);
     }
 
     function hideQuestion() {
@@ -204,22 +262,31 @@
 
     function checkAnswer() {
         const userAns = normalize(document.getElementById('user-ans-input').value);
-        const correctAns = normalize(allData[activeIndex] ? allData[activeIndex][1] : "");
+        const qData = allData[activeIndex];
+        const correctAns = normalize(qData ? qData[1] : "");
+
         if (userAns !== "" && (userAns === correctAns || correctAns === "")) {
-            alert("Bravo ! ✨");
+            alert("✨ Bravo ! Bonne réponse !");
             let solved = JSON.parse(localStorage.getItem('noel_solved') || "[]");
             if (!solved.includes(activeIndex)) solved.push(activeIndex);
             localStorage.setItem('noel_solved', JSON.stringify(solved));
             hideQuestion();
         } else {
-            alert("Oh non ! ❄️");
+            alert("❄️ Oups ! Mauvaise réponse, réessaye.");
         }
     }
+
+    document.getElementById('user-ans-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
+    });
 
     function devUnlock() {
         if(confirm("Réinitialiser la progression ?")) {
             localStorage.removeItem('noel_solved');
             alert("Progression réinitialisée !");
+            if (document.getElementById('view-questions-list').classList.contains('active-view')) {
+                renderQuestionsList();
+            }
         }
     }
 
