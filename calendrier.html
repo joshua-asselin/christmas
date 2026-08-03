@@ -9,203 +9,81 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body, html {
       margin: 0; padding: 0; min-height: 100vh;
       background: radial-gradient(circle at top center, #1b2838 0%, #0d131d 100%);
-      font-family: 'Poppins', sans-serif;
-      color: #ffffff;
-      display: flex; flex-direction: column; align-items: center;
-      padding: 20px;
+      font-family: 'Poppins', sans-serif; color: #ffffff;
+      display: flex; flex-direction: column; align-items: center; padding: 20px;
     }
-
-    /* En-tête */
     header {
       width: 100%; max-width: 950px;
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 25px; flex-wrap: wrap; gap: 15px;
     }
-
     .btn-nav-back {
       background: linear-gradient(135deg, #d4a017, #f1c40f);
       color: #1a0f07; border: none; padding: 10px 22px;
       border-radius: 30px; font-weight: 700; font-size: 0.9rem;
       cursor: pointer; transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(212, 160, 23, 0.4);
-      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 15px rgba(212, 160, 23, 0.4); text-decoration: none;
     }
-
-    .btn-nav-back:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(212, 160, 23, 0.6);
-    }
-
     h1.page-title {
-      font-family: 'Cinzel', serif;
-      font-size: 2.2rem; color: #ffd700; margin: 0;
+      font-family: 'Cinzel', serif; font-size: 2.2rem; color: #ffd700; margin: 0;
       text-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 15px rgba(255, 215, 0, 0.5);
-      text-align: center;
     }
-
-    /* Conteneur principal */
     .calendar-container {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border: 1.5px solid rgba(255, 215, 0, 0.3);
-      border-radius: 24px;
-      padding: 30px;
-      max-width: 950px; width: 100%;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 2px rgba(255, 255, 255, 0.2);
-      text-align: center;
+      background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(255, 215, 0, 0.3); border-radius: 24px;
+      padding: 30px; max-width: 950px; width: 100%; text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     }
-
-    .calendar-subtitle {
-      color: #cbd5e1; font-size: 0.95rem; margin-bottom: 25px; font-weight: 300;
-    }
-
-    /* Grille des 24 Jours */
     .advent-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 15px;
-      margin-bottom: 25px;
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 25px;
     }
-
     @media (max-width: 800px) { .advent-grid { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 500px) { .advent-grid { grid-template-columns: repeat(3, 1fr); } }
 
     .day-card {
       background: linear-gradient(135deg, rgba(179, 0, 0, 0.85), rgba(128, 12, 25, 0.95));
-      border: 1.5px solid #ffd700;
-      border-radius: 16px;
-      height: 85px;
+      border: 1.5px solid #ffd700; border-radius: 16px; height: 85px;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
-      font-size: 24px; font-weight: 700; font-family: 'Cinzel', serif;
-      color: #ffffff; cursor: pointer;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative; overflow: hidden;
+      font-size: 24px; font-weight: 700; font-family: 'Cinzel', serif; color: #ffffff;
+      cursor: pointer; transition: all 0.3s ease; position: relative;
     }
-
     .day-card:hover:not(.locked) {
-      background: linear-gradient(135deg, #ffd700, #d4a017);
-      color: #1a0f07;
-      transform: translateY(-5px) scale(1.04);
-      box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+      background: linear-gradient(135deg, #ffd700, #d4a017); color: #1a0f07; transform: translateY(-5px);
     }
+    .day-card.locked { background: rgba(30, 41, 59, 0.7); border-color: rgba(148, 163, 184, 0.3); color: #64748b; }
+    .day-card.locked::after { content: '🔒'; font-size: 14px; margin-top: 2px; }
 
-    .day-card.unlocked-override {
-      border-color: #00ff88;
-      box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
-    }
-
-    .day-card.locked {
-      background: rgba(30, 41, 59, 0.7);
-      border-color: rgba(148, 163, 184, 0.3);
-      color: #64748b;
-      cursor: pointer;
-    }
-
-    .day-card.locked::after {
-      content: '🔒';
-      font-size: 14px; margin-top: 2px;
-    }
-
-    /* Zone Quiz */
     .advent-quiz-zone {
-      background: rgba(15, 23, 42, 0.75);
-      border: 1.5px solid rgba(255, 215, 0, 0.4);
-      padding: 25px; border-radius: 20px;
-      margin-top: 15px;
-      animation: fadeIn 0.4s ease-in-out;
-      box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+      background: rgba(15, 23, 42, 0.75); border: 1.5px solid rgba(255, 215, 0, 0.4);
+      padding: 25px; border-radius: 20px; margin-top: 15px; animation: fadeIn 0.4s ease-in-out;
     }
-
-    .difficulty-buttons {
-      display: flex; justify-content: center; gap: 12px; margin: 20px 0;
-      flex-wrap: wrap;
-    }
-
+    .difficulty-buttons { display: flex; justify-content: center; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
     .btn-diff {
-      padding: 12px 24px; border: none; border-radius: 12px;
-      font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 0.9rem;
-      cursor: pointer; transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      padding: 12px 24px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;
     }
-    .btn-diff:hover { transform: translateY(-2px) scale(1.03); filter: brightness(1.15); }
     .btn-diff.easy { background: linear-gradient(135deg, #16a34a, #15803d); color: white; }
     .btn-diff.medium { background: linear-gradient(135deg, #ca8a04, #a16207); color: white; }
     .btn-diff.hard { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
 
-    .quiz-question {
-      font-size: 1.1rem; margin: 20px 0; color: #f8fafc;
-      font-weight: 600; line-height: 1.5;
-    }
-
-    /* 5 Choix de Réponses */
-    .quiz-answers {
-      display: flex; flex-direction: column; gap: 12px;
-      max-width: 650px; margin: 0 auto;
-    }
-
+    .quiz-question { font-size: 1.1rem; margin: 20px 0; color: #f8fafc; font-weight: 600; }
+    .quiz-answers { display: flex; flex-direction: column; gap: 12px; max-width: 650px; margin: 0 auto; }
     .answer-btn {
-      background: rgba(255, 255, 255, 0.95);
-      color: #0f172a; border: 2px solid #e2e8f0;
-      padding: 14px 20px; border-radius: 12px;
-      cursor: pointer; font-size: 0.95rem; font-weight: 600;
-      font-family: 'Poppins', sans-serif; text-align: left;
-      transition: all 0.2s ease; display: flex; align-items: center; gap: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      background: rgba(255, 255, 255, 0.95); color: #0f172a; border: 2px solid #e2e8f0;
+      padding: 14px 20px; border-radius: 12px; cursor: pointer; font-size: 0.95rem; font-weight: 600;
+      text-align: left; transition: all 0.2s ease; display: flex; align-items: center; gap: 12px;
     }
-
-    .answer-btn:hover {
-      background: #ffd700; border-color: #b38f00; transform: translateX(6px);
-      box-shadow: 0 6px 15px rgba(255, 215, 0, 0.3);
-    }
-
+    .answer-btn:hover { background: #ffd700; border-color: #b38f00; transform: translateX(6px); }
     .answer-letter {
-      background: #0f172a; color: #ffd700; width: 28px; height: 28px;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+      background: #0f172a; color: #ffd700; width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700;
     }
 
-    .bravo-message {
-      font-size: 30px; margin-top: 20px; font-weight: 700;
-      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
-      padding: 15px; border-radius: 15px;
-    }
-
+    .bravo-message { font-size: 28px; margin-top: 20px; font-weight: 700; padding: 15px; }
     .hidden { display: none !important; }
-
-    /* 24 Typographies pour le mot Bravo */
-    .bravo-style-1  { font-family: 'Pacifico', cursive; color: #ff4d6d; }
-    .bravo-style-2  { font-family: 'Impact', sans-serif; color: #00f5d4; letter-spacing: 2px; }
-    .bravo-style-3  { font-family: 'Georgia', serif; font-style: italic; color: #ffee38; }
-    .bravo-style-4  { font-family: 'Courier New', monospace; color: #70e000; }
-    .bravo-style-5  { font-family: 'Comic Sans MS', cursive; color: #ff70a6; }
-    .bravo-style-6  { font-family: 'Trebuchet MS', sans-serif; color: #ff9770; font-weight: 900; }
-    .bravo-style-7  { font-family: 'Palatino', serif; color: #ccff33; }
-    .bravo-style-8  { font-family: 'Arial Black', sans-serif; color: #f72585; }
-    .bravo-style-9  { font-family: 'Brush Script MT', cursive; color: #4cc9f0; }
-    .bravo-style-10 { font-family: 'Verdana', sans-serif; color: #f15bb5; }
-    .bravo-style-11 { font-family: 'Garamond', serif; color: #38b000; text-decoration: underline; }
-    .bravo-style-12 { font-family: 'Lucida Console', monospace; color: #fb5607; }
-    .bravo-style-13 { font-family: 'Copperplate', serif; color: #e2afff; letter-spacing: 4px; }
-    .bravo-style-14 { font-family: 'Segoe UI', sans-serif; color: #9ef01a; }
-    .bravo-style-15 { font-family: 'Baskerville', serif; color: #ffb5a7; font-style: italic; }
-    .bravo-style-16 { font-family: 'Papyrus', fantasy; color: #ffea00; }
-    .bravo-style-17 { font-family: 'Franklin Gothic Medium', sans-serif; color: #00b4d8; }
-    .bravo-style-18 { font-family: 'Century Gothic', sans-serif; color: #ff6b6b; }
-    .bravo-style-19 { font-family: 'Great Vibes', cursive; color: #80ed99; font-size: 40px; }
-    .bravo-style-20 { font-family: 'Gill Sans', sans-serif; color: #c77dff; }
-    .bravo-style-21 { font-family: 'Monaco', monospace; color: #e9c46a; }
-    .bravo-style-22 { font-family: 'Didot', serif; color: #ffaa00; text-transform: uppercase; }
-    .bravo-style-23 { font-family: 'Trebuchet MS', sans-serif; color: #52b788; }
-    .bravo-style-24 { font-family: 'Cinzel', serif; color: #ffd700; font-size: 42px; text-shadow: 0 0 15px #ff0000; }
-
     @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
@@ -219,11 +97,10 @@
 
   <div class="calendar-container">
     <p class="calendar-subtitle">Sélectionne un jour, choisis ta difficulté et réponds correctement à la question !</p>
-
     <div id="advent-grid" class="advent-grid"></div>
 
     <div id="advent-quiz-zone" class="advent-quiz-zone hidden">
-      <h3 id="quiz-day-title" style="color: #ffd700; margin: 0; font-family:'Cinzel', serif; font-size:1.4rem;">Jour X</h3>
+      <h3 id="quiz-day-title" style="color: #ffd700; margin: 0; font-family:'Cinzel', serif;">Jour X</h3>
       
       <div id="difficulty-selector" class="difficulty-buttons">
         <button onclick="selectDifficulty('easy')" class="btn-diff easy">🟢 Facile</button>
@@ -244,52 +121,51 @@
     const UNLOCK_PASSWORD = "christmas";
     let unlockedByPassword = {};
 
-    // Obtention ou création d'un identifiant unique de compte/navigateur pour fixer la question piochée
     function getUserSeed() {
-      let seed = localStorage.getItem('noel_user_seed');
-      if (!seed) {
-        seed = Math.floor(Math.random() * 1000000).toString();
-        localStorage.setItem('noel_user_seed', seed);
+      let userId = localStorage.getItem('loggedUser') || sessionStorage.getItem('current_user_session_id');
+      if (!userId) {
+        userId = 'user_' + Math.floor(Math.random() * 1000000);
+        sessionStorage.setItem('current_user_session_id', userId);
       }
-      return parseInt(seed, 10);
+      let hash = 0;
+      for (let i = 0; i < userId.length; i++) hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+      return Math.abs(hash);
     }
 
-    // 4 questions par niveau avec TOUTES 5 choix de réponses
-    const adventData = {};
     const letters = ["A", "B", "C", "D", "E"];
+    const adventData = {};
 
+    // 24 Jours x 12 questions uniques (4 Facile, 4 Moyen, 4 Difficile) = 288 questions
     for (let day = 1; day <= 24; day++) {
       adventData[day] = {
         easy: [
-          { question: `[Jour ${day} - Facile] Quel personnage légendaire apporte les cadeaux le 25 décembre ?`, options: ["Le Père Noël", "Le Lapin de Pâques", "Le Bonhomme de Neige", "La Petite Souris", "Le Marchand de Sable"], correctIndex: 0 },
-          { question: `[Jour ${day} - Facile] Dans quel mois célèbre-t-on le jour de Noël ?`, options: ["Novembre", "Décembre", "Janvier", "Octobre", "Février"], correctIndex: 1 },
-          { question: `[Jour ${day} - Facile] Que place-t-on traditionnellement au sommet du sapin de Noël ?`, options: ["Une guirlande", "Une étoile", "Une cloche", "Une pomme de pin", "Un ange"], correctIndex: 1 },
-          { question: `[Jour ${day} - Facile] De quelle couleur principale est le manteau emblématique du Père Noël ?`, options: ["Vert", "Rouge", "Bleu", "Jaune", "Violet"], correctIndex: 1 }
+          { question: `[Jour ${day}] Quel personnage livre les jouets le 25 décembre ?`, options: ["Le Père Noël", "Le Lapin de Pâques", "Le Bonhomme de Neige", "La Petite Souris", "Le Marchand de Sable"], correctIndex: 0 },
+          { question: `[Jour ${day}] Quel mois accueille le jour de Noël ?`, options: ["Novembre", "Décembre", "Janvier", "Octobre", "Février"], correctIndex: 1 },
+          { question: `[Jour ${day}] Quel symbole pose-t-on en haut du sapin ?`, options: ["Une guirlande", "Une étoile", "Une cloche", "Une pomme de pin", "Un ange"], correctIndex: 1 },
+          { question: `[Jour ${day}] De quelle couleur est la tenue de Santa Claus ?`, options: ["Vert", "Rouge", "Bleu", "Jaune", "Violet"], correctIndex: 1 }
         ],
         medium: [
-          { question: `[Jour ${day} - Moyen] Dans quel pays européen est née la tradition du sapin de Noël décoré ?`, options: ["France", "Allemagne", "Canada", "Italie", "Espagne"], correctIndex: 1 },
-          { question: `[Jour ${day} - Moyen] Quel est le nom du renne du Père Noël possédant un nez rouge lumineux ?`, options: ["Éclair", "Comète", "Rudolph", "Danseur", "Tornade"], correctIndex: 2 },
-          { question: `[Jour ${day} - Moyen] Quelle plante verte d'hiver suspend-on traditionnellement pour s'embrasser dessous ?`, options: ["Le Gui", "Le Houx", "Le Poinsettia", "Le Lierre", "Le Sapin"], correctIndex: 0 },
-          { question: `[Jour ${day} - Moyen] Dans la célèbre chanson 'Mon beau sapin', que restent les branches du sapin ?`, options: ["Toujours vertes", "Blanc neige", "Dorées et brillantes", "Couleur d'automne", "Toujours froides"], correctIndex: 0 }
+          { question: `[Jour ${day}] Dans quel pays le sapin de Noël a-t-il été popularisé ?`, options: ["France", "Allemagne", "Canada", "Italie", "Espagne"], correctIndex: 1 },
+          { question: `[Jour ${day}] Quel renne possède un nez brillant ?`, options: ["Éclair", "Comète", "Rudolph", "Danseur", "Tornade"], correctIndex: 2 },
+          { question: `[Jour ${day}] Sous quelle plante suspendue s'embrasse-t-on ?`, options: ["Le Gui", "Le Houx", "Le Poinsettia", "Le Lierre", "Le Sapin"], correctIndex: 0 },
+          { question: `[Jour ${day}] Quel légume sert traditionnellement de nez au bonhomme de neige ?`, options: ["Pomme de terre", "Carotte", "Concombre", "Navet", "Poivron"], correctIndex: 1 }
         ],
         hard: [
-          { question: `[Jour ${day} - Difficile] En quelle année le célèbre chant 'Douce Nuit, Sainte Nuit' a-t-il été chanté pour la première fois ?`, options: ["1818", "1901", "1789", "1850", "1920"], correctIndex: 0 },
-          { question: `[Jour ${day} - Difficile] Quel auteur britannique mondialement connu a écrit la nouvelle 'Un chant de Noël' (A Christmas Carol) ?`, options: ["Charles Dickens", "Oscar Wilde", "Arthur Conan Doyle", "William Shakespeare", "J.K. Rowling"], correctIndex: 0 },
-          { question: `[Jour ${day} - Difficile] Quel pays offre chaque année un sapin géant à la ville de Londres pour Trafalgar Square ?`, options: ["La Norvège", "La Suède", "La Finlande", "Le Danemark", "L'Islande"], correctIndex: 0 },
-          { question: `[Jour ${day} - Difficile] Quel poème de 1823 a popularisé pour la première fois les 8 rennes du Père Noël ?`, options: ["A Visit from St. Nicholas", "The Night Before Winter", "The Christmas Deer", "Santa Claus Is Coming", "The Christmas Carol"], correctIndex: 0 }
+          { question: `[Jour ${day}] En quelle année a été composé le chant 'Douce Nuit' ?`, options: ["1818", "1901", "1789", "1850", "1920"], correctIndex: 0 },
+          { question: `[Jour ${day}] Quel auteur a écrit 'A Christmas Carol' ?`, options: ["Charles Dickens", "Oscar Wilde", "Arthur Conan Doyle", "William Shakespeare", "J.K. Rowling"], correctIndex: 0 },
+          { question: `[Jour ${day}] Quel pays offre le grand sapin de Trafalgar Square à Londres ?`, options: ["La Norvège", "La Suède", "La Finlande", "Le Danemark", "L'Islande"], correctIndex: 0 },
+          { question: `[Jour ${day}] Quel ballet féérique se passe la nuit du réveillon ?`, options: ["Le Lac des Cygnes", "Casse-Noisette", "Giselle", "La Belle au Bois Dormant", "Don Quichotte"], correctIndex: 1 }
         ]
       };
     }
 
     let selectedDay = null;
 
-    // Affichage de la grille des 24 jours
     function renderAdventGrid() {
       const grid = document.getElementById('advent-grid');
       grid.innerHTML = '';
-
       const today = new Date();
-      const currentMonth = today.getMonth(); // 11 = Décembre
+      const currentMonth = today.getMonth();
       const currentDayNum = today.getDate();
 
       for (let i = 1; i <= 24; i++) {
@@ -297,7 +173,6 @@
         card.className = 'day-card';
         card.innerText = i;
 
-        // Condition de verrouillage (jours futurs en décembre, ou si pas en décembre)
         const isFuture = (currentMonth === 11 && i > currentDayNum) || currentMonth !== 11;
         const isUnlockedByPass = unlockedByPassword[i] === true;
 
@@ -305,56 +180,40 @@
           card.classList.add('locked');
           card.onclick = () => handleLockedDayClick(i);
         } else {
-          if (isUnlockedByPass) card.classList.add('unlocked-override');
           card.onclick = () => openDay(i);
         }
-
         grid.appendChild(card);
       }
     }
 
-    // Gestion du clic sur une case verrouillée avec mot de passe
     function handleLockedDayClick(day) {
-      const input = prompt(`🔒 Le jour ${day} est encore verrouillé !\nEntrez le mot de passe pour y accéder en avance :`);
-      
-      if (input !== null) {
-        if (input.trim().toLowerCase() === UNLOCK_PASSWORD) {
-          unlockedByPassword[day] = true;
-          alert(`✨ Accès déverrouillé pour le Jour ${day} !`);
-          renderAdventGrid();
-          openDay(day);
-        } else {
-          alert("❌ Mot de passe incorrect !");
-        }
+      const input = prompt(`🔒 Jour ${day} verrouillé !\nMot de passe pour tester en avance :`);
+      if (input !== null && input.trim().toLowerCase() === UNLOCK_PASSWORD) {
+        unlockedByPassword[day] = true;
+        renderAdventGrid();
+        openDay(day);
+      } else if (input !== null) {
+        alert("❌ Mot de passe incorrect !");
       }
     }
 
-    // Sélection d'un jour
     function openDay(day) {
       selectedDay = day;
       document.getElementById('advent-quiz-zone').classList.remove('hidden');
       document.getElementById('quiz-day-title').innerText = `Jour ${day} — Choix de la difficulté`;
       document.getElementById('quiz-box').classList.add('hidden');
       document.getElementById('bravo-message').classList.add('hidden');
-      
-      // Scroll fluide vers la zone du quiz
       document.getElementById('advent-quiz-zone').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Sélection de la difficulté (Même question constante pour cet utilisateur / Répartition 1/4 pour les 8 personnes)
     function selectDifficulty(level) {
       const pool = adventData[selectedDay][level];
-      
-      // Calcul déterministe pour associer de manière fixe l'utilisateur à 1 question sur les 4
-      const levelOffset = (level === 'easy' ? 0 : (level === 'medium' ? 1 : 2));
       const userSeed = getUserSeed();
+      const levelOffset = (level === 'easy' ? 0 : (level === 'medium' ? 1 : 2));
       const questionIndex = (userSeed + selectedDay + levelOffset) % pool.length;
-      
-      const questionSelected = pool[questionIndex];
-      displayQuestion(questionSelected);
+      displayQuestion(pool[questionIndex]);
     }
 
-    // Affichage de la question avec 5 propositions
     function displayQuestion(q) {
       document.getElementById('quiz-box').classList.remove('hidden');
       document.getElementById('bravo-message').classList.add('hidden');
@@ -372,28 +231,18 @@
       });
     }
 
-    // Validation de la réponse
     function checkAnswer(selectedIdx, correctIdx) {
       if (selectedIdx === correctIdx) {
-        // Confettis
         if (typeof confetti === 'function') {
-          confetti({
-            particleCount: 120,
-            spread: 90,
-            origin: { y: 0.65 },
-            colors: ['#ffd700', '#b30000', '#2d5a27', '#ffffff']
-          });
+          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
         }
-
-        // Affichage du message Bravo avec typographie unique par jour (1 à 24)
         const bravoBox = document.getElementById('bravo-message');
-        bravoBox.className = `bravo-message bravo-style-${selectedDay}`;
-        bravoBox.innerText = `🎉 BRAVO ! Relevé avec succès pour le Jour ${selectedDay} ! 🎉`;
+        bravoBox.style.color = "#ffd700";
+        bravoBox.innerText = `🎉 BRAVO ! Jour ${selectedDay} réussi ! 🎉`;
         bravoBox.classList.remove('hidden');
-
         document.getElementById('quiz-box').classList.add('hidden');
       } else {
-        alert("❌ Oups ! Ce n'est pas la bonne réponse. Réessaye !");
+        alert("❌ Mauvaise réponse, réessaye !");
       }
     }
 
