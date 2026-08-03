@@ -1,1 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendrier de l'Avent</title>
 
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Great+Vibes&family=Pacifico&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body, html {
+      margin: 0; padding: 0; min-height: 100vh;
+      background: radial-gradient(circle at center, #0f1826 0%, #05080f 100%);
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      box-sizing: border-box;
+      padding: 20px;
+    }
+
+    /* En-tête et navigation */
+    header {
+      width: 100%; max-width: 900px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .btn-nav-back {
+      background: linear-gradient(135deg, #d4a017, #aa7c11);
+      color: #1a0f07; border: none; padding: 10px 20px;
+      border-radius: 25px; font-weight: 700; font-size: 0.9rem;
+      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(212, 160, 23, 0.3);
+      text-decoration: none;
+    }
+
+    .btn-nav-back:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(212, 160, 23, 0.5);
+    }
+
+    h1.page-title {
+      font-family: 'Cinzel', serif;
+      font-size: 2rem; color: #ffd700; margin: 0;
+      text-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+      text-align: center;
+    }
+
+    /* Container du calendrier */
+    .calendar-container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 215, 0, 0.4);
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 900px; width: 100%;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .calendar-subtitle {
+      color: #d0d8e8; font-size: 0.95rem; margin-bottom: 20px;
+    }
+
+    /* Grille des 24 Jours */
+    .advent-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin-bottom: 25px;
+    }
+
+    @media (max-width: 700px) {
+      .advent-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .advent-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .day-card {
+      background: linear-gradient(135deg, #b30000, #800c19);
+      border: 2px solid #ffd700;
+      border-radius: 12px;
+      height: 75px;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 22px; font-weight: 700; font-family: 'Cinzel', serif;
+      color: #ffffff; cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+
+    .day-card:hover:not(.locked) {
+      background: linear-gradient(135deg, #ffd700, #d4a017);
+      color: #1a0f07;
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+    }
+
+    .day-card.locked {
+      background: #2b3648;
+      border-color: #4a5568;
+      color: #718096;
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Zone Quiz */
+    .advent-quiz-zone {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      padding: 20px; border-radius: 15px;
+      margin-top: 10px;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .difficulty-buttons {
+      display: flex; justify-content: center; gap: 12px; margin: 15px 0;
+      flex-wrap: wrap;
+    }
+
+    .btn-diff {
+      padding: 10px 20px; border: none; border-radius: 8px;
+      font-weight: 700; font-family: 'Poppins', sans-serif;
+      cursor: pointer; transition: transform 0.2s, filter 0.2s;
+    }
+    .btn-diff:hover { transform: scale(1.05); filter: brightness(1.15); }
+    .btn-diff.easy { background: #2d5a27; color: white; }
+    .btn-diff.medium { background: #d4a017; color: #1a0f07; }
+    .btn-diff.hard { background: #b30000; color: white; }
+
+    .quiz-question {
+      font-size: 1.05rem; margin: 15px 0; color: #ffffff;
+      font-weight: 600;
+    }
+
+    .quiz-answers {
+      display: flex; flex-direction: column; gap: 10px;
+      max-width: 500px; margin: 0 auto;
+    }
+
+    .answer-btn {
+      background: rgba(255, 255, 255, 0.95);
+      color: #1a0f07; border: 1.5px solid #d4a017;
+      padding: 12px 18px; border-radius: 10px;
+      cursor: pointer; font-size: 0.95rem; font-weight: 600;
+      font-family: 'Poppins', sans-serif; text-align: left;
+      transition: all 0.2s ease;
+    }
+
+    .answer-btn:hover {
+      background: #ffd700; transform: translateX(4px);
+    }
+
+    .bravo-message {
+      font-size: 30px; margin-top: 20px;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+    }
+
+    .hidden { display: none !important; }
+
+    /* 24 Typographies pour le mot Bravo */
+    .bravo-style-1  { font-family: 'Pacifico', cursive; color: #ff4d6d; }
+    .bravo-style-2  { font-family: 'Impact', sans-serif; color: #00f5d4; letter-spacing: 2px; }
+    .bravo-style-3  { font-family: 'Georgia', serif; font-style: italic; color: #ffee38; }
+    .bravo-style-4  { font-family: 'Courier New', monospace; color: #70e000; }
+    .bravo-style-5  { font-family: 'Comic Sans MS', cursive; color: #ff70a6; }
+    .bravo-style-6  { font-family: 'Trebuchet MS', sans-serif; color: #ff9770; font-weight: 900; }
+    .bravo-style-7  { font-family: 'Palatino', serif; color: #ccff33; }
+    .bravo-style-8  { font-family: 'Arial Black', sans-serif; color: #f72585; }
+    .bravo-style-9  { font-family: 'Brush Script MT', cursive; color: #4cc9f0; }
+    .bravo-style-10 { font-family: 'Verdana', sans-serif; color: #f15bb5; }
+    .bravo-style-11 { font-family: 'Garamond', serif; color: #38b000; text-decoration: underline; }
+    .bravo-style-12 { font-family: 'Lucida Console', monospace; color: #fb5607; }
+    .bravo-style-13 { font-family: 'Copperplate', serif; color: #e2afff; letter-spacing: 4px; }
+    .bravo-style-14 { font-family: 'Segoe UI', sans-serif; color: #9ef01a; }
+    .bravo-style-15 { font-family: 'Baskerville', serif; color: #ffb5a7; font-style: italic; }
+    .bravo-style-16 { font-family: 'Papyrus', fantasy; color: #ffea00; }
+    .bravo-style-17 { font-family: 'Franklin Gothic Medium', sans-serif; color: #00b4d8; }
+    .bravo-style-18 { font-family: 'Century Gothic', sans-serif; color: #ff6b6b; }
+    .bravo-style-19 { font-family: 'Great Vibes', cursive; color: #80ed99; font-size: 40px; }
+    .bravo-style-20 { font-family: 'Gill Sans', sans-serif; color: #c77dff; }
+    .bravo-style-21 { font-family: 'Monaco', monospace; color: #e9c46a; }
+    .bravo-style-22 { font-family: 'Didot', serif; color: #ffaa00; text-transform: uppercase; }
+    .bravo-style-23 { font-family: 'Trebuchet MS', sans-serif; color: #52b788; }
+    .bravo-style-24 { font-family: 'Cinzel', serif; color: #ffd700; font-size: 42px; text-shadow: 0 0 15px #ff0000; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <button class="btn-nav-back" onclick="window.location.href='index.html'">⬅️ Retour au Menu</button>
+    <h1 class="page-title">🎅 Calendrier de l'Avent</h1>
+    <div style="width: 140px;"></div> </header>
+
+  <div class="calendar-container">
+    <p class="calendar-subtitle">Clique sur une case ouverte, choisis la difficulté de la question et gagne des points !</p>
+
+    <div id="advent-grid" class="advent-grid"></div>
+
+    <div id="advent-quiz-zone" class="advent-quiz-zone hidden">
+      <h3 id="quiz-day-title" style="color: #ffd700; margin-top: 0;">Jour X</h3>
+      
+      <div id="difficulty-selector" class="difficulty-buttons">
+        <button onclick="selectDifficulty('easy')" class="btn-diff easy">🟢 Facile</button>
+        <button onclick="selectDifficulty('medium')" class="btn-diff medium">🟡 Moyen</button>
+        <button onclick="selectDifficulty('hard')" class="btn-diff hard">🔴 Difficile</button>
+      </div>
+
+      <div id="quiz-box" class="quiz-box hidden">
+        <p id="quiz-question-text" class="quiz-question"></p>
+        <div id="quiz-answers-list" class="quiz-answers"></div>
+      </div>
+
+      <div id="bravo-message" class="bravo-message hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    // Banque de données des questions (4 questions uniques par difficulté pour chaque jour)
+    const adventData = {};
+
+    for (let day = 1; day <= 24; day++) {
+      adventData[day] = {
+        easy: [
+          { question: `[Jour ${day} - Facile] Quel personnage apporte les cadeaux le 25 décembre ?`, options: ["Le Père Noël", "Le Lapin de Pâques", "Le Bonhomme de Neige"], correctIndex: 0 },
+          { question: `[Jour ${day} - Facile] Quel est le mois du réveillon de Noël ?`, options: ["Novembre", "Décembre", "Janvier"], correctIndex: 1 },
+          { question: `[Jour ${day} - Facile] Que place-t-on au sommet du sapin ?`, options: ["Une guirlande", "Une étoile", "Une cloche"], correctIndex: 1 },
+          { question: `[Jour ${day} - Facile] De quelle couleur est habituellement le costume du Père Noël ?`, options: ["Vert", "Rouge", "Bleu"], correctIndex: 1 }
+        ],
+        medium: [
+          { question: `[Jour ${day} - Moyen] Dans quel pays est née la tradition du sapin de Noël ?`, options: ["France", "Allemagne", "Canada"], correctIndex: 1 },
+          { question: `[Jour ${day} - Moyen] Quel est le renne au nez rouge vif ?`, options: ["Éclair", "Comète", "Rudolph"], correctIndex: 2 },
+          { question: `[Jour ${day} - Moyen] Quelle plante d'hiver est traditionnellement utilisée pour s'embrasser dessous ?`, options: ["Le Gui", "Le Houx", "Le Poinsettia"], correctIndex: 0 },
+          { question: `[Jour ${day} - Moyen] Dans le chant 'Mon beau sapin', de quelle couleur sont ses branches ?`, options: ["Toujours vertes", "Blanc neige", "Dorées"], correctIndex: 0 }
+        ],
+        hard: [
+          { question: `[Jour ${day} - Difficile] En quelle année a été joué pour la première fois le chant 'Douce Nuit' ?`, options: ["1818", "1901", "1789"], correctIndex: 0 },
+          { question: `[Jour ${day} - Difficile] Quel auteur britannique a écrit 'Un chant de Noël' (A Christmas Carol) ?`, options: ["Charles Dickens", "Oscar Wilde", "Arthur Conan Doyle"], correctIndex: 0 },
+          { question: `[Jour ${day} - Difficile] Quel pays offre chaque année un sapin à la ville de Londres pour Trafalgar Square ?`, options: ["La Norvège", "La Suède", "La Finlande"], correctIndex: 0 },
+          { question: `[Jour ${day} - Difficile] Quel est le nom du poème original qui a popularisé les 8 rennes du Père Noël ?`, options: ["A Visit from St. Nicholas", "The Night Before Winter", "The Christmas Deer"], correctIndex: 0 }
+        ]
+      };
+    }
+
+    let selectedDay = null;
+
+    // Générer la grille de 24 jours au chargement
+    function renderAdventGrid() {
+      const grid = document.getElementById('advent-grid');
+      grid.innerHTML = '';
+
+      const today = new Date();
+      const currentMonth = today.getMonth(); // 11 = Décembre
+      const currentDayNum = today.getDate();
+
+      for (let i = 1; i <= 24; i++) {
+        const card = document.createElement('div');
+        card.className = 'day-card';
+        card.innerText = i;
+
+        // Si nous sommes en décembre, bloquer les jours futurs
+        const isLocked = (currentMonth === 11 && i > currentDayNum);
+
+        if (isLocked) {
+          card.classList.add('locked');
+          card.title = "Cette case s'ouvrira le jour venu !";
+        } else {
+          card.onclick = () => openDay(i);
+        }
+
+        grid.appendChild(card);
+      }
+    }
+
+    // Sélectionner un jour
+    function openDay(day) {
+      selectedDay = day;
+      document.getElementById('advent-quiz-zone').classList.remove('hidden');
+      document.getElementById('quiz-day-title').innerText = `Jour ${day} - Choisis la difficulté :`;
+      document.getElementById('quiz-box').classList.add('hidden');
+      document.getElementById('bravo-message').classList.add('hidden');
+    }
+
+    // Choisir une difficulté et piocher 1 question au hasard parmi les 4 du jour
+    function selectDifficulty(level) {
+      const pool = adventData[selectedDay][level];
+      const randomIndex = Math.floor(Math.random() * pool.length);
+      const questionSelected = pool[randomIndex];
+
+      displayQuestion(questionSelected);
+    }
+
+    // Afficher la question
+    function displayQuestion(q) {
+      document.getElementById('quiz-box').classList.remove('hidden');
+      document.getElementById('bravo-message').classList.add('hidden');
+      document.getElementById('quiz-question-text').innerText = q.question;
+
+      const answersList = document.getElementById('quiz-answers-list');
+      answersList.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(idx, q.correctIndex);
+        answersList.appendChild(btn);
+      });
+    }
+
+    // Vérifier la réponse
+    function checkAnswer(selectedIdx, correctIdx) {
+      if (selectedIdx === correctIdx) {
+        // Animation de Confettis
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 100,
+            spread: 80,
+            origin: { y: 0.65 },
+            colors: ['#ffd700', '#b30000', '#2d5a27', '#ffffff']
+          });
+        }
+
+        // Afficher le Bravo stylisé selon le jour
+        const bravoBox = document.getElementById('bravo-message');
+        bravoBox.className = `bravo-message bravo-style-${selectedDay}`;
+        bravoBox.innerText = `🎉 BRAVO ! Relevé avec succès pour le Jour ${selectedDay} ! 🎉`;
+        bravoBox.classList.remove('hidden');
+
+        document.getElementById('quiz-box').classList.add('hidden');
+      } else {
+        alert("❌ Oups ! Mauvaise réponse. Essaie à nouveau ou choisis un autre niveau !");
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', renderAdventGrid);
+  </script>
+</body>
+</html>
