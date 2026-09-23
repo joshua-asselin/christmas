@@ -13,14 +13,14 @@
         body, html {
             margin: 0; padding: 0; min-height: 100vh; width: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            background-color: #0b131f; /* Fond sombre propre sans impacter l'index */
+            background-color: #0b131f;
             font-family: 'Poppins', sans-serif; box-sizing: border-box; padding-bottom: 40px;
         }
 
-        /* Rectangle/Bannière en haut avec ton image */
+        /* Bannière supérieure en plein écran/large */
         .header-banner {
-            margin-top: 25px;
-            width: 90%; max-width: 880px; height: 180px;
+            margin-top: 20px;
+            width: 95%; max-width: 1400px; height: 180px;
             background-image: url('https://i.postimg.cc/Kc7F8rdr/53a6d70e-6093-4bdd-a3d0-3b43e8c70781-885x590.jpg');
             background-size: cover; background-position: center;
             border-radius: 20px; border: 3px solid #d4a017;
@@ -32,58 +32,75 @@
         .header-title {
             background: rgba(10, 15, 25, 0.7);
             backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-            padding: 12px 28px; border-radius: 40px;
+            padding: 12px 35px; border-radius: 40px;
             border: 1.5px solid #ffd700; color: #ffffff;
-            font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800;
+            font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 800;
             text-shadow: 0 0 12px rgba(255, 215, 0, 0.6); text-align: center;
         }
 
-        /* Conteneur principal BLANC TRANSPARENT À 80% en bas */
+        /* Conteneur principal semi-transparent blanc élargi */
         .calendar-container {
-            margin-top: 25px; width: 90%; max-width: 880px;
-            background: rgba(255, 255, 255, 0.80);
+            margin-top: 20px; width: 95%; max-width: 1400px;
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border-radius: 24px; border: 2.5px solid #d4a017;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4); padding: 25px;
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
             box-sizing: border-box;
         }
 
-        /* Responsive : écran mobile et tablette */
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .calendar-container { grid-template-columns: repeat(4, 1fr); }
+        }
         @media (max-width: 768px) {
-            .calendar-container { grid-template-columns: repeat(4, 1fr); padding: 15px; gap: 10px; }
+            .calendar-container { grid-template-columns: repeat(3, 1fr); padding: 15px; gap: 10px; }
             .header-banner { height: 130px; }
-            .header-title { font-size: 1.2rem; padding: 8px 18px; }
+            .header-title { font-size: 1.3rem; padding: 8px 20px; }
         }
         @media (max-width: 480px) {
-            .calendar-container { grid-template-columns: repeat(3, 1fr); }
+            .calendar-container { grid-template-columns: repeat(2, 1fr); }
         }
 
-        /* Animation des cases (Rouleau 3D) */
+        /* Animation des cases (3D Roll) */
         .door-frame {
-            position: relative; height: 110px; perspective: 1000px;
+            position: relative; height: 120px; perspective: 1000px;
             border-radius: 14px; overflow: hidden;
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
-        /* Contenu sous la porte (Cadeau / Surprise) */
+        /* Contenu sous la porte (avec grand numéro en arrière-plan) */
         .door-content {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #fffdf5, #f5e6ca);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 6px; box-sizing: border-box;
+            text-align: center; padding: 8px; box-sizing: border-box;
             border-radius: 14px; border: 1.5px solid #d4a017;
+            overflow: hidden;
         }
-        .door-content .reward-emoji { font-size: 1.8rem; margin-bottom: 2px; }
-        .door-content .reward-text { font-size: 0.72rem; font-weight: 600; color: #4a2d0b; line-height: 1.1; }
 
-        /* Porte rouge style papier/rouleau */
+        /* Grand numéro filigrane en arrière-plan */
+        .door-bg-number {
+            position: absolute;
+            font-family: 'Cinzel', serif;
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: rgba(212, 160, 23, 0.15);
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .door-content .reward-emoji { font-size: 1.8rem; margin-bottom: 2px; z-index: 1; }
+        .door-content .reward-text { font-size: 0.78rem; font-weight: 600; color: #4a2d0b; line-height: 1.2; z-index: 1; }
+
+        /* Porte extérieure (Battant) */
         .door-front {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #800c19, #b30000);
             border: 2px solid #ffd700; border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            color: #ffffff; font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 800;
+            color: #ffffff; font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800;
             text-shadow: 1px 2px 4px rgba(0,0,0,0.5); cursor: pointer;
             transform-origin: left center;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s ease;
@@ -94,7 +111,7 @@
             content: "✨"; position: absolute; bottom: 6px; right: 8px; font-size: 0.75rem; opacity: 0.6;
         }
 
-        /* Animation rouleau / porte pivotante vers la gauche */
+        /* Animation d'ouverture en rouleau vers la gauche */
         .door-frame.open .door-front {
             transform: rotateY(-160deg) scaleX(0.85);
             box-shadow: 10px 0 20px rgba(0,0,0,0.4);
@@ -108,9 +125,9 @@
 
         /* Bouton Retour */
         .btn-back {
-            margin-top: 25px; padding: 12px 30px; border-radius: 30px;
+            margin-top: 25px; padding: 12px 35px; border-radius: 30px;
             background: linear-gradient(135deg, #d4a017, #aa7c11);
-            color: #200407; border: 2px solid #fff; font-size: 0.95rem; font-weight: 700;
+            color: #200407; border: 2px solid #fff; font-size: 1rem; font-weight: 700;
             cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: all 0.3s ease;
         }
         .btn-back:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 25px rgba(0,0,0,0.5); }
@@ -118,19 +135,20 @@
 </head>
 <body>
 
-    <!-- Rectangle image dans le haut -->
+    <!-- Bannière image géante -->
     <div class="header-banner">
         <div class="header-title">📅 CALENDRIER DE L'AVENT</div>
     </div>
 
-    <!-- Fond blanc transparent (80%) pour les cases -->
-    <div class="calendar-container" id="calendar-grid">
-        <!-- Généré dynamiquement en JS -->
-    </div>
+    <!-- Conteneur 25 cases large -->
+    <div class="calendar-container" id="calendar-grid"></div>
 
     <button class="btn-back" onclick="window.location.href='index.html'">⬅️ RETOUR AU MENU</button>
 
 <script>
+    let isBypassed = false;
+
+    // 25 Récompenses / Défis pour chaque jour
     const rewards = [
         { emoji: "🍫", text: "Chocolat chaud gourmand !" },
         { emoji: "🎬", text: "Soirée film de Noël" },
@@ -140,13 +158,13 @@
         { emoji: "🎶", text: "Écoute tes chants préférés" },
         { emoji: "🎄", text: "Décore ton sapin" },
         { emoji: "💌", text: "Envoie un mot doux" },
-        { emoji: "⭐", text: "Fais un vœu" },
+        { emoji: "⭐", text: "Fais un vœu sous les étoiles" },
         { emoji: "🧩", text: "Résous le casse-tête" },
         { emoji: "🍵", text: "Thé de Noël aux épices" },
         { emoji: "❄️", text: "Bataille de boules de neige" },
         { emoji: "📜", text: "Lis un conte de Noël" },
         { emoji: "🕯️", text: "Allume une bougie parfumée" },
-        { emoji: "🎅", text: "Message du Père Noël" },
+        { emoji: "🎅", text: "Message secret du Père Noël" },
         { emoji: "📷", text: "Prends une photo festive" },
         { emoji: "🎁", text: "Un bonus exclusif !" },
         { emoji: "🍬", text: "Déguste une sucrerie" },
@@ -155,22 +173,25 @@
         { emoji: "⛄", text: "Construis un bonhomme de neige" },
         { emoji: "✨", text: "Soirée pyjama de Noël" },
         { emoji: "🛷", text: "Nuit magique en approche" },
-        { emoji: "👑", text: "Joyeux Noël ! Cadeau final !" }
+        { emoji: "👑", text: "Joyeux Réveillon de Noël !" },
+        { emoji: "🎅", text: "Joyeux Noël ! Grande surprise finale !" }
     ];
 
     function createCalendar() {
         const grid = document.getElementById('calendar-grid');
+        grid.innerHTML = ''; // Réinitialiser le calendrier
         const today = new Date();
         const currentMonth = today.getMonth(); // 11 = Décembre
         const currentDay = today.getDate();
 
         const openedDoors = JSON.parse(localStorage.getItem('opened_advent_doors') || "[]");
 
-        for (let i = 1; i <= 24; i++) {
+        for (let i = 1; i <= 25; i++) {
             const frame = document.createElement('div');
             frame.className = 'door-frame';
 
-            const isAvailable = (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
+            // Vérification de déverrouillage (soit la date, soit le mode Bypass actif)
+            const isAvailable = isBypassed || (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
 
             if (!isAvailable) {
                 frame.classList.add('locked');
@@ -180,6 +201,7 @@
 
             frame.innerHTML = `
                 <div class="door-content">
+                    <div class="door-bg-number">${i}</div>
                     <div class="reward-emoji">${reward.emoji}</div>
                     <div class="reward-text">${reward.text}</div>
                 </div>
@@ -193,7 +215,7 @@
             }
 
             front.addEventListener('click', () => {
-                if (frame.classList.contains('locked')) {
+                if (frame.classList.contains('locked') && !isBypassed) {
                     alert(`🔒 Pas encore ! La porte ${i} s'ouvrira le ${i} Décembre.`);
                     return;
                 }
@@ -203,7 +225,7 @@
                     
                     if (typeof confetti === 'function') {
                         confetti({
-                            particleCount: 40, spread: 60, origin: { y: 0.7 },
+                            particleCount: 50, spread: 70, origin: { y: 0.7 },
                             colors: ['#ffd700', '#b30000', '#ffffff']
                         });
                     }
@@ -218,6 +240,20 @@
             grid.appendChild(frame);
         }
     }
+
+    // Code Bypass : Taper "christmas" au clavier déverrouille automatiquement toutes les cases
+    let secretInput = "";
+    window.addEventListener('keydown', (e) => {
+        secretInput += e.key.toLowerCase();
+        if (secretInput.length > 15) secretInput = secretInput.slice(-15);
+
+        if (secretInput.includes("christmas")) {
+            isBypassed = true;
+            secretInput = "";
+            alert("🎄 Mode Noël Activé ! Toutes les portes sont déverrouillées !");
+            createCalendar();
+        }
+    });
 
     window.addEventListener('DOMContentLoaded', createCalendar);
 </script>
