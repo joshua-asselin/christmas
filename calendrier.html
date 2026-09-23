@@ -1,277 +1,232 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calendrier de l'Avent 🎄</title>
-
-  <!-- Google Fonts & Canvas Confetti -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-  <style>
-    * { box-sizing: border-box; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier de l'Avent</title>
     
-    body, html {
-      margin: 0; padding: 0; min-height: 100vh;
-      background: radial-gradient(circle at top center, #1b2838 0%, #0a0f18 100%);
-      font-family: 'Poppins', sans-serif; color: #ffffff;
-      display: flex; flex-direction: column; align-items: center; padding: 20px;
-      overflow-x: hidden; position: relative;
-    }
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    /* Effet de neige Canvas en arrière-plan */
-    #snow-canvas {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      pointer-events: none; z-index: 1;
-    }
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Poppins:wght@400;600;700&display=swap');
 
-    header {
-      width: 100%; max-width: 1000px;
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 20px; z-index: 2; flex-wrap: wrap; gap: 15px;
-    }
+        body, html {
+            margin: 0; padding: 0; min-height: 100vh; width: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            background-image: url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            font-family: 'Poppins', sans-serif; box-sizing: border-box; padding-bottom: 40px;
+        }
 
-    .btn-nav-back {
-      background: linear-gradient(135deg, #d4a017, #f1c40f);
-      color: #1a0f07; border: none; padding: 12px 26px;
-      border-radius: 30px; font-weight: 700; font-size: 0.95rem;
-      cursor: pointer; transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(212, 160, 23, 0.4); text-decoration: none;
-      display: inline-flex; align-items: center; gap: 8px;
-    }
-    .btn-nav-back:hover {
-      transform: translateY(-3px) scale(1.03);
-      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
-    }
+        /* Bannière supérieure */
+        .header-banner {
+            margin-top: 20px;
+            width: 90%; max-width: 880px; height: 180px;
+            background-image: url('https://i.postimg.cc/Kc7F8rdr/53a6d70e-6093-4bdd-a3d0-3b43e8c70781-885x590.jpg');
+            background-size: cover; background-position: center;
+            border-radius: 20px; border: 3px solid #d4a017;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
 
-    h1.page-title {
-      font-family: 'Cinzel', serif; font-size: 2.5rem; color: #ffd700; margin: 0;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 20px rgba(255, 215, 0, 0.6);
-      text-align: center;
-    }
+        .header-title {
+            background: rgba(10, 15, 25, 0.65);
+            backdrop-filter: blur(5px);
+            padding: 12px 28px; border-radius: 40px;
+            border: 1.5px solid #ffd700; color: #ffffff;
+            font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800;
+            text-shadow: 0 0 12px rgba(255, 215, 0, 0.6); text-align: center;
+        }
 
-    .calendar-container {
-      background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px);
-      border: 1.5px solid rgba(255, 215, 0, 0.25); border-radius: 28px;
-      padding: 35px; max-width: 1000px; width: 100%; text-align: center;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(255, 215, 0, 0.05);
-      z-index: 2; margin-bottom: 30px;
-    }
+        /* Conteneur principal semi-transparent blanc (80%) */
+        .calendar-container {
+            margin-top: 25px; width: 90%; max-width: 880px;
+            background: rgba(255, 255, 255, 0.80);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px; border: 2.5px solid #d4a017;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); padding: 25px;
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px;
+            box-sizing: border-box;
+        }
 
-    .calendar-subtitle {
-      font-size: 1.05rem; color: #cbd5e1; margin-bottom: 30px; font-weight: 300;
-    }
+        /* Responsive : adaptations pour smartphones et tablettes */
+        @media (max-width: 768px) {
+            .calendar-container { grid-template-columns: repeat(4, 1fr); padding: 15px; gap: 10px; }
+            .header-banner { height: 130px; }
+            .header-title { font-size: 1.2rem; padding: 8px 18px; }
+        }
+        @media (max-width: 480px) {
+            .calendar-container { grid-template-columns: repeat(3, 1fr); }
+        }
 
-    /* Grille du calendrier */
-    .advent-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px;
-    }
-    @media (max-width: 900px) { .advent-grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (max-width: 600px) { .advent-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 420px) { .advent-grid { grid-template-columns: repeat(2, 1fr); } }
+        /* Style des Portes / Cases (effet 3D & Rouleau) */
+        .door-frame {
+            position: relative; height: 110px; perspective: 1000px;
+            border-radius: 14px; overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
 
-    /* CONTENEUR DE LA PORTE 3D */
-    .door-wrapper {
-      perspective: 1000px;
-      height: 110px;
-      cursor: pointer;
-    }
+        /* Contenu sous la porte (la surprise) */
+        .door-content {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #fffdf5, #f5e6ca);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 6px; box-sizing: border-box;
+            border-radius: 14px; border: 1.5px solid #d4a017;
+        }
+        .door-content .reward-emoji { font-size: 1.8rem; margin-bottom: 2px; }
+        .door-content .reward-text { font-size: 0.72rem; font-weight: 600; color: #4a2d0b; line-height: 1.1; }
 
-    .door-card {
-      position: relative;
-      width: 100%; height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 18px;
-    }
+        /* Vraie Porte avec effet de battant / rouleau */
+        .door-front {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #800c19, #b30000);
+            border: 2px solid #ffd700; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            color: #ffffff; font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 800;
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.5); cursor: pointer;
+            transform-origin: left center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s ease;
+            box-sizing: border-box; z-index: 2;
+        }
 
-    /* BATTANT DE LA PORTE (Face avant) */
-    .door-front {
-      position: absolute; width: 100%; height: 100%;
-      backface-visibility: hidden;
-      background: linear-gradient(135deg, rgba(185, 28, 28, 0.95), rgba(127, 29, 29, 0.95));
-      border: 2px solid #ffd700; border-radius: 18px;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      font-size: 28px; font-weight: 800; font-family: 'Cinzel', serif; color: #ffffff;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(255, 215, 0, 0.2);
-      transform-origin: left;
-      transition: all 0.4s ease;
-      z-index: 2;
-    }
+        .door-front::after {
+            content: "✨"; position: absolute; bottom: 6px; right: 8px; font-size: 0.75rem; opacity: 0.6;
+        }
 
-    .door-wrapper:hover .door-front:not(.locked) {
-      background: linear-gradient(135deg, #ffd700, #d4a017); color: #1a0f07;
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-    }
+        /* Animation style rouleau / porte qui tourne vers la gauche */
+        .door-frame.open .door-front {
+            transform: rotateY(-160deg) scaleX(0.85);
+            box-shadow: 10px 0 20px rgba(0,0,0,0.4);
+            pointer-events: none;
+        }
 
-    /* INTERIEUR DE LA CASE (Révélation) */
-    .door-back {
-      position: absolute; width: 100%; height: 100%;
-      background: radial-gradient(circle, #2d3748, #1a202c);
-      border: 1.5px dashed #ffd700; border-radius: 18px;
-      display: flex; justify-content: center; align-items: center;
-      font-size: 32px;
-      z-index: 1;
-    }
+        .door-frame.locked .door-front {
+            background: linear-gradient(135deg, #4a4a4a, #2c2c2c);
+            border-color: #888; cursor: not-allowed; opacity: 0.85;
+        }
 
-    /* ETAT VERROUILLÉ */
-    .door-front.locked {
-      background: rgba(30, 41, 59, 0.85);
-      border-color: rgba(148, 163, 184, 0.4);
-      color: #64748b;
-    }
-    .door-front.locked::after {
-      content: '🔒'; font-size: 14px; margin-top: 4px;
-    }
-
-    /* ANIMATION D'OUVERTURE DE PORTE 3D */
-    .door-wrapper.open .door-front {
-      transform: rotateY(-110deg);
-      opacity: 0.8;
-    }
-  </style>
+        /* Bouton Retour */
+        .btn-back {
+            margin-top: 20px; padding: 12px 30px; border-radius: 30px;
+            background: linear-gradient(135deg, #d4a017, #aa7c11);
+            color: #200407; border: 2px solid #fff; font-size: 0.95rem; font-weight: 700;
+            cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: all 0.3s ease;
+        }
+        .btn-back:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 25px rgba(0,0,0,0.4); }
+    </style>
 </head>
 <body>
 
-  <canvas id="snow-canvas"></canvas>
+    <!-- Bannière avec l'image demandée -->
+    <div class="header-banner">
+        <div class="header-title">📅 CALENDRIER DE L'AVENT</div>
+    </div>
 
-  <header>
-    <a href="index.html" class="btn-nav-back">⬅️ Menu Principal</a>
-    <h1 class="page-title">🎅 Calendrier de l'Avent</h1>
-    <div style="width: 140px;"></div>
-  </header>
+    <!-- Conteneur blanc transparent à 80% -->
+    <div class="calendar-container" id="calendar-grid">
+        <!-- Les 24 cases seront générées dynamiquement en JS -->
+    </div>
 
-  <div class="calendar-container">
-    <p class="calendar-subtitle">Clique sur une porte pour découvrir la surprise du jour ! 🎁</p>
-    <div id="advent-grid" class="advent-grid"></div>
-  </div>
+    <button class="btn-back" onclick="window.location.href='index.html'">⬅️ RETOUR AU MENU</button>
 
-  <script>
-    const UNLOCK_PASSWORD = "christmas";
-    let unlockedByPassword = {};
+<script>
+    // Liste des récompens/défis pour les 24 jours
+    const rewards = [
+        { emoji: "🍫", text: "Chocolat chaud gourmand !" },
+        { emoji: "🎬", text: "Soirée film de Noël" },
+        { emoji: "🎨", text: "Dessine un bonhomme de neige" },
+        { emoji: "🍪", text: "Cuisine des biscuits" },
+        { emoji: "🎁", text: "Avantage mystère débloqué !" },
+        { emoji: "🎶", text: "Écoute tes chants de Noël préférés" },
+        { emoji: "🎄", text: "Décore ton sapin" },
+        { emoji: "💌", text: "Envoie un mot doux à un proche" },
+        { emoji: "⭐", text: "Fais un vœu sous une étoile" },
+        { emoji: "🧩", text: "Résous le casse-tête du jour" },
+        { emoji: "🍵", text: "Thé de Noël aux épices" },
+        { emoji: "❄️", text: "Bataille de boules de neige virtuelle" },
+        { emoji: "📜", text: "Lis un conte de Noël" },
+        { emoji: "🕯️", text: "Allume une bougie parfumée" },
+        { emoji: "🎅", text: "Message secret du Père Noël" },
+        { emoji: "📷", text: "Prends une photo festive" },
+        { emoji: "🎁", text: "Un bonus exclusif !" },
+        { emoji: "🍬", text: "Déguste une sucrerie" },
+        { emoji: "🧸", text: "Fais une bonne action" },
+        { emoji: "🔔", text: "Fais tinter les cloches !" },
+        { emoji: "⛄", text: "Construis un igloo ou bonhomme" },
+        { emoji: "✨", text: "Soirée pyjama de Noël" },
+        { emoji: "🛷", text: "Prépa de la nuit magique" },
+        { emoji: "👑", text: "Joyeux Noël ! Cadeau final !" }
+    ];
 
-    function renderAdventGrid() {
-      const grid = document.getElementById('advent-grid');
-      grid.innerHTML = '';
-      const today = new Date();
-      const currentMonth = today.getMonth(); // 11 = Décembre
-      const currentDayNum = today.getDate();
+    function createCalendar() {
+        const grid = document.getElementById('calendar-grid');
+        const today = new Date();
+        const currentMonth = today.getMonth(); // 11 = Décembre
+        const currentDay = today.getDate();
 
-      // De 1 à 25 Décembre
-      for (let i = 1; i <= 25; i++) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'door-wrapper';
-        wrapper.id = `door-wrapper-${i}`;
+        // Récupérer l'état des portes ouvertes enregistrées dans le navigateur
+        const openedDoors = JSON.parse(localStorage.getItem('opened_advent_doors') || "[]");
 
-        const card = document.createElement('div');
-        card.className = 'door-card';
+        for (let i = 1; i <= 24; i++) {
+            const frame = document.createElement('div');
+            frame.className = 'door-frame';
 
-        // Intérieur de la porte (Surprise cachée)
-        const back = document.createElement('div');
-        back.className = 'door-back';
-        back.innerText = '✨';
+            // Vérification de la date (ouvert uniquement si on est en Décembre et au jour J)
+            const isAvailable = (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
 
-        // Face de la porte
-        const front = document.createElement('div');
-        front.className = 'door-front';
-        front.innerText = i;
+            if (!isAvailable) {
+                frame.classList.add('locked');
+            }
 
-        // Condition de déverrouillage (Jour passé/actuel ou mot de passe)
-        const isFuture = (currentMonth === 11 && i > currentDayNum) || currentMonth !== 11;
-        const isUnlockedByPass = unlockedByPassword[i] === true;
+            const reward = rewards[i - 1];
 
-        if (isFuture && !isUnlockedByPass) {
-          front.classList.add('locked');
-          wrapper.onclick = () => handleLockedDayClick(i);
-        } else {
-          wrapper.onclick = () => triggerDoorOpen(i);
+            frame.innerHTML = `
+                <div class="door-content">
+                    <div class="reward-emoji">${reward.emoji}</div>
+                    <div class="reward-text">${reward.text}</div>
+                </div>
+                <div class="door-front">${i}</div>
+            `;
+
+            const front = frame.querySelector('.door-front');
+
+            // Si la porte a déjà été ouverte auparavant
+            if (openedDoors.includes(i)) {
+                frame.classList.add('open');
+            }
+
+            front.addEventListener('click', () => {
+                if (frame.classList.contains('locked')) {
+                    alert(`🔒 Pas encore ! La porte ${i} s'ouvrira le ${i} Décembre.`);
+                    return;
+                }
+
+                if (!frame.classList.contains('open')) {
+                    frame.classList.add('open');
+                    
+                    // Lancer du confetti à l'ouverture
+                    if (typeof confetti === 'function') {
+                        confetti({
+                            particleCount: 40, spread: 60, origin: { y: 0.7 },
+                            colors: ['#ffd700', '#b30000', '#ffffff']
+                        });
+                    }
+
+                    // Sauvegarder la porte ouverte
+                    if (!openedDoors.includes(i)) {
+                        openedDoors.push(i);
+                        localStorage.setItem('opened_advent_doors', JSON.stringify(openedDoors));
+                    }
+                }
+            });
+
+            grid.appendChild(frame);
         }
-
-        card.appendChild(back);
-        card.appendChild(front);
-        wrapper.appendChild(card);
-        grid.appendChild(wrapper);
-      }
     }
 
-    function handleLockedDayClick(day) {
-      const input = prompt(`🔒 Jour ${day} verrouillé !\nMot de passe pour tester en avance :`);
-      if (input !== null && input.trim().toLowerCase() === UNLOCK_PASSWORD) {
-        unlockedByPassword[day] = true;
-        renderAdventGrid();
-        triggerDoorOpen(day);
-      } else if (input !== null) {
-        alert("❌ Mot de passe incorrect !");
-      }
-    }
-
-    // ANIMATION ET REDIRECTION VERS DÉCEMBRE X
-    function triggerDoorOpen(day) {
-      const doorWrapper = document.getElementById(`door-wrapper-${day}`);
-      
-      if (!doorWrapper.classList.contains('open')) {
-        // Déclenche l'animation d'ouverture 3D
-        doorWrapper.classList.add('open');
-
-        // Confettis légers
-        if (typeof confetti === 'function') {
-          confetti({
-            particleCount: 50,
-            spread: 60,
-            origin: { y: 0.7 }
-          });
-        }
-
-        // Redirection fluide vers la page GitHub (December1.html, December2.html, etc.)
-        setTimeout(() => {
-          window.location.href = `December${day}.html`;
-        }, 900); // 900ms pour laisser l'animation de porte se terminer
-      }
-    }
-
-    /* ---- EFFET DE NEIGE DYNAMIQUE CANVAS ---- */
-    const canvas = document.getElementById('snow-canvas');
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-
-    const flakes = Array.from({ length: 65 }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      radius: Math.random() * 3 + 1,
-      speed: Math.random() * 1 + 0.5,
-      wind: Math.random() * 0.5 - 0.25
-    }));
-
-    function animateSnow() {
-      ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.beginPath();
-      
-      flakes.forEach(f => {
-        ctx.moveTo(f.x, f.y);
-        ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
-        f.y += f.speed;
-        f.x += f.wind;
-        if (f.y > height) f.y = -5;
-        if (f.x > width) f.x = 0;
-        if (f.x < 0) f.x = width;
-      });
-
-      ctx.fill();
-      requestAnimationFrame(animateSnow);
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      renderAdventGrid();
-      animateSnow();
-    });
-  </script>
+    window.addEventListener('DOMContentLoaded', createCalendar);
+</script>
 </body>
 </html>
