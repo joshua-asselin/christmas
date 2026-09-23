@@ -13,44 +13,43 @@
         body, html {
             margin: 0; padding: 0; min-height: 100vh; width: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            background-image: url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
-            background-size: cover; background-position: center; background-attachment: fixed;
+            background-color: #0b131f; /* Fond sombre propre sans impacter l'index */
             font-family: 'Poppins', sans-serif; box-sizing: border-box; padding-bottom: 40px;
         }
 
-        /* Bannière supérieure */
+        /* Rectangle/Bannière en haut avec ton image */
         .header-banner {
-            margin-top: 20px;
+            margin-top: 25px;
             width: 90%; max-width: 880px; height: 180px;
             background-image: url('https://i.postimg.cc/Kc7F8rdr/53a6d70e-6093-4bdd-a3d0-3b43e8c70781-885x590.jpg');
             background-size: cover; background-position: center;
             border-radius: 20px; border: 3px solid #d4a017;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
             display: flex; align-items: center; justify-content: center;
             position: relative; overflow: hidden;
         }
 
         .header-title {
-            background: rgba(10, 15, 25, 0.65);
-            backdrop-filter: blur(5px);
+            background: rgba(10, 15, 25, 0.7);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
             padding: 12px 28px; border-radius: 40px;
             border: 1.5px solid #ffd700; color: #ffffff;
             font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800;
             text-shadow: 0 0 12px rgba(255, 215, 0, 0.6); text-align: center;
         }
 
-        /* Conteneur principal semi-transparent blanc (80%) */
+        /* Conteneur principal BLANC TRANSPARENT À 80% en bas */
         .calendar-container {
             margin-top: 25px; width: 90%; max-width: 880px;
             background: rgba(255, 255, 255, 0.80);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border-radius: 24px; border: 2.5px solid #d4a017;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3); padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); padding: 25px;
             display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px;
             box-sizing: border-box;
         }
 
-        /* Responsive : adaptations pour smartphones et tablettes */
+        /* Responsive : écran mobile et tablette */
         @media (max-width: 768px) {
             .calendar-container { grid-template-columns: repeat(4, 1fr); padding: 15px; gap: 10px; }
             .header-banner { height: 130px; }
@@ -60,14 +59,14 @@
             .calendar-container { grid-template-columns: repeat(3, 1fr); }
         }
 
-        /* Style des Portes / Cases (effet 3D & Rouleau) */
+        /* Animation des cases (Rouleau 3D) */
         .door-frame {
             position: relative; height: 110px; perspective: 1000px;
             border-radius: 14px; overflow: hidden;
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
-        /* Contenu sous la porte (la surprise) */
+        /* Contenu sous la porte (Cadeau / Surprise) */
         .door-content {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #fffdf5, #f5e6ca);
@@ -78,7 +77,7 @@
         .door-content .reward-emoji { font-size: 1.8rem; margin-bottom: 2px; }
         .door-content .reward-text { font-size: 0.72rem; font-weight: 600; color: #4a2d0b; line-height: 1.1; }
 
-        /* Vraie Porte avec effet de battant / rouleau */
+        /* Porte rouge style papier/rouleau */
         .door-front {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #800c19, #b30000);
@@ -95,7 +94,7 @@
             content: "✨"; position: absolute; bottom: 6px; right: 8px; font-size: 0.75rem; opacity: 0.6;
         }
 
-        /* Animation style rouleau / porte qui tourne vers la gauche */
+        /* Animation rouleau / porte pivotante vers la gauche */
         .door-frame.open .door-front {
             transform: rotateY(-160deg) scaleX(0.85);
             box-shadow: 10px 0 20px rgba(0,0,0,0.4);
@@ -109,54 +108,53 @@
 
         /* Bouton Retour */
         .btn-back {
-            margin-top: 20px; padding: 12px 30px; border-radius: 30px;
+            margin-top: 25px; padding: 12px 30px; border-radius: 30px;
             background: linear-gradient(135deg, #d4a017, #aa7c11);
             color: #200407; border: 2px solid #fff; font-size: 0.95rem; font-weight: 700;
-            cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: all 0.3s ease;
+            cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: all 0.3s ease;
         }
-        .btn-back:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 25px rgba(0,0,0,0.4); }
+        .btn-back:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 25px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
-    <!-- Bannière avec l'image demandée -->
+    <!-- Rectangle image dans le haut -->
     <div class="header-banner">
         <div class="header-title">📅 CALENDRIER DE L'AVENT</div>
     </div>
 
-    <!-- Conteneur blanc transparent à 80% -->
+    <!-- Fond blanc transparent (80%) pour les cases -->
     <div class="calendar-container" id="calendar-grid">
-        <!-- Les 24 cases seront générées dynamiquement en JS -->
+        <!-- Généré dynamiquement en JS -->
     </div>
 
     <button class="btn-back" onclick="window.location.href='index.html'">⬅️ RETOUR AU MENU</button>
 
 <script>
-    // Liste des récompens/défis pour les 24 jours
     const rewards = [
         { emoji: "🍫", text: "Chocolat chaud gourmand !" },
         { emoji: "🎬", text: "Soirée film de Noël" },
         { emoji: "🎨", text: "Dessine un bonhomme de neige" },
         { emoji: "🍪", text: "Cuisine des biscuits" },
         { emoji: "🎁", text: "Avantage mystère débloqué !" },
-        { emoji: "🎶", text: "Écoute tes chants de Noël préférés" },
+        { emoji: "🎶", text: "Écoute tes chants préférés" },
         { emoji: "🎄", text: "Décore ton sapin" },
-        { emoji: "💌", text: "Envoie un mot doux à un proche" },
-        { emoji: "⭐", text: "Fais un vœu sous une étoile" },
-        { emoji: "🧩", text: "Résous le casse-tête du jour" },
+        { emoji: "💌", text: "Envoie un mot doux" },
+        { emoji: "⭐", text: "Fais un vœu" },
+        { emoji: "🧩", text: "Résous le casse-tête" },
         { emoji: "🍵", text: "Thé de Noël aux épices" },
-        { emoji: "❄️", text: "Bataille de boules de neige virtuelle" },
+        { emoji: "❄️", text: "Bataille de boules de neige" },
         { emoji: "📜", text: "Lis un conte de Noël" },
         { emoji: "🕯️", text: "Allume une bougie parfumée" },
-        { emoji: "🎅", text: "Message secret du Père Noël" },
+        { emoji: "🎅", text: "Message du Père Noël" },
         { emoji: "📷", text: "Prends une photo festive" },
         { emoji: "🎁", text: "Un bonus exclusif !" },
         { emoji: "🍬", text: "Déguste une sucrerie" },
         { emoji: "🧸", text: "Fais une bonne action" },
         { emoji: "🔔", text: "Fais tinter les cloches !" },
-        { emoji: "⛄", text: "Construis un igloo ou bonhomme" },
+        { emoji: "⛄", text: "Construis un bonhomme de neige" },
         { emoji: "✨", text: "Soirée pyjama de Noël" },
-        { emoji: "🛷", text: "Prépa de la nuit magique" },
+        { emoji: "🛷", text: "Nuit magique en approche" },
         { emoji: "👑", text: "Joyeux Noël ! Cadeau final !" }
     ];
 
@@ -166,14 +164,12 @@
         const currentMonth = today.getMonth(); // 11 = Décembre
         const currentDay = today.getDate();
 
-        // Récupérer l'état des portes ouvertes enregistrées dans le navigateur
         const openedDoors = JSON.parse(localStorage.getItem('opened_advent_doors') || "[]");
 
         for (let i = 1; i <= 24; i++) {
             const frame = document.createElement('div');
             frame.className = 'door-frame';
 
-            // Vérification de la date (ouvert uniquement si on est en Décembre et au jour J)
             const isAvailable = (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
 
             if (!isAvailable) {
@@ -192,7 +188,6 @@
 
             const front = frame.querySelector('.door-front');
 
-            // Si la porte a déjà été ouverte auparavant
             if (openedDoors.includes(i)) {
                 frame.classList.add('open');
             }
@@ -206,7 +201,6 @@
                 if (!frame.classList.contains('open')) {
                     frame.classList.add('open');
                     
-                    // Lancer du confetti à l'ouverture
                     if (typeof confetti === 'function') {
                         confetti({
                             particleCount: 40, spread: 60, origin: { y: 0.7 },
@@ -214,7 +208,6 @@
                         });
                     }
 
-                    // Sauvegarder la porte ouverte
                     if (!openedDoors.includes(i)) {
                         openedDoors.push(i);
                         localStorage.setItem('opened_advent_doors', JSON.stringify(openedDoors));
