@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Les 300 Défis de Noël</title>
     
+    <!-- Préchargement critique des images pour un affichage instantané -->
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1543589077-47d5199462d7?auto=format&fit=crop&w=1200&q=75">
+    <link rel="preload" as="image" href="https://png.pngtree.com/png-vector/20220612/ourmid/pngtree-vintage-scroll-banner-illustration-png-image_4987820.png">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -15,7 +19,8 @@
             margin: 0; padding: 0; height: 100%; width: 100%;
             display: flex; justify-content: center; align-items: center;
             overflow: hidden;
-            background-image: url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
+            background-color: #0a0f18; /* Fond par défaut le temps du chargement */
+            background-image: url('https://images.unsplash.com/photo-1543589077-47d5199462d7?auto=format&fit=crop&w=1200&q=75');
             background-size: cover; background-position: center;
             font-family: 'Poppins', sans-serif;
         }
@@ -260,7 +265,7 @@
 
 <div class="container" id="main-container">
     <div id="list-view">
-        <img id="main-scroll-bg" src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
+        <img id="main-scroll-bg" src="https://png.pngtree.com/png-vector/20220612/ourmid/pngtree-vintage-scroll-banner-illustration-png-image_4987820.png" class="parchemin-img" alt="Parchemin">
         
         <div class="scroll-box">
             
