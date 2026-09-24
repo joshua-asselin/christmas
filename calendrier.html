@@ -5,29 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendrier de l'Avent</title>
     
+    <!-- Supabase SDK & Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Poppins:wght@400;600;700&display=swap');
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body, html {
             margin: 0; padding: 0; min-height: 100vh; width: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            /* Image d'arrière-plan globale */
             background-image: linear-gradient(rgba(11, 19, 31, 0.75), rgba(11, 19, 31, 0.75)), 
                               url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
             background-size: cover; background-position: center; background-attachment: fixed;
-            font-family: 'Poppins', sans-serif; padding-bottom: 25px;
+            font-family: 'Poppins', sans-serif; padding-bottom: 20px; overflow-x: hidden;
         }
 
-        /* Bannière supérieure en plein écran/large */
+        /* Bannière supérieure */
         .header-banner {
             margin-top: 15px;
-            width: 95%; max-width: 1400px; height: 140px;
+            width: 95%; max-width: 1300px; height: 130px;
             background-image: url('https://i.postimg.cc/Kc7F8rdr/53a6d70e-6093-4bdd-a3d0-3b43e8c70781-885x590.jpg');
             background-size: cover; background-position: center;
             border-radius: 20px; border: 3px solid #d4a017;
@@ -42,12 +41,12 @@
             backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
             padding: 10px 30px; border-radius: 40px;
             border: 1.5px solid #ffd700; color: #ffffff;
-            font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800;
+            font-family: 'Cinzel', serif; font-size: 1.7rem; font-weight: 800;
             text-shadow: 0 0 12px rgba(255, 215, 0, 0.6); text-align: center;
             transition: all 0.3s ease;
         }
 
-        /* Animation Clignotement (Flash) 4 fois */
+        /* Animation Flash 4 fois */
         @keyframes flashAnim {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.2; transform: scale(1.03); color: #ffd700; }
@@ -57,68 +56,57 @@
             animation: flashAnim 0.5s ease-in-out 4;
         }
 
-        /* Conteneur principal semi-transparent blanc */
+        /* Conteneur des 25 portes */
         .calendar-container {
-            margin-top: 15px; width: 95%; max-width: 1400px;
+            margin-top: 15px; width: 95%; max-width: 1300px;
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border-radius: 24px; border: 2.5px solid #d4a017;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4); padding: 18px;
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+            border-radius: 20px; border: 2.5px solid #d4a017;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); padding: 15px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
         }
 
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .calendar-container { grid-template-columns: repeat(4, 1fr); }
-        }
+        /* Responsive design */
+        @media (max-width: 1024px) { .calendar-container { grid-template-columns: repeat(4, 1fr); } }
         @media (max-width: 768px) {
-            .calendar-container { grid-template-columns: repeat(3, 1fr); padding: 12px; gap: 8px; }
-            .header-banner { height: 110px; }
-            .header-title { font-size: 1.2rem; padding: 6px 16px; }
+            .calendar-container { grid-template-columns: repeat(3, 1fr); padding: 10px; gap: 8px; }
+            .header-banner { height: 100px; }
+            .header-title { font-size: 1.1rem; padding: 6px 15px; }
         }
-        @media (max-width: 480px) {
-            .calendar-container { grid-template-columns: repeat(2, 1fr); }
-        }
+        @media (max-width: 480px) { .calendar-container { grid-template-columns: repeat(2, 1fr); } }
 
-        /* Case / Porte du calendrier */
+        /* Porte du calendrier */
         .door-frame {
-            position: relative; height: 100px; perspective: 1000px;
+            position: relative; height: 95px; perspective: 1000px;
             border-radius: 12px; overflow: hidden;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
-        /* Contenu sous la porte */
         .door-content {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #fffdf5, #f5e6ca);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 6px;
+            text-align: center; padding: 4px;
             border-radius: 12px; border: 1.5px solid #d4a017;
             overflow: hidden;
         }
 
-        /* Grand numéro en arrière-plan */
         .door-bg-number {
-            position: absolute;
-            font-family: 'Cinzel', serif;
-            font-size: 3.8rem;
-            font-weight: 800;
-            color: rgba(212, 160, 23, 0.18);
-            z-index: 0;
-            pointer-events: none;
-            user-select: none;
+            position: absolute; font-family: 'Cinzel', serif;
+            font-size: 3.5rem; font-weight: 800;
+            color: rgba(212, 160, 23, 0.18); z-index: 0;
+            pointer-events: none; user-select: none;
         }
 
-        .door-content .reward-emoji { font-size: 1.6rem; margin-bottom: 2px; z-index: 1; }
-        .door-content .reward-text { font-size: 0.72rem; font-weight: 600; color: #4a2d0b; line-height: 1.1; z-index: 1; }
+        .door-content .reward-emoji { font-size: 1.5rem; margin-bottom: 2px; z-index: 1; }
+        .door-content .reward-text { font-size: 0.7rem; font-weight: 600; color: #4a2d0b; line-height: 1.1; z-index: 1; }
 
-        /* Porte extérieure */
         .door-front {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #800c19, #b30000);
             border: 2px solid #ffd700; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            color: #ffffff; font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 800;
+            color: #ffffff; font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 800;
             text-shadow: 1px 2px 4px rgba(0,0,0,0.5); cursor: pointer;
             transform-origin: left center;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s ease;
@@ -126,10 +114,9 @@
         }
 
         .door-front::after {
-            content: "✨"; position: absolute; bottom: 4px; right: 6px; font-size: 0.7rem; opacity: 0.6;
+            content: "✨"; position: absolute; bottom: 4px; right: 6px; font-size: 0.65rem; opacity: 0.6;
         }
 
-        /* Ouverture 3D */
         .door-frame.open .door-front {
             transform: rotateY(-160deg) scaleX(0.85);
             box-shadow: 10px 0 20px rgba(0,0,0,0.4);
@@ -141,32 +128,36 @@
             border-color: #888; cursor: not-allowed; opacity: 0.85;
         }
 
-        /* Bouton Retour */
         .btn-back {
-            margin-top: 18px; padding: 10px 30px; border-radius: 30px;
+            margin-top: 15px; padding: 10px 28px; border-radius: 30px;
             background: linear-gradient(135deg, #d4a017, #aa7c11);
-            color: #200407; border: 2px solid #fff; font-size: 0.95rem; font-weight: 700;
+            color: #200407; border: 2px solid #fff; font-size: 0.9rem; font-weight: 700;
             cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: all 0.3s ease;
         }
-        .btn-back:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 25px rgba(0,0,0,0.5); }
+        .btn-back:hover { transform: translateY(-3px) scale(1.03); }
     </style>
 </head>
 <body>
 
-    <!-- Bannière image avec interaction au survol -->
+    <!-- Bannière avec interaction au survol -->
     <div class="header-banner" id="banner">
         <div class="header-title" id="header-title">📅 CALENDRIER DE L'AVENT</div>
     </div>
 
-    <!-- Conteneur des 25 portes -->
+    <!-- Grille du calendrier -->
     <div class="calendar-container" id="calendar-grid"></div>
 
     <button class="btn-back" onclick="window.location.href='index.html'">⬅️ RETOUR AU MENU</button>
 
 <script>
-    let isBypassed = false;
+    const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjEwMDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
+    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-    // 25 Récompenses / Surprises
+    let currentUserEmail = "";
+    let isBypassed = false;
+    let openedDoors = [];
+
     const rewards = [
         { emoji: "🍫", text: "Chocolat chaud gourmand !" },
         { emoji: "🎬", text: "Soirée film de Noël" },
@@ -195,6 +186,51 @@
         { emoji: "🎅", text: "Joyeux Noël ! Grande surprise finale !" }
     ];
 
+    async function loadUserProgress() {
+        if (!supabaseClient) return;
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        
+        if (session && session.user) {
+            currentUserEmail = session.user.email.toLowerCase();
+        } else {
+            currentUserEmail = localStorage.getItem('last_active_email') || "guest@local";
+        }
+
+        // Récupération de l'avancement dans Supabase
+        const { data } = await supabaseClient
+            .from('advent_progress')
+            .select('opened_doors')
+            .eq('email', currentUserEmail)
+            .maybeSingle();
+
+        if (data && data.opened_doors) {
+            openedDoors = data.opened_doors;
+        } else {
+            // Sauvegarde locale de secours
+            openedDoors = JSON.parse(localStorage.getItem(`advent_doors_${currentUserEmail}`) || "[]");
+        }
+
+        createCalendar();
+    }
+
+    async function saveUserProgress(doorIndex) {
+        if (!openedDoors.includes(doorIndex)) {
+            openedDoors.push(doorIndex);
+        }
+
+        localStorage.setItem(`advent_doors_${currentUserEmail}`, JSON.stringify(openedDoors));
+
+        if (supabaseClient && currentUserEmail) {
+            await supabaseClient
+                .from('advent_progress')
+                .upsert({
+                    email: currentUserEmail,
+                    opened_doors: openedDoors,
+                    updated_at: new Date()
+                }, { onConflict: 'email' });
+        }
+    }
+
     function createCalendar() {
         const grid = document.getElementById('calendar-grid');
         grid.innerHTML = '';
@@ -202,13 +238,10 @@
         const currentMonth = today.getMonth(); // 11 = Décembre
         const currentDay = today.getDate();
 
-        const openedDoors = JSON.parse(localStorage.getItem('opened_advent_doors') || "[]");
-
         for (let i = 1; i <= 25; i++) {
             const frame = document.createElement('div');
             frame.className = 'door-frame';
 
-            // Condition de déverrouillage
             const isAvailable = isBypassed || (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
 
             if (!isAvailable) {
@@ -248,10 +281,7 @@
                         });
                     }
 
-                    if (!openedDoors.includes(i)) {
-                        openedDoors.push(i);
-                        localStorage.setItem('opened_advent_doors', JSON.stringify(openedDoors));
-                    }
+                    saveUserProgress(i);
                 }
             });
 
@@ -259,7 +289,7 @@
         }
     }
 
-    // Gestion de l'animation au survol du rectangle du haut
+    // Animation au survol de la bannière supérieure
     function setupHeaderAnimation() {
         const banner = document.getElementById('banner');
         const title = document.getElementById('header-title');
@@ -278,7 +308,6 @@
             title.innerText = dateText;
             title.classList.add('flashing');
 
-            // Arrête le clignotement après 2 secondes (4 cycles de 0.5s)
             setTimeout(() => {
                 title.classList.remove('flashing');
             }, 2000);
@@ -291,7 +320,7 @@
         });
     }
 
-    // Code Passe-partout : taper "christmas" débloque tout
+    // Code Bypass : taper "christmas" au clavier déverrouille toutes les portes
     let secretInput = "";
     window.addEventListener('keydown', (e) => {
         secretInput += e.key.toLowerCase();
@@ -306,7 +335,7 @@
     });
 
     window.addEventListener('DOMContentLoaded', () => {
-        createCalendar();
+        loadUserProgress();
         setupHeaderAnimation();
     });
 </script>
