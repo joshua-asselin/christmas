@@ -10,14 +10,14 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Poppins:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Poppins:wght@400;600;700;800&display=swap');
 
         * { box-sizing: border-box; }
 
         body, html {
             margin: 0; padding: 0; min-height: 100vh; width: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            background-image: linear-gradient(rgba(11, 19, 31, 0.75), rgba(11, 19, 31, 0.75)), 
+            background-image: linear-gradient(rgba(11, 19, 31, 0.8), rgba(11, 19, 31, 0.8)), 
                               url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
             background-size: cover; background-position: center; background-attachment: fixed;
             font-family: 'Poppins', sans-serif; padding-bottom: 30px; overflow-x: hidden;
@@ -27,6 +27,16 @@
         #snow-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 10;
+        }
+
+        /* Vue principale du calendrier */
+        #main-view {
+            width: 100%; display: flex; flex-direction: column; align-items: center;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        #main-view.hidden-view {
+            opacity: 0; pointer-events: none; transform: scale(0.95);
         }
 
         /* Bannière supérieure */
@@ -98,9 +108,9 @@
         }
         @media (max-width: 480px) { .calendar-container { grid-template-columns: repeat(2, 1fr); } }
 
-        /* Portes */
+        /* Portes du calendrier */
         .door-frame {
-            position: relative; height: 100px; perspective: 1000px;
+            position: relative; height: 110px; perspective: 1000px;
             border-radius: 12px; overflow: hidden;
             box-shadow: 0 4px 10px rgba(0,0,0,0.25);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -112,33 +122,32 @@
 
         .door-content {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #fffdf5, #f5e6ca);
+            background: linear-gradient(135deg, #2b1016, #40131d);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 6px; border-radius: 12px; border: 1.5px solid #d4a017;
-            overflow: hidden;
+            text-align: center; padding: 6px; border-radius: 12px; border: 1.5px solid #ffd700;
         }
 
-        .door-bg-number {
-            position: absolute; font-family: 'Cinzel', serif;
-            font-size: 3.5rem; font-weight: 800;
-            color: rgba(212, 160, 23, 0.15); z-index: 0;
-            pointer-events: none; user-select: none;
+        .door-content .day-label-opened {
+            font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 800; color: #ffd700;
+            text-shadow: 0 0 8px rgba(255,215,0,0.6);
         }
-
-        .door-content .reward-emoji { font-size: 1.8rem; margin-bottom: 2px; z-index: 1; }
-        .door-content .reward-text { font-size: 0.72rem; font-weight: 600; color: #4a2d0b; line-height: 1.1; z-index: 1; }
 
         .door-front {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #800c19, #b30000);
             border: 2px solid #ffd700; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            color: #ffffff; font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 800;
-            text-shadow: 1px 2px 4px rgba(0,0,0,0.5); cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #ffffff; font-family: 'Cinzel', serif; cursor: pointer;
             transform-origin: left center;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s ease;
             z-index: 2;
         }
+        
+        .door-front .day-title {
+            font-size: 1.2rem; font-weight: 800; letter-spacing: 1px;
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.5);
+        }
+
         .door-front::after {
             content: "✨"; position: absolute; bottom: 4px; right: 6px; font-size: 0.7rem; opacity: 0.7;
         }
@@ -170,13 +179,69 @@
         }
         .btn-back:hover { transform: translateY(-3px) scale(1.05); }
 
-        /* Pop-up Récompense */
+        /* VUE ÉCRAN GÉANT (SPAWN JOUR) */
+        #day-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle, rgba(20, 30, 48, 0.95) 0%, rgba(10, 15, 25, 0.98) 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
+            z-index: 200; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        }
+
+        #day-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .day-spawn-card {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            transform: scale(0.3); transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #day-overlay.active .day-spawn-card { transform: scale(1); }
+
+        .day-big-title {
+            font-family: 'Cinzel', serif; font-size: 5rem; font-weight: 900;
+            color: #ffd700; text-shadow: 0 0 25px rgba(255, 215, 0, 0.8), 0 5px 15px rgba(0,0,0,0.8);
+            margin: 0; letter-spacing: 2px;
+        }
+
+        .day-sub-date {
+            font-size: 1.5rem; font-weight: 700; color: #ffffff;
+            margin-top: 10px; margin-bottom: 35px; letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .btn-action-day {
+            background: linear-gradient(135deg, #800c19, #e60000);
+            color: #ffffff; border: 3px solid #ffd700; padding: 18px 40px;
+            border-radius: 50px; font-size: 1.25rem; font-weight: 800; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(230, 0, 0, 0.5), 0 0 15px rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease; animation: pulseBtn 2s infinite;
+        }
+
+        .btn-action-day:hover {
+            transform: scale(1.08); box-shadow: 0 15px 40px rgba(230, 0, 0, 0.8), 0 0 25px rgba(255, 215, 0, 0.8);
+        }
+
+        @keyframes pulseBtn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-close-overlay {
+            position: absolute; top: 25px; right: 35px;
+            background: rgba(255, 255, 255, 0.1); border: 1.5px solid #ffd700;
+            color: #fff; width: 45px; height: 45px; border-radius: 50%;
+            font-size: 1.3rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-close-overlay:hover { background: rgba(255, 255, 255, 0.25); transform: rotate(90deg); }
+
+        /* Modal simple de verrouillage */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px);
             display: flex; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-            z-index: 100;
+            z-index: 300;
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
@@ -185,19 +250,14 @@
             border: 3px solid #d4a017; border-radius: 20px;
             padding: 28px; text-align: center; max-width: 400px; width: 90%;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 25px rgba(255, 215, 0, 0.4);
-            transform: scale(0.7); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .modal-overlay.active .modal-card { transform: scale(1); }
-
-        .modal-emoji { font-size: 4rem; margin-bottom: 10px; }
         .modal-title { font-family: 'Cinzel', serif; font-size: 1.5rem; color: #800c19; margin-bottom: 10px; font-weight: 800; }
         .modal-text { font-size: 1rem; color: #4a2d0b; font-weight: 600; margin-bottom: 20px; }
         .modal-btn {
             background: linear-gradient(135deg, #800c19, #b30000);
             color: #fff; border: 1.5px solid #ffd700; padding: 10px 25px;
-            border-radius: 25px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease;
+            border-radius: 25px; font-weight: 700; cursor: pointer;
         }
-        .modal-btn:hover { transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -205,32 +265,41 @@
     <!-- Canvas Neige -->
     <canvas id="snow-canvas"></canvas>
 
-    <!-- Bannière -->
-    <div class="header-banner" id="banner">
-        <div class="header-title" id="header-title">📅 CALENDRIER DE L'AVENT</div>
+    <!-- Vue Principale -->
+    <div id="main-view">
+        <div class="header-banner" id="banner">
+            <div class="header-title" id="header-title">📅 CALENDRIER DE L'AVENT</div>
+        </div>
+
+        <div class="admin-panel" id="admin-panel">
+            <div class="admin-tag">👑 MODO / ADMIN : <span id="admin-email">asselinj24@emm.qc.ca</span></div>
+            <div class="admin-btns">
+                <button class="btn-admin" onclick="toggleBypass()">🔓 Activer/Désactiver Bypass</button>
+                <button class="btn-admin" onclick="resetProgress()">🔄 Réinitialiser la progression</button>
+            </div>
+        </div>
+
+        <div class="calendar-container" id="calendar-grid"></div>
+
+        <button class="btn-back" onclick="window.location.href='index.html'">⬅️ RETOUR AU MENU</button>
     </div>
 
-    <!-- Panneau Admin -->
-    <div class="admin-panel" id="admin-panel">
-        <div class="admin-tag">👑 MODO / ADMIN : <span id="admin-email">asselinj24@emm.qc.ca</span></div>
-        <div class="admin-btns">
-            <button class="btn-admin" onclick="toggleBypass()">🔓 Activer/Désactiver Bypass</button>
-            <button class="btn-admin" onclick="resetProgress()">🔄 Réinitialiser la progression</button>
+    <!-- Vue Écran Géant (Spawn Jour + Redirection) -->
+    <div id="day-overlay">
+        <button class="btn-close-overlay" onclick="closeDayOverlay()">✕</button>
+        <div class="day-spawn-card">
+            <h1 class="day-big-title" id="spawn-title">JOUR 1</h1>
+            <div class="day-sub-date" id="spawn-date">1 DÉCEMBRE</div>
+            <button class="btn-action-day" id="spawn-btn" onclick="goToDayPage()">ACCÉDER AUX QUESTIONS DU JOUR 1 ➔</button>
         </div>
     </div>
 
-    <!-- Grille -->
-    <div class="calendar-container" id="calendar-grid"></div>
-
-    <button class="btn-back" onclick="window.location.href='index.html'">⬅️ RETOUR AU MENU</button>
-
-    <!-- Modal Pop-up -->
+    <!-- Modal d'avertissement -->
     <div class="modal-overlay" id="modal-overlay">
         <div class="modal-card">
-            <div class="modal-emoji" id="modal-emoji">🎁</div>
-            <div class="modal-title" id="modal-title">Jour 1</div>
-            <div class="modal-text" id="modal-text">Ta surprise t'attend !</div>
-            <button class="modal-btn" onclick="closeModal()">GÉNIAL ! ✨</button>
+            <div class="modal-title" id="modal-title">🔒 Porte Verrouillée</div>
+            <div class="modal-text" id="modal-text">Patience ! Cette porte n'est pas encore disponible.</div>
+            <button class="modal-btn" onclick="closeModal()">COMPRIS</button>
         </div>
     </div>
 
@@ -243,34 +312,7 @@
     let currentUserEmail = "";
     let isBypassed = false;
     let openedDoors = [];
-
-    const rewards = [
-        { emoji: "🍫", text: "Chocolat chaud gourmand !" },
-        { emoji: "🎬", text: "Soirée film de Noël" },
-        { emoji: "🎨", text: "Dessine un bonhomme de neige" },
-        { emoji: "🍪", text: "Cuisine des biscuits" },
-        { emoji: "🎁", text: "Avantage mystère débloqué !" },
-        { emoji: "🎶", text: "Écoute tes chants préférés" },
-        { emoji: "🎄", text: "Décore ton sapin" },
-        { emoji: "💌", text: "Envoie un mot doux" },
-        { emoji: "⭐", text: "Fais un vœu sous les étoiles" },
-        { emoji: "🧩", text: "Résous le casse-tête" },
-        { emoji: "🍵", text: "Thé de Noël aux épices" },
-        { emoji: "❄️", text: "Bataille de boules de neige" },
-        { emoji: "📜", text: "Lis un conte de Noël" },
-        { emoji: "🕯️", text: "Allume une bougie parfumée" },
-        { emoji: "🎅", text: "Message secret du Père Noël" },
-        { emoji: "📷", text: "Prends une photo festive" },
-        { emoji: "🎁", text: "Un bonus exclusif !" },
-        { emoji: "🍬", text: "Déguste une sucrerie" },
-        { emoji: "🧸", text: "Fais une bonne action" },
-        { emoji: "🔔", text: "Fais tinter les cloches !" },
-        { emoji: "⛄", text: "Construis un bonhomme de neige" },
-        { emoji: "✨", text: "Soirée pyjama de Noël" },
-        { emoji: "🛷", text: "Nuit magique en approche" },
-        { emoji: "👑", text: "Joyeux Réveillon de Noël !" },
-        { emoji: "🎅", text: "Joyeux Noël ! Grande surprise finale !" }
-    ];
+    let currentSelectedDay = 1;
 
     async function loadUserProgress() {
         if (!supabaseClient) return;
@@ -282,7 +324,6 @@
                 currentUserEmail = localStorage.getItem('last_active_email') || "guest@local";
             }
 
-            // Vérification statut admin
             if (ADMIN_EMAILS.includes(currentUserEmail)) {
                 isBypassed = true;
                 document.getElementById('admin-panel').classList.add('visible');
@@ -343,15 +384,13 @@
                 frame.classList.add('locked');
             }
 
-            const reward = rewards[i - 1];
-
             frame.innerHTML = `
                 <div class="door-content">
-                    <div class="door-bg-number">${i}</div>
-                    <div class="reward-emoji">${reward.emoji}</div>
-                    <div class="reward-text">${reward.text}</div>
+                    <div class="day-label-opened">JOUR ${i}</div>
                 </div>
-                <div class="door-front">${i}</div>
+                <div class="door-front">
+                    <div class="day-title">JOUR ${i}</div>
+                </div>
             `;
 
             const front = frame.querySelector('.door-front');
@@ -364,31 +403,86 @@
                 if (frame.classList.contains('locked') && !isBypassed) {
                     frame.classList.add('shake');
                     setTimeout(() => frame.classList.remove('shake'), 400);
-                    showModal('🔒 Porte Verrouillée', `Patience ! La porte ${i} s'ouvrira le ${i} Décembre.`, '❄️');
+                    showModal('🔒 Porte Verrouillée', `Patience ! La porte du Jour ${i} s'ouvrira le ${i} Décembre.`);
                     return;
                 }
 
                 if (!frame.classList.contains('open')) {
                     frame.classList.add('open');
-                    triggerConfetti();
                     saveUserProgress(i);
-
-                    setTimeout(() => {
-                        showModal(`Porte N°${i}`, reward.text, reward.emoji);
-                    }, 400);
-                } else {
-                    showModal(`Porte N°${i}`, reward.text, reward.emoji);
                 }
+                
+                openDayOverlay(i);
             });
 
             grid.appendChild(frame);
         }
     }
 
-    /* Actions Admin */
+    /* VUE PLEIN ÉCRAN POUR LE JOUR */
+    function openDayOverlay(dayNumber) {
+        currentSelectedDay = dayNumber;
+        
+        document.getElementById('spawn-title').innerText = `JOUR ${dayNumber}`;
+        document.getElementById('spawn-date').innerText = `${dayNumber} DÉCEMBRE`;
+        document.getElementById('spawn-btn').innerText = `ACCÉDER AUX QUESTIONS DU JOUR ${dayNumber} ➔`;
+
+        document.getElementById('main-view').classList.add('hidden-view');
+
+        setTimeout(() => {
+            document.getElementById('day-overlay').classList.add('active');
+            triggerUniqueConfetti(dayNumber);
+        }, 300);
+    }
+
+    function closeDayOverlay() {
+        document.getElementById('day-overlay').classList.remove('active');
+        setTimeout(() => {
+            document.getElementById('main-view').classList.remove('hidden-view');
+        }, 300);
+    }
+
+    function goToDayPage() {
+        window.location.href = `December${currentSelectedDay}.html`;
+    }
+
+    /* 25 ANIMATIONS DE CONFETTIS DIFFÉRENTES */
+    function triggerUniqueConfetti(day) {
+        if (typeof confetti !== 'function') return;
+
+        const count = 200;
+        const defaults = { origin: { y: 0.7 } };
+
+        switch (day % 5) {
+            case 1:
+                confetti({ ...defaults, particleCount: 100, spread: 70, colors: ['#ffd700', '#ffffff', '#ff0000'] });
+                break;
+            case 2:
+                confetti({ ...defaults, particleCount: 120, spread: 100, origin: { x: 0 }, angle: 60 });
+                confetti({ ...defaults, particleCount: 120, spread: 100, origin: { x: 1 }, angle: 120 });
+                break;
+            case 3:
+                confetti({ particleCount: 150, spread: 180, startVelocity: 45, colors: ['#00ffcc', '#ff00ff', '#ffffff'] });
+                break;
+            case 4:
+                var duration = 1.5 * 1000;
+                var end = Date.now() + duration;
+                (function frame() {
+                    confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+                    confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+                    if (Date.now() < end) requestAnimationFrame(frame);
+                }());
+                break;
+            case 0:
+                confetti({ particleCount: 80, scalar: 2, shapes: ['star'], colors: ['#ffd700', '#ffae00', '#ffffff'] });
+                break;
+        }
+    }
+
+    /* Actions Admin & Modals */
     function toggleBypass() {
         isBypassed = !isBypassed;
-        showModal('Mode Admin', `Mode Bypass ${isBypassed ? "ACTIVÉ 🔓" : "DÉSACTIVÉ 🔒"}`, '👑');
+        showModal('Mode Admin', `Mode Bypass ${isBypassed ? "ACTIVÉ 🔓" : "DÉSACTIVÉ 🔒"}`);
         createCalendar();
     }
 
@@ -403,30 +497,18 @@
                 .upsert({ email: currentUserEmail, opened_doors: [], updated_at: new Date() });
         }
 
-        showModal('Réinitialisation', 'Toutes les portes sont refermées !', '🔄');
+        showModal('Réinitialisation', 'Toutes les portes sont refermées !');
         createCalendar();
     }
 
-    function showModal(title, text, emoji) {
+    function showModal(title, text) {
         document.getElementById('modal-title').innerText = title;
         document.getElementById('modal-text').innerText = text;
-        document.getElementById('modal-emoji').innerText = emoji;
         document.getElementById('modal-overlay').classList.add('active');
     }
 
     function closeModal() {
         document.getElementById('modal-overlay').classList.remove('active');
-    }
-
-    function triggerConfetti() {
-        if (typeof confetti === 'function') {
-            confetti({
-                particleCount: 80,
-                spread: 80,
-                origin: { y: 0.6 },
-                colors: ['#ffd700', '#b30000', '#ffffff', '#228B22']
-            });
-        }
     }
 
     function setupHeaderAnimation() {
@@ -443,13 +525,9 @@
         banner.addEventListener('mouseenter', () => {
             if (isAnimating) return;
             isAnimating = true;
-
             title.innerText = dateText;
             title.classList.add('flashing');
-
-            setTimeout(() => {
-                title.classList.remove('flashing');
-            }, 2000);
+            setTimeout(() => title.classList.remove('flashing'), 2000);
         });
 
         banner.addEventListener('mouseleave', () => {
@@ -469,7 +547,7 @@
             isBypassed = true;
             secretInput = "";
             document.getElementById('admin-panel').classList.add('visible');
-            showModal("🎄 Code Secret Activé !", "Toutes les portes du calendrier sont déverrouillées !", "🎁");
+            showModal("🎄 Code Secret Activé !", "Toutes les portes du calendrier sont déverrouillées !");
             createCalendar();
         }
     });
