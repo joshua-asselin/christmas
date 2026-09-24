@@ -10,43 +10,61 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Poppins:wght@400;600;700&display=swap');
 
+        * {
+            box-sizing: border-box;
+        }
+
         body, html {
             margin: 0; padding: 0; min-height: 100vh; width: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            background-color: #0b131f;
-            font-family: 'Poppins', sans-serif; box-sizing: border-box; padding-bottom: 40px;
+            /* Image d'arrière-plan globale */
+            background-image: linear-gradient(rgba(11, 19, 31, 0.75), rgba(11, 19, 31, 0.75)), 
+                              url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            font-family: 'Poppins', sans-serif; padding-bottom: 25px;
         }
 
         /* Bannière supérieure en plein écran/large */
         .header-banner {
-            margin-top: 20px;
-            width: 95%; max-width: 1400px; height: 180px;
+            margin-top: 15px;
+            width: 95%; max-width: 1400px; height: 140px;
             background-image: url('https://i.postimg.cc/Kc7F8rdr/53a6d70e-6093-4bdd-a3d0-3b43e8c70781-885x590.jpg');
             background-size: cover; background-position: center;
             border-radius: 20px; border: 3px solid #d4a017;
             box-shadow: 0 10px 25px rgba(0,0,0,0.6);
             display: flex; align-items: center; justify-content: center;
             position: relative; overflow: hidden;
+            cursor: pointer;
         }
 
         .header-title {
-            background: rgba(10, 15, 25, 0.7);
+            background: rgba(10, 15, 25, 0.75);
             backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-            padding: 12px 35px; border-radius: 40px;
+            padding: 10px 30px; border-radius: 40px;
             border: 1.5px solid #ffd700; color: #ffffff;
-            font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 800;
+            font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800;
             text-shadow: 0 0 12px rgba(255, 215, 0, 0.6); text-align: center;
+            transition: all 0.3s ease;
         }
 
-        /* Conteneur principal semi-transparent blanc élargi */
+        /* Animation Clignotement (Flash) 4 fois */
+        @keyframes flashAnim {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(1.03); color: #ffd700; }
+        }
+
+        .header-title.flashing {
+            animation: flashAnim 0.5s ease-in-out 4;
+        }
+
+        /* Conteneur principal semi-transparent blanc */
         .calendar-container {
-            margin-top: 20px; width: 95%; max-width: 1400px;
+            margin-top: 15px; width: 95%; max-width: 1400px;
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border-radius: 24px; border: 2.5px solid #d4a017;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4); padding: 25px;
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
-            box-sizing: border-box;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); padding: 18px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
         }
 
         /* Responsive */
@@ -54,64 +72,64 @@
             .calendar-container { grid-template-columns: repeat(4, 1fr); }
         }
         @media (max-width: 768px) {
-            .calendar-container { grid-template-columns: repeat(3, 1fr); padding: 15px; gap: 10px; }
-            .header-banner { height: 130px; }
-            .header-title { font-size: 1.3rem; padding: 8px 20px; }
+            .calendar-container { grid-template-columns: repeat(3, 1fr); padding: 12px; gap: 8px; }
+            .header-banner { height: 110px; }
+            .header-title { font-size: 1.2rem; padding: 6px 16px; }
         }
         @media (max-width: 480px) {
             .calendar-container { grid-template-columns: repeat(2, 1fr); }
         }
 
-        /* Animation des cases (3D Roll) */
+        /* Case / Porte du calendrier */
         .door-frame {
-            position: relative; height: 120px; perspective: 1000px;
-            border-radius: 14px; overflow: hidden;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            position: relative; height: 100px; perspective: 1000px;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
         }
 
-        /* Contenu sous la porte (avec grand numéro en arrière-plan) */
+        /* Contenu sous la porte */
         .door-content {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #fffdf5, #f5e6ca);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 8px; box-sizing: border-box;
-            border-radius: 14px; border: 1.5px solid #d4a017;
+            text-align: center; padding: 6px;
+            border-radius: 12px; border: 1.5px solid #d4a017;
             overflow: hidden;
         }
 
-        /* Grand numéro filigrane en arrière-plan */
+        /* Grand numéro en arrière-plan */
         .door-bg-number {
             position: absolute;
             font-family: 'Cinzel', serif;
-            font-size: 4.5rem;
+            font-size: 3.8rem;
             font-weight: 800;
-            color: rgba(212, 160, 23, 0.15);
+            color: rgba(212, 160, 23, 0.18);
             z-index: 0;
             pointer-events: none;
             user-select: none;
         }
 
-        .door-content .reward-emoji { font-size: 1.8rem; margin-bottom: 2px; z-index: 1; }
-        .door-content .reward-text { font-size: 0.78rem; font-weight: 600; color: #4a2d0b; line-height: 1.2; z-index: 1; }
+        .door-content .reward-emoji { font-size: 1.6rem; margin-bottom: 2px; z-index: 1; }
+        .door-content .reward-text { font-size: 0.72rem; font-weight: 600; color: #4a2d0b; line-height: 1.1; z-index: 1; }
 
-        /* Porte extérieure (Battant) */
+        /* Porte extérieure */
         .door-front {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #800c19, #b30000);
-            border: 2px solid #ffd700; border-radius: 14px;
+            border: 2px solid #ffd700; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            color: #ffffff; font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800;
+            color: #ffffff; font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 800;
             text-shadow: 1px 2px 4px rgba(0,0,0,0.5); cursor: pointer;
             transform-origin: left center;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s ease;
-            box-sizing: border-box; z-index: 2;
+            z-index: 2;
         }
 
         .door-front::after {
-            content: "✨"; position: absolute; bottom: 6px; right: 8px; font-size: 0.75rem; opacity: 0.6;
+            content: "✨"; position: absolute; bottom: 4px; right: 6px; font-size: 0.7rem; opacity: 0.6;
         }
 
-        /* Animation d'ouverture en rouleau vers la gauche */
+        /* Ouverture 3D */
         .door-frame.open .door-front {
             transform: rotateY(-160deg) scaleX(0.85);
             box-shadow: 10px 0 20px rgba(0,0,0,0.4);
@@ -125,9 +143,9 @@
 
         /* Bouton Retour */
         .btn-back {
-            margin-top: 25px; padding: 12px 35px; border-radius: 30px;
+            margin-top: 18px; padding: 10px 30px; border-radius: 30px;
             background: linear-gradient(135deg, #d4a017, #aa7c11);
-            color: #200407; border: 2px solid #fff; font-size: 1rem; font-weight: 700;
+            color: #200407; border: 2px solid #fff; font-size: 0.95rem; font-weight: 700;
             cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: all 0.3s ease;
         }
         .btn-back:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 25px rgba(0,0,0,0.5); }
@@ -135,12 +153,12 @@
 </head>
 <body>
 
-    <!-- Bannière image géante -->
-    <div class="header-banner">
-        <div class="header-title">📅 CALENDRIER DE L'AVENT</div>
+    <!-- Bannière image avec interaction au survol -->
+    <div class="header-banner" id="banner">
+        <div class="header-title" id="header-title">📅 CALENDRIER DE L'AVENT</div>
     </div>
 
-    <!-- Conteneur 25 cases large -->
+    <!-- Conteneur des 25 portes -->
     <div class="calendar-container" id="calendar-grid"></div>
 
     <button class="btn-back" onclick="window.location.href='index.html'">⬅️ RETOUR AU MENU</button>
@@ -148,7 +166,7 @@
 <script>
     let isBypassed = false;
 
-    // 25 Récompenses / Défis pour chaque jour
+    // 25 Récompenses / Surprises
     const rewards = [
         { emoji: "🍫", text: "Chocolat chaud gourmand !" },
         { emoji: "🎬", text: "Soirée film de Noël" },
@@ -179,7 +197,7 @@
 
     function createCalendar() {
         const grid = document.getElementById('calendar-grid');
-        grid.innerHTML = ''; // Réinitialiser le calendrier
+        grid.innerHTML = '';
         const today = new Date();
         const currentMonth = today.getMonth(); // 11 = Décembre
         const currentDay = today.getDate();
@@ -190,7 +208,7 @@
             const frame = document.createElement('div');
             frame.className = 'door-frame';
 
-            // Vérification de déverrouillage (soit la date, soit le mode Bypass actif)
+            // Condition de déverrouillage
             const isAvailable = isBypassed || (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
 
             if (!isAvailable) {
@@ -225,7 +243,7 @@
                     
                     if (typeof confetti === 'function') {
                         confetti({
-                            particleCount: 50, spread: 70, origin: { y: 0.7 },
+                            particleCount: 45, spread: 60, origin: { y: 0.7 },
                             colors: ['#ffd700', '#b30000', '#ffffff']
                         });
                     }
@@ -241,7 +259,39 @@
         }
     }
 
-    // Code Bypass : Taper "christmas" au clavier déverrouille automatiquement toutes les cases
+    // Gestion de l'animation au survol du rectangle du haut
+    function setupHeaderAnimation() {
+        const banner = document.getElementById('banner');
+        const title = document.getElementById('header-title');
+        const defaultText = "📅 CALENDRIER DE L'AVENT";
+        
+        const today = new Date();
+        const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+        const dateText = `📆 ${today.getDate()} ${months[today.getMonth()].toUpperCase()}`;
+
+        let isAnimating = false;
+
+        banner.addEventListener('mouseenter', () => {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            title.innerText = dateText;
+            title.classList.add('flashing');
+
+            // Arrête le clignotement après 2 secondes (4 cycles de 0.5s)
+            setTimeout(() => {
+                title.classList.remove('flashing');
+            }, 2000);
+        });
+
+        banner.addEventListener('mouseleave', () => {
+            title.innerText = defaultText;
+            title.classList.remove('flashing');
+            isAnimating = false;
+        });
+    }
+
+    // Code Passe-partout : taper "christmas" débloque tout
     let secretInput = "";
     window.addEventListener('keydown', (e) => {
         secretInput += e.key.toLowerCase();
@@ -250,12 +300,15 @@
         if (secretInput.includes("christmas")) {
             isBypassed = true;
             secretInput = "";
-            alert("🎄 Mode Noël Activé ! Toutes les portes sont déverrouillées !");
+            alert("🎄 Code 'christmas' activé ! Toutes les portes sont déverrouillées !");
             createCalendar();
         }
     });
 
-    window.addEventListener('DOMContentLoaded', createCalendar);
+    window.addEventListener('DOMContentLoaded', () => {
+        createCalendar();
+        setupHeaderAnimation();
+    });
 </script>
 </body>
 </html>
