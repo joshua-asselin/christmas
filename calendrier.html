@@ -106,8 +106,12 @@
             .calendar-container { grid-template-columns: repeat(3, 1fr); padding: 10px; gap: 8px; }
             .header-banner { height: 90px; }
             .header-title { font-size: 1.2rem; padding: 6px 15px; }
+            .day-big-title { font-size: 4.5rem !important; }
         }
-        @media (max-width: 480px) { .calendar-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { 
+            .calendar-container { grid-template-columns: repeat(2, 1fr); } 
+            .day-big-title { font-size: 3.2rem !important; }
+        }
 
         /* Portes du calendrier */
         .door-frame {
@@ -181,10 +185,10 @@
         }
         .btn-back:hover { transform: translateY(-3px) scale(1.05); background: #ffffff; }
 
-        /* OVERLAY TRANSCLUCIDE (LAISSE VOIR LE FOND D'ÉCRAN) */
+        /* OVERLAY TRANSLUCIDE (OPACITÉ À 45% + PREMIER PLAN POUR LE TEXTE) */
         #day-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.45);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
             z-index: 200; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -199,16 +203,18 @@
 
         #day-overlay.active .day-spawn-card { transform: scale(1); }
 
+        /* TEXTE DU JOUR EN BLANC PUR ET TRÈS GROS */
         .day-big-title {
-            font-family: 'Cinzel', serif; font-size: 6rem; font-weight: 900;
-            color: #ffffff !important; text-shadow: 0 0 30px rgba(255, 255, 255, 0.9), 0 5px 15px rgba(0,0,0,0.9);
-            margin: 0; letter-spacing: 2px;
+            font-family: 'Cinzel', serif; font-size: 8.5rem; font-weight: 900;
+            color: #ffffff !important; 
+            text-shadow: 0 0 35px rgba(255, 255, 255, 1), 0 8px 25px rgba(0,0,0,0.9);
+            margin: 0; letter-spacing: 3px;
         }
 
         .day-sub-date {
-            font-size: 1.8rem; font-weight: 700; color: #ffffff !important;
+            font-size: 2.2rem; font-weight: 800; color: #ffffff !important;
             margin-top: 10px; margin-bottom: 40px; letter-spacing: 2px;
-            text-transform: uppercase; text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            text-transform: uppercase; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(0,0,0,0.8);
         }
 
         .btn-action-day {
@@ -458,7 +464,7 @@
         window.location.href = `December${currentSelectedDay}.html`;
     }
 
-    /* ANIMATIONS DE CONFETTIS PENDANT 10 SECONDES */
+    /* ANIMATIONS DE CONFETTIS AU PREMIER PLAN (Z-INDEX SUPERIEUR) */
     function triggerUniqueConfetti(day) {
         if (typeof confetti !== 'function') return;
 
@@ -472,24 +478,27 @@
                 return clearInterval(interval);
             }
 
-            const particleCount = 50 * (timeLeft / duration);
+            // Options par défaut pour mettre les confettis tout devant
+            const defaultOptions = {
+                zIndex: 999999
+            };
 
             switch (day % 5) {
                 case 1:
-                    confetti({ particleCount: 15, spread: 80, origin: { y: 0.6 }, colors: ['#ffffff', '#ff0000', '#ffd700'] });
+                    confetti({ ...defaultOptions, particleCount: 15, spread: 80, origin: { y: 0.6 }, colors: ['#ffffff', '#ff0000', '#ffd700'] });
                     break;
                 case 2:
-                    confetti({ particleCount: 10, angle: 60, spread: 55, origin: { x: 0 } });
-                    confetti({ particleCount: 10, angle: 120, spread: 55, origin: { x: 1 } });
+                    confetti({ ...defaultOptions, particleCount: 10, angle: 60, spread: 55, origin: { x: 0 } });
+                    confetti({ ...defaultOptions, particleCount: 10, angle: 120, spread: 55, origin: { x: 1 } });
                     break;
                 case 3:
-                    confetti({ particleCount: 20, spread: 100, startVelocity: 30, origin: { y: 0.8 }, colors: ['#00ffcc', '#ffffff', '#ff00ff'] });
+                    confetti({ ...defaultOptions, particleCount: 20, spread: 100, startVelocity: 30, origin: { y: 0.8 }, colors: ['#00ffcc', '#ffffff', '#ff00ff'] });
                     break;
                 case 4:
-                    confetti({ particleCount: 15, scalar: 1.2, shapes: ['circle'], origin: { x: Math.random(), y: Math.random() - 0.2 } });
+                    confetti({ ...defaultOptions, particleCount: 15, scalar: 1.2, shapes: ['circle'], origin: { x: Math.random(), y: Math.random() - 0.2 } });
                     break;
                 case 0:
-                    confetti({ particleCount: 15, scalar: 1.5, shapes: ['star'], colors: ['#ffffff', '#ffd700', '#ffae00'] });
+                    confetti({ ...defaultOptions, particleCount: 15, scalar: 1.5, shapes: ['star'], colors: ['#ffffff', '#ffd700', '#ffae00'] });
                     break;
             }
         }, 250);
