@@ -17,10 +17,11 @@
         body, html {
             margin: 0; padding: 0; min-height: 100vh; width: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            background-image: linear-gradient(rgba(11, 19, 31, 0.8), rgba(11, 19, 31, 0.8)), 
-                              url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
+            /* NOUVEAU BACKGROUND ICI */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), 
+                              url('https://i.postimg.cc/PxR6NvbB/a2781225b39a14644c5673928f1b8f0b.jpg');
             background-size: cover; background-position: center; background-attachment: fixed;
-            font-family: 'Poppins', sans-serif; padding-bottom: 30px; overflow-x: hidden;
+            font-family: 'Poppins', sans-serif; overflow-x: hidden; color: #ffffff;
         }
 
         /* Canvas Chute de Neige */
@@ -29,9 +30,10 @@
             pointer-events: none; z-index: 10;
         }
 
-        /* Vue principale du calendrier */
+        /* Vue principale du calendrier prend toute la page */
         #main-view {
-            width: 100%; display: flex; flex-direction: column; align-items: center;
+            width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+            justify-content: space-between; padding: 20px;
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
@@ -41,12 +43,11 @@
 
         /* Bannière supérieure */
         .header-banner {
-            margin-top: 15px;
-            width: 95%; max-width: 1300px; height: 120px;
+            width: 98%; height: 110px;
             background-image: url('https://i.postimg.cc/Kc7F8rdr/53a6d70e-6093-4bdd-a3d0-3b43e8c70781-885x590.jpg');
             background-size: cover; background-position: center;
-            border-radius: 20px; border: 3px solid #d4a017;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6), 0 0 20px rgba(255, 215, 0, 0.3);
+            border-radius: 20px; border: 3px solid #ffffff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6), 0 0 20px rgba(255, 255, 255, 0.4);
             display: flex; align-items: center; justify-content: center;
             position: relative; overflow: hidden; cursor: pointer;
             z-index: 1; transition: transform 0.3s ease;
@@ -54,48 +55,48 @@
         .header-banner:hover { transform: scale(1.01); }
 
         .header-title {
-            background: rgba(10, 15, 25, 0.85);
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            padding: 10px 30px; border-radius: 40px;
-            border: 2px solid #ffd700; color: #ffffff;
-            font-family: 'Cinzel', serif; font-size: 1.7rem; font-weight: 800;
-            text-shadow: 0 0 12px rgba(255, 215, 0, 0.8); text-align: center;
+            padding: 12px 35px; border-radius: 40px;
+            border: 2px solid #ffffff; color: #ffffff;
+            font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 800;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9); text-align: center;
             transition: all 0.3s ease;
         }
 
         @keyframes flashAnim {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(1.05); color: #ffd700; text-shadow: 0 0 20px #ffd700; }
+            50% { opacity: 0.4; transform: scale(1.05); color: #ffffff; text-shadow: 0 0 25px #ffffff; }
         }
         .header-title.flashing { animation: flashAnim 0.5s ease-in-out 4; }
 
         /* Section Admin */
         .admin-panel {
             display: none;
-            width: 95%; max-width: 1300px; margin-top: 15px;
-            background: rgba(20, 10, 30, 0.9); border: 2px solid #ffd700;
-            border-radius: 15px; padding: 12px 20px; color: #fff;
+            width: 98%; margin-top: 10px;
+            background: rgba(0, 0, 0, 0.85); border: 2px solid #ffffff;
+            border-radius: 15px; padding: 12px 20px; color: #ffffff;
             align-items: center; justify-content: space-between;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); z-index: 1;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); z-index: 1;
             flex-wrap: wrap; gap: 10px;
         }
         .admin-panel.visible { display: flex; }
-        .admin-tag { font-weight: 700; color: #ffd700; font-size: 0.95rem; }
+        .admin-tag { font-weight: 700; color: #ffffff; font-size: 0.95rem; }
         .admin-btns { display: flex; gap: 10px; }
         .btn-admin {
-            background: #800c19; color: #fff; border: 1px solid #ffd700;
+            background: #800c19; color: #ffffff; border: 1px solid #ffffff;
             padding: 6px 14px; border-radius: 20px; font-weight: 600;
             font-size: 0.82rem; cursor: pointer; transition: all 0.2s ease;
         }
         .btn-admin:hover { background: #b30000; transform: scale(1.04); }
 
-        /* Conteneur du Calendrier */
+        /* Conteneur du Calendrier Plein Écran */
         .calendar-container {
-            margin-top: 15px; width: 95%; max-width: 1300px;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border-radius: 20px; border: 2.5px solid #d4a017;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 15px rgba(255, 215, 0, 0.2); 
+            margin-top: 15px; margin-bottom: 15px; width: 98%; flex-grow: 1;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px; border: 2.5px solid #ffffff;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 15px rgba(255, 255, 255, 0.2); 
             padding: 18px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
             z-index: 1;
         }
@@ -103,39 +104,39 @@
         @media (max-width: 1024px) { .calendar-container { grid-template-columns: repeat(4, 1fr); } }
         @media (max-width: 768px) {
             .calendar-container { grid-template-columns: repeat(3, 1fr); padding: 10px; gap: 8px; }
-            .header-banner { height: 95px; }
-            .header-title { font-size: 1.1rem; padding: 6px 15px; }
+            .header-banner { height: 90px; }
+            .header-title { font-size: 1.2rem; padding: 6px 15px; }
         }
         @media (max-width: 480px) { .calendar-container { grid-template-columns: repeat(2, 1fr); } }
 
         /* Portes du calendrier */
         .door-frame {
-            position: relative; height: 110px; perspective: 1000px;
+            position: relative; min-height: 100px; height: 100%; perspective: 1000px;
             border-radius: 12px; overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .door-frame:hover:not(.locked) {
             transform: translateY(-4px);
-            box-shadow: 0 8px 18px rgba(212, 160, 23, 0.4);
+            box-shadow: 0 8px 18px rgba(255, 255, 255, 0.4);
         }
 
         .door-content {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #2b1016, #40131d);
+            background: linear-gradient(135deg, #111111, #222222);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 6px; border-radius: 12px; border: 1.5px solid #ffd700;
+            text-align: center; padding: 6px; border-radius: 12px; border: 1.5px solid #ffffff;
         }
 
         .door-content .day-label-opened {
-            font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 800; color: #ffd700;
-            text-shadow: 0 0 8px rgba(255,215,0,0.6);
+            font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 800; color: #ffffff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
         }
 
         .door-front {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #800c19, #b30000);
-            border: 2px solid #ffd700; border-radius: 12px;
+            border: 2px solid #ffffff; border-radius: 12px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: #ffffff; font-family: 'Cinzel', serif; cursor: pointer;
             transform-origin: left center;
@@ -144,23 +145,23 @@
         }
         
         .door-front .day-title {
-            font-size: 1.2rem; font-weight: 800; letter-spacing: 1px;
-            text-shadow: 1px 2px 4px rgba(0,0,0,0.5);
+            font-size: 1.3rem; font-weight: 800; letter-spacing: 1px; color: #ffffff;
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.7);
         }
 
         .door-front::after {
-            content: "✨"; position: absolute; bottom: 4px; right: 6px; font-size: 0.7rem; opacity: 0.7;
+            content: "✨"; position: absolute; bottom: 4px; right: 6px; font-size: 0.8rem; opacity: 0.8;
         }
 
         .door-frame.open .door-front {
             transform: rotateY(-160deg) scaleX(0.85);
-            box-shadow: 10px 0 20px rgba(0,0,0,0.4);
+            box-shadow: 10px 0 20px rgba(0,0,0,0.5);
             pointer-events: none;
         }
 
         .door-frame.locked .door-front {
-            background: linear-gradient(135deg, #3a3a3a, #1f1f1f);
-            border-color: #777; cursor: not-allowed; opacity: 0.85;
+            background: linear-gradient(135deg, #2b2b2b, #151515);
+            border-color: #888888; cursor: not-allowed; opacity: 0.85;
         }
 
         @keyframes shake {
@@ -171,21 +172,21 @@
         .door-frame.shake { animation: shake 0.4s ease; }
 
         .btn-back {
-            margin-top: 18px; padding: 12px 32px; border-radius: 30px;
-            background: linear-gradient(135deg, #d4a017, #aa7c11);
-            color: #200407; border: 2px solid #fff; font-size: 1rem; font-weight: 700;
-            cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: all 0.3s ease;
+            margin-bottom: 10px; padding: 12px 35px; border-radius: 30px;
+            background: linear-gradient(135deg, #ffffff, #dddddd);
+            color: #000000; border: 2px solid #ffffff; font-size: 1rem; font-weight: 800;
+            cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.5); transition: all 0.3s ease;
             z-index: 1;
         }
-        .btn-back:hover { transform: translateY(-3px) scale(1.05); }
+        .btn-back:hover { transform: translateY(-3px) scale(1.05); background: #ffffff; }
 
         /* VUE ÉCRAN GÉANT (SPAWN JOUR) */
         #day-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle, rgba(20, 30, 48, 0.95) 0%, rgba(10, 15, 25, 0.98) 100%);
+            background: rgba(0, 0, 0, 0.92);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
-            z-index: 200; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            z-index: 200; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         }
 
         #day-overlay.active { opacity: 1; pointer-events: auto; }
@@ -198,27 +199,27 @@
         #day-overlay.active .day-spawn-card { transform: scale(1); }
 
         .day-big-title {
-            font-family: 'Cinzel', serif; font-size: 5rem; font-weight: 900;
-            color: #ffd700; text-shadow: 0 0 25px rgba(255, 215, 0, 0.8), 0 5px 15px rgba(0,0,0,0.8);
+            font-family: 'Cinzel', serif; font-size: 6rem; font-weight: 900;
+            color: #ffffff; text-shadow: 0 0 30px rgba(255, 255, 255, 0.9), 0 5px 15px rgba(0,0,0,0.9);
             margin: 0; letter-spacing: 2px;
         }
 
         .day-sub-date {
-            font-size: 1.5rem; font-weight: 700; color: #ffffff;
-            margin-top: 10px; margin-bottom: 35px; letter-spacing: 1px;
-            text-transform: uppercase;
+            font-size: 1.8rem; font-weight: 700; color: #ffffff;
+            margin-top: 10px; margin-bottom: 40px; letter-spacing: 2px;
+            text-transform: uppercase; text-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
 
         .btn-action-day {
             background: linear-gradient(135deg, #800c19, #e60000);
-            color: #ffffff; border: 3px solid #ffd700; padding: 18px 40px;
-            border-radius: 50px; font-size: 1.25rem; font-weight: 800; cursor: pointer;
-            box-shadow: 0 10px 30px rgba(230, 0, 0, 0.5), 0 0 15px rgba(255, 215, 0, 0.5);
+            color: #ffffff; border: 3px solid #ffffff; padding: 20px 45px;
+            border-radius: 50px; font-size: 1.35rem; font-weight: 800; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(230, 0, 0, 0.6), 0 0 20px rgba(255, 255, 255, 0.6);
             transition: all 0.3s ease; animation: pulseBtn 2s infinite;
         }
 
         .btn-action-day:hover {
-            transform: scale(1.08); box-shadow: 0 15px 40px rgba(230, 0, 0, 0.8), 0 0 25px rgba(255, 215, 0, 0.8);
+            transform: scale(1.08); box-shadow: 0 15px 40px rgba(230, 0, 0, 0.9), 0 0 30px rgba(255, 255, 255, 0.9);
         }
 
         @keyframes pulseBtn {
@@ -229,16 +230,16 @@
 
         .btn-close-overlay {
             position: absolute; top: 25px; right: 35px;
-            background: rgba(255, 255, 255, 0.1); border: 1.5px solid #ffd700;
-            color: #fff; width: 45px; height: 45px; border-radius: 50%;
-            font-size: 1.3rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.15); border: 1.5px solid #ffffff;
+            color: #ffffff; width: 50px; height: 50px; border-radius: 50%;
+            font-size: 1.5rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;
         }
-        .btn-close-overlay:hover { background: rgba(255, 255, 255, 0.25); transform: rotate(90deg); }
+        .btn-close-overlay:hover { background: rgba(255, 255, 255, 0.35); transform: rotate(90deg); }
 
         /* Modal simple de verrouillage */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
             display: flex; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
             z-index: 300;
@@ -246,16 +247,17 @@
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
         .modal-card {
-            background: linear-gradient(135deg, #fffdf5, #f5e6ca);
-            border: 3px solid #d4a017; border-radius: 20px;
-            padding: 28px; text-align: center; max-width: 400px; width: 90%;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 25px rgba(255, 215, 0, 0.4);
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            border: 2.5px solid #ffffff; border-radius: 20px;
+            padding: 30px; text-align: center; max-width: 420px; width: 90%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 25px rgba(255, 255, 255, 0.3);
+            color: #ffffff;
         }
-        .modal-title { font-family: 'Cinzel', serif; font-size: 1.5rem; color: #800c19; margin-bottom: 10px; font-weight: 800; }
-        .modal-text { font-size: 1rem; color: #4a2d0b; font-weight: 600; margin-bottom: 20px; }
+        .modal-title { font-family: 'Cinzel', serif; font-size: 1.6rem; color: #ffffff; margin-bottom: 12px; font-weight: 800; }
+        .modal-text { font-size: 1rem; color: #dddddd; font-weight: 600; margin-bottom: 25px; }
         .modal-btn {
             background: linear-gradient(135deg, #800c19, #b30000);
-            color: #fff; border: 1.5px solid #ffd700; padding: 10px 25px;
+            color: #ffffff; border: 1.5px solid #ffffff; padding: 12px 30px;
             border-radius: 25px; font-weight: 700; cursor: pointer;
         }
     </style>
@@ -446,37 +448,41 @@
         window.location.href = `December${currentSelectedDay}.html`;
     }
 
-    /* 25 ANIMATIONS DE CONFETTIS DIFFÉRENTES */
+    /* 25 ANIMATIONS DE CONFETTIS QUI DURENT 5.5 SECONDES */
     function triggerUniqueConfetti(day) {
         if (typeof confetti !== 'function') return;
 
-        const count = 200;
-        const defaults = { origin: { y: 0.7 } };
+        const duration = 5.5 * 1000;
+        const animationEnd = Date.now() + duration;
 
-        switch (day % 5) {
-            case 1:
-                confetti({ ...defaults, particleCount: 100, spread: 70, colors: ['#ffd700', '#ffffff', '#ff0000'] });
-                break;
-            case 2:
-                confetti({ ...defaults, particleCount: 120, spread: 100, origin: { x: 0 }, angle: 60 });
-                confetti({ ...defaults, particleCount: 120, spread: 100, origin: { x: 1 }, angle: 120 });
-                break;
-            case 3:
-                confetti({ particleCount: 150, spread: 180, startVelocity: 45, colors: ['#00ffcc', '#ff00ff', '#ffffff'] });
-                break;
-            case 4:
-                var duration = 1.5 * 1000;
-                var end = Date.now() + duration;
-                (function frame() {
-                    confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
-                    confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
-                    if (Date.now() < end) requestAnimationFrame(frame);
-                }());
-                break;
-            case 0:
-                confetti({ particleCount: 80, scalar: 2, shapes: ['star'], colors: ['#ffd700', '#ffae00', '#ffffff'] });
-                break;
-        }
+        const interval = setInterval(() => {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            const particleCount = 50 * (timeLeft / duration);
+
+            switch (day % 5) {
+                case 1:
+                    confetti({ particleCount: 15, spread: 80, origin: { y: 0.6 }, colors: ['#ffffff', '#ff0000', '#ffd700'] });
+                    break;
+                case 2:
+                    confetti({ particleCount: 10, angle: 60, spread: 55, origin: { x: 0 } });
+                    confetti({ particleCount: 10, angle: 120, spread: 55, origin: { x: 1 } });
+                    break;
+                case 3:
+                    confetti({ particleCount: 20, spread: 100, startVelocity: 30, origin: { y: 0.8 }, colors: ['#00ffcc', '#ffffff', '#ff00ff'] });
+                    break;
+                case 4:
+                    confetti({ particleCount: 15, scalar: 1.2, shapes: ['circle'], origin: { x: Math.random(), y: Math.random() - 0.2 } });
+                    break;
+                case 0:
+                    confetti({ particleCount: 15, scalar: 1.5, shapes: ['star'], colors: ['#ffffff', '#ffd700', '#ffae00'] });
+                    break;
+            }
+        }, 250);
     }
 
     /* Actions Admin & Modals */
@@ -564,7 +570,7 @@
         window.addEventListener('resize', resize);
         resize();
 
-        const flakes = Array.from({ length: 65 }, () => ({
+        const flakes = Array.from({ length: 75 }, () => ({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
             r: Math.random() * 3 + 1,
@@ -573,7 +579,7 @@
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+            ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
             ctx.beginPath();
             for (let f of flakes) {
                 ctx.moveTo(f.x, f.y);
