@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendrier de l'Avent</title>
+    <title>Calendrier de l'Avent Magique</title>
     
     <!-- Supabase SDK & Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -20,7 +20,13 @@
             background-image: linear-gradient(rgba(11, 19, 31, 0.75), rgba(11, 19, 31, 0.75)), 
                               url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
             background-size: cover; background-position: center; background-attachment: fixed;
-            font-family: 'Poppins', sans-serif; padding-bottom: 20px; overflow-x: hidden;
+            font-family: 'Poppins', sans-serif; padding-bottom: 30px; overflow-x: hidden;
+        }
+
+        /* Canvas pour l'effet de neige */
+        #snow-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10;
         }
 
         /* Bannière supérieure */
@@ -30,43 +36,41 @@
             background-image: url('https://i.postimg.cc/Kc7F8rdr/53a6d70e-6093-4bdd-a3d0-3b43e8c70781-885x590.jpg');
             background-size: cover; background-position: center;
             border-radius: 20px; border: 3px solid #d4a017;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6), 0 0 20px rgba(255, 215, 0, 0.3);
             display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden;
-            cursor: pointer;
+            position: relative; overflow: hidden; cursor: pointer;
+            z-index: 1; transition: transform 0.3s ease;
         }
+        .header-banner:hover { transform: scale(1.01); }
 
         .header-title {
-            background: rgba(10, 15, 25, 0.75);
-            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-            padding: 10px 30px; border-radius: 40px;
-            border: 1.5px solid #ffd700; color: #ffffff;
-            font-family: 'Cinzel', serif; font-size: 1.7rem; font-weight: 800;
-            text-shadow: 0 0 12px rgba(255, 215, 0, 0.6); text-align: center;
+            background: rgba(10, 15, 25, 0.85);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            padding: 12px 35px; border-radius: 40px;
+            border: 2px solid #ffd700; color: #ffffff;
+            font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800;
+            text-shadow: 0 0 12px rgba(255, 215, 0, 0.8); text-align: center;
             transition: all 0.3s ease;
         }
 
-        /* Animation Flash 4 fois */
         @keyframes flashAnim {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.2; transform: scale(1.03); color: #ffd700; }
+            50% { opacity: 0.3; transform: scale(1.05); color: #ffd700; text-shadow: 0 0 20px #ffd700; }
         }
 
-        .header-title.flashing {
-            animation: flashAnim 0.5s ease-in-out 4;
-        }
+        .header-title.flashing { animation: flashAnim 0.5s ease-in-out 4; }
 
         /* Conteneur des 25 portes */
         .calendar-container {
-            margin-top: 15px; width: 95%; max-width: 1300px;
+            margin-top: 20px; width: 95%; max-width: 1300px;
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border-radius: 20px; border: 2.5px solid #d4a017;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4); padding: 15px;
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 15px rgba(255, 215, 0, 0.2); 
+            padding: 20px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+            z-index: 1;
         }
 
-        /* Responsive design */
         @media (max-width: 1024px) { .calendar-container { grid-template-columns: repeat(4, 1fr); } }
         @media (max-width: 768px) {
             .calendar-container { grid-template-columns: repeat(3, 1fr); padding: 10px; gap: 8px; }
@@ -77,36 +81,40 @@
 
         /* Porte du calendrier */
         .door-frame {
-            position: relative; height: 95px; perspective: 1000px;
+            position: relative; height: 100px; perspective: 1000px;
             border-radius: 12px; overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .door-frame:hover:not(.locked) {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(212, 160, 23, 0.4);
         }
 
         .door-content {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #fffdf5, #f5e6ca);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 4px;
-            border-radius: 12px; border: 1.5px solid #d4a017;
+            text-align: center; padding: 6px; border-radius: 12px; border: 1.5px solid #d4a017;
             overflow: hidden;
         }
 
         .door-bg-number {
             position: absolute; font-family: 'Cinzel', serif;
             font-size: 3.5rem; font-weight: 800;
-            color: rgba(212, 160, 23, 0.18); z-index: 0;
+            color: rgba(212, 160, 23, 0.15); z-index: 0;
             pointer-events: none; user-select: none;
         }
 
-        .door-content .reward-emoji { font-size: 1.5rem; margin-bottom: 2px; z-index: 1; }
-        .door-content .reward-text { font-size: 0.7rem; font-weight: 600; color: #4a2d0b; line-height: 1.1; z-index: 1; }
+        .door-content .reward-emoji { font-size: 1.8rem; margin-bottom: 2px; z-index: 1; }
+        .door-content .reward-text { font-size: 0.72rem; font-weight: 600; color: #4a2d0b; line-height: 1.1; z-index: 1; }
 
         .door-front {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #800c19, #b30000);
             border: 2px solid #ffd700; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            color: #ffffff; font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 800;
+            color: #ffffff; font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 800;
             text-shadow: 1px 2px 4px rgba(0,0,0,0.5); cursor: pointer;
             transform-origin: left center;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s ease;
@@ -114,7 +122,7 @@
         }
 
         .door-front::after {
-            content: "✨"; position: absolute; bottom: 4px; right: 6px; font-size: 0.65rem; opacity: 0.6;
+            content: "✨"; position: absolute; bottom: 4px; right: 6px; font-size: 0.7rem; opacity: 0.7;
         }
 
         .door-frame.open .door-front {
@@ -124,30 +132,81 @@
         }
 
         .door-frame.locked .door-front {
-            background: linear-gradient(135deg, #4a4a4a, #2c2c2c);
-            border-color: #888; cursor: not-allowed; opacity: 0.85;
+            background: linear-gradient(135deg, #3a3a3a, #1f1f1f);
+            border-color: #777; cursor: not-allowed; opacity: 0.85;
         }
 
-        .btn-back {
-            margin-top: 15px; padding: 10px 28px; border-radius: 30px;
-            background: linear-gradient(135deg, #d4a017, #aa7c11);
-            color: #200407; border: 2px solid #fff; font-size: 0.9rem; font-weight: 700;
-            cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: all 0.3s ease;
+        /* Animation de secousse pour les cases verrouillées */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
         }
-        .btn-back:hover { transform: translateY(-3px) scale(1.03); }
+        .door-frame.shake { animation: shake 0.4s ease; }
+
+        .btn-back {
+            margin-top: 20px; padding: 12px 32px; border-radius: 30px;
+            background: linear-gradient(135deg, #d4a017, #aa7c11);
+            color: #200407; border: 2px solid #fff; font-size: 1rem; font-weight: 700;
+            cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: all 0.3s ease;
+            z-index: 1;
+        }
+        .btn-back:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 12px 25px rgba(212, 160, 23, 0.5); }
+
+        /* Pop-up / Modal pour la surprise */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-card {
+            background: linear-gradient(135deg, #fffdf5, #f5e6ca);
+            border: 3px solid #d4a017; border-radius: 20px;
+            padding: 30px; text-align: center; max-width: 400px; width: 90%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 25px rgba(255, 215, 0, 0.4);
+            transform: scale(0.7); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .modal-card { transform: scale(1); }
+
+        .modal-emoji { font-size: 4rem; margin-bottom: 10px; }
+        .modal-title { font-family: 'Cinzel', serif; font-size: 1.5rem; color: #800c19; margin-bottom: 10px; font-weight: 800; }
+        .modal-text { font-size: 1rem; color: #4a2d0b; font-weight: 600; margin-bottom: 20px; }
+        .modal-btn {
+            background: linear-gradient(135deg, #800c19, #b30000);
+            color: #fff; border: 1.5px solid #ffd700; padding: 10px 25px;
+            border-radius: 25px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease;
+        }
+        .modal-btn:hover { transform: scale(1.05); }
     </style>
 </head>
 <body>
 
-    <!-- Bannière avec interaction au survol -->
+    <!-- Canvas de neige -->
+    <canvas id="snow-canvas"></canvas>
+
+    <!-- Bannière supérieure -->
     <div class="header-banner" id="banner">
         <div class="header-title" id="header-title">📅 CALENDRIER DE L'AVENT</div>
     </div>
 
-    <!-- Grille du calendrier -->
+    <!-- Grille des cases -->
     <div class="calendar-container" id="calendar-grid"></div>
 
     <button class="btn-back" onclick="window.location.href='index.html'">⬅️ RETOUR AU MENU</button>
+
+    <!-- Fenêtre surgissante (Modal) -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-emoji" id="modal-emoji">🎁</div>
+            <div class="modal-title" id="modal-title">Jour 1</div>
+            <div class="modal-text" id="modal-text">Ta surprise t'attend !</div>
+            <button class="modal-btn" onclick="closeModal()">GÉNIAL ! ✨</button>
+        </div>
+    </div>
 
 <script>
     const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
@@ -188,26 +247,28 @@
 
     async function loadUserProgress() {
         if (!supabaseClient) return;
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        
-        if (session && session.user) {
-            currentUserEmail = session.user.email.toLowerCase();
-        } else {
-            currentUserEmail = localStorage.getItem('last_active_email') || "guest@local";
-        }
+        try {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session && session.user) {
+                currentUserEmail = session.user.email.toLowerCase();
+            } else {
+                currentUserEmail = localStorage.getItem('last_active_email') || "guest@local";
+            }
 
-        // Récupération de l'avancement dans Supabase
-        const { data } = await supabaseClient
-            .from('advent_progress')
-            .select('opened_doors')
-            .eq('email', currentUserEmail)
-            .maybeSingle();
+            const { data } = await supabaseClient
+                .from('advent_progress')
+                .select('opened_doors')
+                .eq('email', currentUserEmail)
+                .maybeSingle();
 
-        if (data && data.opened_doors) {
-            openedDoors = data.opened_doors;
-        } else {
-            // Sauvegarde locale de secours
-            openedDoors = JSON.parse(localStorage.getItem(`advent_doors_${currentUserEmail}`) || "[]");
+            if (data && data.opened_doors) {
+                openedDoors = data.opened_doors;
+            } else {
+                openedDoors = JSON.parse(localStorage.getItem(`advent_doors_${currentUserEmail}`) || "[]");
+            }
+        } catch (e) {
+            console.error(e);
+            openedDoors = JSON.parse(localStorage.getItem(`advent_doors_guest@local`) || "[]");
         }
 
         createCalendar();
@@ -267,21 +328,26 @@
 
             front.addEventListener('click', () => {
                 if (frame.classList.contains('locked') && !isBypassed) {
-                    alert(`🔒 Pas encore ! La porte ${i} s'ouvrira le ${i} Décembre.`);
+                    frame.classList.add('shake');
+                    setTimeout(() => frame.classList.remove('shake'), 400);
+                    showModal('🔒 Porte Verrouillée', `Patience ! La porte ${i} s'ouvrira le ${i} Décembre.`, '❄️');
                     return;
                 }
 
                 if (!frame.classList.contains('open')) {
                     frame.classList.add('open');
                     
-                    if (typeof confetti === 'function') {
-                        confetti({
-                            particleCount: 45, spread: 60, origin: { y: 0.7 },
-                            colors: ['#ffd700', '#b30000', '#ffffff']
-                        });
-                    }
+                    // Explosion de confettis
+                    triggerConfetti();
 
                     saveUserProgress(i);
+
+                    // Affichage du pop-up de récompense
+                    setTimeout(() => {
+                        showModal(`Porte N°${i}`, reward.text, reward.emoji);
+                    }, 400);
+                } else {
+                    showModal(`Porte N°${i}`, reward.text, reward.emoji);
                 }
             });
 
@@ -289,7 +355,31 @@
         }
     }
 
-    // Animation au survol de la bannière supérieure
+    /* Modal / Pop-up personnalisé */
+    function showModal(title, text, emoji) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-text').innerText = text;
+        document.getElementById('modal-emoji').innerText = emoji;
+        document.getElementById('modal-overlay').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('modal-overlay').classList.remove('active');
+    }
+
+    /* Animation Confetti */
+    function triggerConfetti() {
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 80,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#ffd700', '#b30000', '#ffffff', '#228B22']
+            });
+        }
+    }
+
+    /* Animation au survol de la bannière */
     function setupHeaderAnimation() {
         const banner = document.getElementById('banner');
         const title = document.getElementById('header-title');
@@ -320,7 +410,7 @@
         });
     }
 
-    // Code Bypass : taper "christmas" au clavier déverrouille toutes les portes
+    /* Code Bypass "christmas" */
     let secretInput = "";
     window.addEventListener('keydown', (e) => {
         secretInput += e.key.toLowerCase();
@@ -329,14 +419,60 @@
         if (secretInput.includes("christmas")) {
             isBypassed = true;
             secretInput = "";
-            alert("🎄 Code 'christmas' activé ! Toutes les portes sont déverrouillées !");
+            showModal("🎄 Code Secret Activé !", "Toutes les portes du calendrier sont déverrouillées !", "🎁");
             createCalendar();
         }
     });
 
+    /* Animation de chute de neige */
+    function initSnow() {
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const flakes = Array.from({ length: 65 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 3 + 1,
+            d: Math.random() * 1 + 0.5
+        }));
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+            ctx.beginPath();
+            for (let f of flakes) {
+                ctx.moveTo(f.x, f.y);
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+            }
+            ctx.fill();
+            update();
+            requestAnimationFrame(draw);
+        }
+
+        function update() {
+            for (let f of flakes) {
+                f.y += Math.cos(f.d) + 1 + f.r / 2;
+                f.x += Math.sin(f.d) * 0.5;
+                if (f.y > canvas.height) {
+                    f.y = -10;
+                    f.x = Math.random() * canvas.width;
+                }
+            }
+        }
+        draw();
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
         loadUserProgress();
         setupHeaderAnimation();
+        initSnow();
     });
 </script>
 </body>
