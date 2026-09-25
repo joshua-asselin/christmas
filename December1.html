@@ -1,1 +1,516 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jour 1 - Calendrier de l'Avent</title>
 
+    <!-- Supabase SDK & Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Poppins:wght@400;600;700;800&display=swap');
+
+        * { box-sizing: border-box; }
+
+        body, html {
+            margin: 0; padding: 0; min-height: 100vh; width: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), 
+                              url('https://i.postimg.cc/PxR6NvbB/a2781225b39a14644c5673928f1b8f0b.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            font-family: 'Poppins', sans-serif; color: #ffffff !important; overflow-x: hidden;
+        }
+
+        /* BANNIÈRE HAUT */
+        .page-header {
+            width: 98%; margin-top: 15px; padding: 15px;
+            background: rgba(0, 0, 0, 0.65); border: 2px solid #ffffff;
+            border-radius: 20px; text-align: center; backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .page-title {
+            font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 800; margin: 0;
+            text-shadow: 0 0 15px rgba(255,255,255,0.8);
+        }
+
+        .btn-header {
+            background: #800c19; color: #ffffff; border: 1.5px solid #ffffff;
+            padding: 8px 18px; border-radius: 20px; font-weight: 700; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: #b30000; transform: scale(1.05); }
+
+        /* PANNEAU ADMIN (CRÉATEUR DE QUESTION) */
+        .admin-creator-panel {
+            display: none; width: 95%; max-width: 900px; margin-top: 15px;
+            background: rgba(15, 15, 15, 0.95); border: 2px solid #ffd700;
+            border-radius: 20px; padding: 20px; box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            z-index: 100;
+        }
+        .admin-creator-panel.visible { display: block; }
+        .admin-title { font-family: 'Cinzel', serif; color: #ffd700; font-size: 1.5rem; margin-top: 0; text-align: center; }
+
+        .form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-weight: 700; font-size: 0.9rem; color: #dddddd; }
+        .form-control {
+            padding: 10px; border-radius: 10px; border: 1px solid #ffffff;
+            background: #222; color: #fff; font-family: inherit; font-size: 0.95rem;
+        }
+
+        .options-builder { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .option-row { display: flex; gap: 10px; align-items: center; }
+        .color-picker { width: 45px; height: 38px; border: none; border-radius: 8px; cursor: pointer; }
+
+        /* UI 1 : CHOIX DE DIFFICULTÉ */
+        #ui-1-main {
+            width: 95%; max-width: 900px; margin-top: 30px; display: flex;
+            flex-direction: column; align-items: center; gap: 20px;
+        }
+
+        .diff-card-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%;
+        }
+
+        .diff-card {
+            background: rgba(0, 0, 0, 0.65); border: 2.5px solid #ffffff;
+            border-radius: 20px; padding: 25px; text-align: center;
+            backdrop-filter: blur(10px); cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+        .diff-card:hover { transform: translateY(-5px) scale(1.03); border-color: #ffd700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); }
+
+        .diff-card.easy { border-color: #2ecc71; }
+        .diff-card.medium { border-color: #f39c12; }
+        .diff-card.hard { border-color: #e74c3c; }
+
+        .diff-title { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+
+        /* UI 2 : LES QUESTIONS (MAX 5) */
+        #ui-2-questions {
+            display: none; width: 95%; max-width: 900px; margin-top: 20px;
+            flex-direction: column; align-items: center; gap: 25px;
+        }
+        #ui-2-questions.visible { display: flex; }
+
+        .question-box {
+            width: 100%; background: rgba(0, 0, 0, 0.75); border: 2px solid #ffffff;
+            border-radius: 20px; padding: 25px; backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        .question-text { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+
+        /* KAHOOT STYLE BUTTONS (4 À 10 CHOIX) */
+        .kahoot-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%;
+        }
+
+        .btn-kahoot {
+            padding: 16px; border-radius: 12px; border: 2px solid #ffffff;
+            color: #ffffff; font-weight: 800; font-size: 1.1rem; cursor: pointer;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8); transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+        }
+        .btn-kahoot:hover { transform: scale(1.02); filter: brightness(1.2); }
+        .btn-kahoot.selected { border-color: #ffff00; box-shadow: 0 0 15px #ffff00; }
+
+        .input-text-answer {
+            width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ffffff;
+            background: rgba(255, 255, 255, 0.1); color: #fff; font-size: 1.1rem;
+            font-family: inherit; margin-bottom: 15px;
+        }
+
+        .btn-submit-q {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #fff; border: 2px solid #ffffff; padding: 12px 30px;
+            border-radius: 25px; font-weight: 800; font-size: 1rem; cursor: pointer;
+            margin-top: 10px; transition: transform 0.2s ease;
+        }
+        .btn-submit-q:hover { transform: scale(1.05); }
+
+        /* OVERLAY BRAVO ANIMATION GÉANTE */
+        #bravo-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+            z-index: 99999;
+        }
+        #bravo-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .bravo-card {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            transform: scale(0.2); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #bravo-overlay.active .bravo-card { transform: scale(1); }
+
+        .bravo-text {
+            font-family: 'Cinzel', serif; font-size: 7rem; font-weight: 900;
+            color: #ffffff !important;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 1), 0 0 80px rgba(255, 215, 0, 0.8), 0 5px 15px rgba(0,0,0,0.9);
+            margin: 0; animation: popText 0.8s infinite alternate ease-in-out;
+        }
+
+        @keyframes popText {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); }
+        }
+
+        .bravo-sub { font-size: 2rem; font-weight: 700; color: #ffd700; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+    <!-- BANNIÈRE -->
+    <div class="page-header">
+        <button class="btn-header" onclick="window.location.href='calendrier.html'">⬅️ CALENDRIER</button>
+        <h1 class="page-title" id="day-header-title">JOUR 1</h1>
+        <button class="btn-header" id="admin-toggle-btn" style="display:none;" onclick="toggleAdminPanel()">👑 NOUVELLE QUESTION</button>
+    </div>
+
+    <!-- PANNEAU MODO / ADMIN : CRÉATEUR DE QUESTIONS -->
+    <div class="admin-creator-panel" id="admin-panel">
+        <h2 class="admin-title">👑 CRÉER UNE QUESTION (ADMIN)</h2>
+        <form id="question-form" onsubmit="saveQuestion(event)">
+            <div class="form-group">
+                <label>Difficulté :</label>
+                <select class="form-control" id="q-diff">
+                    <option value="easy">Facile (Easy)</option>
+                    <option value="medium">Moyen (Medium)</option>
+                    <option value="hard">Difficile (Hard)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Type de Question :</label>
+                <select class="form-control" id="q-type" onchange="renderOptionBuilder()">
+                    <option value="single_choice">Choix Unique (Style Kahoot)</option>
+                    <option value="multiple_choice">Plusieurs Choix de Réponse</option>
+                    <option value="short_text">Réponse Écrite Courte</option>
+                    <option value="long_text">Réponse Écrite Longue</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Texte de la Question :</label>
+                <textarea class="form-control" id="q-text" rows="2" required placeholder="Ex: Quel est le renne au nez rouge ?"></textarea>
+            </div>
+
+            <div id="kahoot-options-container">
+                <div class="form-group">
+                    <label>Nombre de choix (4 à 10) :</label>
+                    <input type="number" class="form-control" id="q-opt-count" min="4" max="10" value="4" onchange="renderOptionBuilder()">
+                </div>
+                <div class="options-builder" id="options-builder-list"></div>
+            </div>
+
+            <div class="form-group" id="text-answer-container" style="display:none;">
+                <label>Réponse exacte attendue :</label>
+                <input type="text" class="form-control" id="q-text-correct" placeholder="Entrez la réponse exacte">
+            </div>
+
+            <button type="submit" class="btn-header" style="width: 100%; margin-top: 15px; padding: 12px; background: #2ecc71;">💾 SAUVEGARDER LA QUESTION DANS SUPABASE</button>
+        </form>
+    </div>
+
+    <!-- UI 1 : SELECTION DIFFICULTÉ -->
+    <div id="ui-1-main">
+        <h2 style="font-family: 'Cinzel', serif; text-align: center;">CHOISIS TA DIFFICULTÉ</h2>
+        <div class="diff-card-grid">
+            <div class="diff-card easy" onclick="loadQuestionsForDiff('easy')">
+                <div class="diff-title" style="color:#2ecc71;">EASY</div>
+                <p>Questions Faciles</p>
+            </div>
+            <div class="diff-card medium" onclick="loadQuestionsForDiff('medium')">
+                <div class="diff-title" style="color:#f39c12;">MEDIUM</div>
+                <p>Questions Moyennes</p>
+            </div>
+            <div class="diff-card hard" onclick="loadQuestionsForDiff('hard')">
+                <div class="diff-title" style="color:#e74c3c;">HARD</div>
+                <p>Questions Difficiles</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI 2 : AFFICHAGE DES QUESTIONS (MAX 5) -->
+    <div id="ui-2-questions">
+        <button class="btn-header" onclick="backToUI1()">⬅️ RETOUR AUX DIFFICULTÉS</button>
+        <div id="questions-list" style="width:100%;"></div>
+    </div>
+
+    <!-- OVERLAY BRAVO ET CONFETTIS GÉANTS -->
+    <div id="bravo-overlay">
+        <div class="bravo-card">
+            <h1 class="bravo-text">BRAVO !</h1>
+            <div class="bravo-sub">BONNE RÉPONSE !</div>
+            <button class="btn-header" style="font-size: 1.2rem; padding: 12px 30px;" onclick="closeBravo()">CONTINUER</button>
+        </div>
+    </div>
+
+<script>
+    /* CONFIGURATION DU JOUR */
+    const CURRENT_DAY = 1; // Change ce chiffre pour December2.html, December3.html, etc.
+
+    const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjEwMDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
+    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    const ADMIN_EMAILS = ["asselinj24@emm.qc.ca"];
+    let currentUserEmail = "";
+    let currentDiff = "easy";
+    let activeQuestions = [];
+
+    const DEFAULT_COLORS = ['#e74c3c', '#2980b9', '#f1c40f', '#2ecc71', '#9b59b6', '#e67e22', '#1abc9c', '#34495e', '#d35400', '#7f8c8d'];
+
+    async function initPage() {
+        document.getElementById('day-header-title').innerText = `JOUR ${CURRENT_DAY}`;
+
+        if (supabaseClient) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session && session.user) {
+                currentUserEmail = session.user.email.toLowerCase();
+            } else {
+                currentUserEmail = localStorage.getItem('last_active_email') || "guest@local";
+            }
+
+            if (ADMIN_EMAILS.includes(currentUserEmail)) {
+                document.getElementById('admin-toggle-btn').style.display = 'block';
+            }
+        }
+        renderOptionBuilder();
+    }
+
+    function toggleAdminPanel() {
+        const panel = document.getElementById('admin-panel');
+        panel.classList.toggle('visible');
+    }
+
+    /* CONSTRUCTEUR DE CHOIX DANS L'ADMIN */
+    function renderOptionBuilder() {
+        const type = document.getElementById('q-type').value;
+        const container = document.getElementById('kahoot-options-container');
+        const textAnswerCont = document.getElementById('text-answer-container');
+        const builder = document.getElementById('options-builder-list');
+
+        if (type === 'short_text' || type === 'long_text') {
+            container.style.display = 'none';
+            textAnswerCont.style.display = 'block';
+            return;
+        }
+
+        container.style.display = 'block';
+        textAnswerCont.style.display = 'none';
+        builder.innerHTML = '';
+
+        const count = parseInt(document.getElementById('q-opt-count').value) || 4;
+
+        for (let i = 0; i < count; i++) {
+            const row = document.createElement('div');
+            row.className = 'option-row';
+            row.innerHTML = `
+                <input type="color" class="color-picker" value="${DEFAULT_COLORS[i % DEFAULT_COLORS.length]}" id="opt-color-${i}">
+                <input type="text" class="form-control" style="flex-grow:1;" placeholder="Option ${i+1}" id="opt-text-${i}" required>
+                <label style="font-size:0.85rem;"><input type="${type === 'single_choice' ? 'radio' : 'checkbox'}" name="correct-opt" value="${i}"> Correcte</label>
+            `;
+            builder.appendChild(row);
+        }
+    }
+
+    /* SAUVEGARDER UNE QUESTION SUR SUPABASE */
+    async function saveQuestion(e) {
+        e.preventDefault();
+        const diff = document.getElementById('q-diff').value;
+        const type = document.getElementById('q-type').value;
+        const text = document.getElementById('q-text').value;
+
+        let options = [];
+        let correctAnswers = [];
+
+        if (type === 'single_choice' || type === 'multiple_choice') {
+            const count = parseInt(document.getElementById('q-opt-count').value);
+            const checkboxes = document.querySelectorAll('input[name="correct-opt"]');
+
+            checkboxes.forEach((cb, i) => {
+                const optText = document.getElementById(`opt-text-${i}`).value;
+                const optColor = document.getElementById(`opt-color-${i}`).value;
+                options.push({ text: optText, color: optColor });
+
+                if (cb.checked) {
+                    correctAnswers.push(optText);
+                }
+            });
+
+            if (correctAnswers.length === 0) {
+                alert("Veuillez cocher au moins une bonne réponse !");
+                return;
+            }
+        } else {
+            correctAnswers.push(document.getElementById('q-text-correct').value.trim());
+        }
+
+        // Vérifier s'il y a déjà 5 questions pour ce jour et cette difficulté
+        const { data: existing } = await supabaseClient
+            .from('advent_questions')
+            .select('id')
+            .eq('day', CURRENT_DAY)
+            .eq('difficulty', diff);
+
+        if (existing && existing.length >= 5) {
+            alert(`Vous avez déjà atteint la limite de 5 questions pour la difficulté ${diff.toUpperCase()} le Jour ${CURRENT_DAY} !`);
+            return;
+        }
+
+        const { error } = await supabaseClient
+            .from('advent_questions')
+            .insert({
+                day: CURRENT_DAY,
+                difficulty: diff,
+                question_type: type,
+                question_text: text,
+                options: options,
+                correct_answers: correctAnswers
+            });
+
+        if (error) {
+            alert("Erreur lors de la sauvegarde : " + error.message);
+        } else {
+            alert("Question ajoutée avec succès !");
+            document.getElementById('question-form').reset();
+            toggleAdminPanel();
+            renderOptionBuilder();
+        }
+    }
+
+    /* CHARGER LES QUESTIONS (UI 2) */
+    async function loadQuestionsForDiff(diff) {
+        currentDiff = diff;
+        document.getElementById('ui-1-main').style.display = 'none';
+        document.getElementById('ui-2-questions').classList.add('visible');
+
+        const listCont = document.getElementById('questions-list');
+        listCont.innerHTML = '<p style="text-align:center;">Chargement des questions...</p>';
+
+        const { data, error } = await supabaseClient
+            .from('advent_questions')
+            .select('*')
+            .eq('day', CURRENT_DAY)
+            .eq('difficulty', diff)
+            .limit(5);
+
+        if (error || !data || data.length === 0) {
+            listCont.innerHTML = `<p style="text-align:center;">Aucune question disponible en niveau ${diff.toUpperCase()} pour aujourd'hui.</p>`;
+            return;
+        }
+
+        activeQuestions = data;
+        listCont.innerHTML = '';
+
+        data.forEach((q, qIndex) => {
+            const qBox = document.createElement('div');
+            qBox.className = 'question-box';
+            
+            let answerHTML = '';
+
+            if (q.question_type === 'single_choice' || q.question_type === 'multiple_choice') {
+                answerHTML = `<div class="kahoot-grid">`;
+                q.options.forEach((opt, oIdx) => {
+                    answerHTML += `
+                        <button class="btn-kahoot" style="background:${opt.color};" onclick="toggleOptionSelect(this, '${q.question_type}', ${qIndex})">
+                            ${opt.text}
+                        </button>
+                    `;
+                });
+                answerHTML += `</div>`;
+            } else if (q.question_type === 'short_text') {
+                answerHTML = `<input type="text" class="input-text-answer" id="answer-input-${qIndex}" placeholder="Votre réponse...">`;
+            } else {
+                answerHTML = `<textarea class="input-text-answer" rows="3" id="answer-input-${qIndex}" placeholder="Votre réponse détaillée..."></textarea>`;
+            }
+
+            qBox.innerHTML = `
+                <div class="question-text">Q${qIndex + 1}. ${q.question_text}</div>
+                ${answerHTML}
+                <button class="btn-submit-q" onclick="validateAnswer(${qIndex})">Valider ma réponse</button>
+            `;
+
+            listCont.appendChild(qBox);
+        });
+    }
+
+    function toggleOptionSelect(btn, type, qIndex) {
+        const parent = btn.parentElement;
+        if (type === 'single_choice') {
+            parent.querySelectorAll('.btn-kahoot').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        } else {
+            btn.classList.toggle('selected');
+        }
+    }
+
+    /* VALIDATION ET ANIMATIONS DE CONFETTIS PROGRESSIVES */
+    function validateAnswer(qIndex) {
+        const q = activeQuestions[qIndex];
+        let isCorrect = false;
+
+        if (q.question_type === 'single_choice' || q.question_type === 'multiple_choice') {
+            const qBox = document.querySelectorAll('.question-box')[qIndex];
+            const selectedBtns = qBox.querySelectorAll('.btn-kahoot.selected');
+            const userAns = Array.from(selectedBtns).map(b => b.innerText.trim());
+
+            if (userAns.length === q.correct_answers.length && userAns.every(val => q.correct_answers.includes(val))) {
+                isCorrect = true;
+            }
+        } else {
+            const inputVal = document.getElementById(`answer-input-${qIndex}`).value.trim().toLowerCase();
+            if (q.correct_answers.some(ans => ans.toLowerCase() === inputVal)) {
+                isCorrect = true;
+            }
+        }
+
+        if (isCorrect) {
+            triggerBravoAnimation(q.difficulty);
+        } else {
+            alert("Oups ! Mauvaise réponse, réessaie encore !");
+        }
+    }
+
+    function triggerBravoAnimation(diff) {
+        document.getElementById('bravo-overlay').classList.add('active');
+
+        const defaultOptions = { zIndex: 999999 };
+
+        if (diff === 'easy') {
+            // Confettis légers
+            confetti({ ...defaultOptions, particleCount: 40, spread: 60, origin: { y: 0.6 } });
+        } else if (diff === 'medium') {
+            // Confettis moyens
+            confetti({ ...defaultOptions, particleCount: 80, spread: 90, origin: { y: 0.5 } });
+        } else if (diff === 'hard') {
+            // EXPLOSION GÉANTE DE CONFETTIS !
+            const duration = 5 * 1000;
+            const end = Date.now() + duration;
+
+            const interval = setInterval(() => {
+                if (Date.now() > end) return clearInterval(interval);
+                confetti({ ...defaultOptions, particleCount: 50, startVelocity: 30, spread: 360, origin: { x: Math.random(), y: Math.random() - 0.2 } });
+            }, 200);
+        }
+    }
+
+    function closeBravo() {
+        document.getElementById('bravo-overlay').classList.remove('active');
+    }
+
+    function backToUI1() {
+        document.getElementById('ui-2-questions').classList.remove('visible');
+        document.getElementById('ui-1-main').style.display = 'flex';
+    }
+
+    window.addEventListener('DOMContentLoaded', initPage);
+</script>
+</body>
+</html>
