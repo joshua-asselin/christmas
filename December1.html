@@ -252,8 +252,9 @@
     </div>
 
 <script>
-    /* CONFIGURATION DU JOUR */
-    const CURRENT_DAY = 1; // Change ce chiffre pour December2.html, December3.html, etc.
+    /* CONFIGURATION DU JOUR ET DE LA TABLE */
+    const CURRENT_DAY = 1; 
+    const TABLE_NAME = 'advent_questions'; // Si ta table existante s'appelle autrement, change ce nom ici !
 
     const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjEwMDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
@@ -289,7 +290,6 @@
         panel.classList.toggle('visible');
     }
 
-    /* CONSTRUCTEUR DE CHOIX DANS L'ADMIN */
     function renderOptionBuilder() {
         const type = document.getElementById('q-type').value;
         const container = document.getElementById('kahoot-options-container');
@@ -320,7 +320,6 @@
         }
     }
 
-    /* SAUVEGARDER UNE QUESTION SUR SUPABASE */
     async function saveQuestion(e) {
         e.preventDefault();
         const diff = document.getElementById('q-diff').value;
@@ -352,9 +351,8 @@
             correctAnswers.push(document.getElementById('q-text-correct').value.trim());
         }
 
-        // Vérifier s'il y a déjà 5 questions pour ce jour et cette difficulté
         const { data: existing } = await supabaseClient
-            .from('advent_questions')
+            .from(TABLE_NAME)
             .select('id')
             .eq('day', CURRENT_DAY)
             .eq('difficulty', diff);
@@ -365,7 +363,7 @@
         }
 
         const { error } = await supabaseClient
-            .from('advent_questions')
+            .from(TABLE_NAME)
             .insert({
                 day: CURRENT_DAY,
                 difficulty: diff,
@@ -385,7 +383,6 @@
         }
     }
 
-    /* CHARGER LES QUESTIONS (UI 2) */
     async function loadQuestionsForDiff(diff) {
         currentDiff = diff;
         document.getElementById('ui-1-main').style.display = 'none';
@@ -395,7 +392,7 @@
         listCont.innerHTML = '<p style="text-align:center;">Chargement des questions...</p>';
 
         const { data, error } = await supabaseClient
-            .from('advent_questions')
+            .from(TABLE_NAME)
             .select('*')
             .eq('day', CURRENT_DAY)
             .eq('difficulty', diff)
@@ -451,7 +448,6 @@
         }
     }
 
-    /* VALIDATION ET ANIMATIONS DE CONFETTIS PROGRESSIVES */
     function validateAnswer(qIndex) {
         const q = activeQuestions[qIndex];
         let isCorrect = false;
@@ -484,13 +480,10 @@
         const defaultOptions = { zIndex: 999999 };
 
         if (diff === 'easy') {
-            // Confettis légers
             confetti({ ...defaultOptions, particleCount: 40, spread: 60, origin: { y: 0.6 } });
         } else if (diff === 'medium') {
-            // Confettis moyens
             confetti({ ...defaultOptions, particleCount: 80, spread: 90, origin: { y: 0.5 } });
         } else if (diff === 'hard') {
-            // EXPLOSION GÉANTE DE CONFETTIS !
             const duration = 5 * 1000;
             const end = Date.now() + duration;
 
