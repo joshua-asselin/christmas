@@ -3,664 +3,630 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Les 300 Défis de Noël</title>
+    <title>Calendrier de l'Avent Magique</title>
     
+    <!-- Supabase SDK & Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@300;400;600&family=Great+Vibes&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Poppins:wght@400;600;700;800&display=swap');
+
+        * { box-sizing: border-box; }
 
         body, html {
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
-            background-image: url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
+            margin: 0; padding: 0; min-height: 100vh; width: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), 
+                              url('https://i.postimg.cc/PxR6NvbB/a2781225b39a14644c5673928f1b8f0b.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            font-family: 'Poppins', sans-serif; overflow-x: hidden; color: #ffffff !important;
+        }
+
+        /* Canvas Chute de Neige */
+        #snow-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10;
+        }
+
+        /* Vue principale du calendrier */
+        #main-view {
+            width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+            justify-content: space-between; padding: 20px;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        #main-view.hidden-view {
+            opacity: 0; pointer-events: none; transform: scale(0.95);
+        }
+
+        /* Bannière supérieure */
+        .header-banner {
+            width: 98%; height: 110px;
+            background-image: url('https://i.postimg.cc/Kc7F8rdr/53a6d70e-6093-4bdd-a3d0-3b43e8c70781-885x590.jpg');
             background-size: cover; background-position: center;
-            font-family: 'Poppins', sans-serif;
+            border-radius: 20px; border: 3px solid #ffffff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6), 0 0 20px rgba(255, 255, 255, 0.4);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; cursor: pointer;
+            z-index: 1; transition: transform 0.3s ease;
+        }
+        .header-banner:hover { transform: scale(1.01); }
+
+        .header-title {
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            padding: 12px 35px; border-radius: 40px;
+            border: 2px solid #ffffff; color: #ffffff !important;
+            font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 800;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9); text-align: center;
+            transition: all 0.3s ease;
         }
 
-        #login-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at center, rgba(15, 20, 30, 0.75) 0%, rgba(5, 8, 15, 0.92) 100%);
-            backdrop-filter: blur(16px);
-            z-index: 1000; display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
+        @keyframes flashAnim {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.05); color: #ffffff; text-shadow: 0 0 25px #ffffff; }
+        }
+        .header-title.flashing { animation: flashAnim 0.5s ease-in-out 4; }
+
+        /* Section Admin */
+        .admin-panel {
+            display: none;
+            width: 98%; margin-top: 10px;
+            background: rgba(0, 0, 0, 0.85); border: 2px solid #ffffff;
+            border-radius: 15px; padding: 12px 20px; color: #ffffff !important;
+            align-items: center; justify-content: space-between;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); z-index: 1;
+            flex-wrap: wrap; gap: 10px;
+        }
+        .admin-panel.visible { display: flex; }
+        .admin-tag { font-weight: 700; color: #ffffff !important; font-size: 0.95rem; }
+        .admin-btns { display: flex; gap: 10px; }
+        .btn-admin {
+            background: #800c19; color: #ffffff !important; border: 1px solid #ffffff;
+            padding: 6px 14px; border-radius: 20px; font-weight: 600;
+            font-size: 0.82rem; cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-admin:hover { background: #b30000; transform: scale(1.04); }
+
+        /* Conteneur du Calendrier Plein Écran */
+        .calendar-container {
+            margin-top: 15px; margin-bottom: 15px; width: 98%; flex-grow: 1;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px; border: 2.5px solid #ffffff;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 15px rgba(255, 255, 255, 0.2); 
+            padding: 18px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+            z-index: 1;
         }
 
-        .floating-bg-item {
-            position: absolute; font-size: 2.2rem; pointer-events: none; opacity: 0.6;
-            animation: floatAnim 8s infinite ease-in-out;
+        @media (max-width: 1024px) { .calendar-container { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 768px) {
+            .calendar-container { grid-template-columns: repeat(3, 1fr); padding: 10px; gap: 8px; }
+            .header-banner { height: 90px; }
+            .header-title { font-size: 1.2rem; padding: 6px 15px; }
+            .day-big-title { font-size: 4.5rem !important; }
         }
-        .item-1 { top: 12%; left: 15%; animation-delay: 0s; }
-        .item-2 { top: 70%; left: 10%; animation-delay: 2s; }
-        .item-3 { top: 20%; right: 15%; animation-delay: 4s; }
-        .item-4 { top: 75%; right: 12%; animation-delay: 1s; }
-
-        @keyframes floatAnim {
-            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-            50% { transform: translateY(-20px) rotate(10deg) scale(1.1); }
+        @media (max-width: 480px) { 
+            .calendar-container { grid-template-columns: repeat(2, 1fr); } 
+            .day-big-title { font-size: 3.2rem !important; }
         }
 
-        .login-card {
-            background: rgba(255, 255, 255, 0.18);
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            padding: 2.5rem 2.2rem; border-radius: 28px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.3), inset 0 0 2px rgba(255,255,255,0.6);
-            text-align: center; max-width: 400px; width: 88%;
-            border: 2px solid rgba(255, 215, 0, 0.6); color: white;
-            position: relative; z-index: 10;
+        /* Portes du calendrier */
+        .door-frame {
+            position: relative; min-height: 100px; height: 100%; perspective: 1000px;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .door-frame:hover:not(.locked) {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(255, 255, 255, 0.4);
+        }
+
+        .door-content {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(17,17,17,0.9), rgba(34,34,34,0.9));
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-sizing: border-box;
-            animation: pulseGlow 4s infinite alternate;
+            text-align: center; padding: 6px; border-radius: 12px; border: 1.5px solid #ffffff;
+            cursor: pointer;
         }
 
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.2); }
-            100% { box-shadow: 0 25px 55px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.5); }
+        .door-content .day-label-opened {
+            font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 800; color: #ffffff !important;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
         }
 
-        .login-card h1 {
-            font-size: 2.2rem; margin: 0 0 10px 0;
-            color: #ffffff; font-family: 'Cinzel', serif;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 15px rgba(255, 215, 0, 0.6);
-        }
-
-        .btn-google {
-            background: #ffffff; color: #222; border: 1.5px solid #ffd700;
-            padding: 12px 20px; font-size: 0.98rem; font-weight: 600;
-            border-radius: 50px; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; gap: 12px;
-            transition: all 0.3s ease; box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-            width: 100%; box-sizing: border-box; margin-bottom: 18px;
-        }
-        .btn-google:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 12px 25px rgba(0,0,0,0.35); }
-
-        .bypass-box {
-            border-top: 1px dashed rgba(255, 255, 255, 0.4);
-            padding-top: 18px; margin-top: 5px; width: 100%;
-            display: flex; flex-direction: column; align-items: center; box-sizing: border-box;
-        }
-
-        .bypass-input {
-            width: 100%; padding: 11px 14px; border-radius: 12px; border: 1.5px solid #ffd700;
-            background: rgba(255, 255, 255, 0.95); color: #111; text-align: center;
-            font-size: 0.95rem; font-family: 'Poppins', sans-serif; box-sizing: border-box;
-            margin-bottom: 10px; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        #user-header {
-            position: absolute; top: 20px; right: 25px; display: none;
-            align-items: center; gap: 12px; background: rgba(20, 25, 35, 0.85);
-            backdrop-filter: blur(10px); padding: 6px 16px; border-radius: 40px;
-            color: #fce8b2; z-index: 100; border: 1px solid rgba(212, 160, 23, 0.5);
-        }
-
-        .avatar-img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1.5px solid #d4a017; }
-        .avatar-circle {
-            width: 34px; height: 34px; border-radius: 50%; background: #900c1c;
-            color: #f7d070; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 15px; border: 1.5px solid #d4a017;
-        }
-
-        .btn-header-logout {
-            background: linear-gradient(135deg, #d4a017, #aa7c11); color: #200407; border: none; padding: 6px 14px;
-            border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.8rem;
-        }
-
-        .container { position: relative; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; }
-
-        .parchemin-img {
-            height: 98vh; width: 82vw; max-width: 1100px; object-fit: fill; 
-            filter: drop-shadow(0px 20px 40px rgba(0,0,0,0.6));
-        }
-
-        .scroll-box {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 50%; height: 60%; overflow: hidden; padding: 10px;
-            text-align: center; font-family: 'Cinzel', serif; z-index: 5;
+        .door-front {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #800c19, #b30000);
+            border: 2px solid #ffffff; border-radius: 12px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #ffffff !important; font-family: 'Cinzel', serif; cursor: pointer;
+            transform-origin: left center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s ease;
+            z-index: 2;
+        }
+        
+        .door-front .day-title {
+            font-size: 1.3rem; font-weight: 800; letter-spacing: 1px; color: #ffffff !important;
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.7);
         }
 
-        h1 { font-size: 2.1rem; margin-bottom: 20px; text-shadow: 1px 1px 0px rgba(255,255,255,0.8); }
-
-        .titre-or {
-            color: #d4a017; font-size: 2.2rem; font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin-bottom: 10px;
+        .door-front::after {
+            content: "✨"; position: absolute; bottom: 4px; right: 6px; font-size: 0.8rem; opacity: 0.8;
         }
 
-        .btn-question {
-            display: block; width: 80%; max-width: 360px; margin: 8px auto; padding: 10px 18px;
-            background: linear-gradient(180deg, #fceecb 0%, #e8d098 100%) !important; 
-            color: #3d240b; border: 1.5px solid #a3723f; border-radius: 12px; font-size: 0.95rem; font-weight: 600;
-            font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); box-sizing: border-box;
-        }
-        .btn-question:hover { transform: translateY(-2px) scale(1.02); }
-
-        .btn-silver { border-color: #999; }
-        .btn-green { border-color: #2d5a27; }
-        .btn-gold { border-color: #d4a017; }
-        .btn-red { border-color: #b30000; }
-
-        .lettre-ancienne {
-            font-family: 'Great Vibes', cursive;
-            font-size: 1.85rem; line-height: 1.35; color: #1a0f07;
-            text-shadow: 0.5px 0.5px 1px rgba(20, 10, 5, 0.3);
-            max-width: 85%; margin: 5px auto 15px auto; padding: 0;
-            white-space: pre-wrap; word-wrap: break-word; text-align: center;
-            overflow: hidden; max-height: 38vh; font-weight: 600;
+        .door-frame.open .door-front {
+            transform: rotateY(-160deg) scaleX(0.85);
+            box-shadow: 10px 0 20px rgba(0,0,0,0.5);
+            pointer-events: none;
         }
 
-        .letter-buttons-row {
-            display: flex; justify-content: center; align-items: center;
-            gap: 10px; width: 95%; max-width: 480px; margin-top: 10px;
+        .door-frame.locked .door-front {
+            background: linear-gradient(135deg, #2b2b2b, #151515);
+            border-color: #888888; cursor: not-allowed; opacity: 0.85;
         }
 
-        .btn-christmas-action {
-            flex: 1; padding: 10px 8px; border-radius: 14px; font-size: 0.82rem; font-weight: 700;
-            font-family: 'Poppins', sans-serif; cursor: pointer; border: 2px solid transparent;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.25); transition: all 0.3s ease;
-            display: flex; align-items: center; justify-content: center; text-align: center;
-            animation: christmasPulse 3s infinite ease-in-out;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
         }
+        .door-frame.shake { animation: shake 0.4s ease; }
 
-        .btn-christmas-green {
-            background: linear-gradient(135deg, #1b4d24, #2d5a27); color: #ffffff;
-            border-color: #82e0aa; animation-delay: 0s;
+        .btn-back {
+            margin-bottom: 10px; padding: 12px 35px; border-radius: 30px;
+            background: linear-gradient(135deg, #ffffff, #dddddd);
+            color: #000000; border: 2px solid #ffffff; font-size: 1rem; font-weight: 800;
+            cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.5); transition: all 0.3s ease;
+            z-index: 1;
         }
-        .btn-christmas-gold {
-            background: linear-gradient(135deg, #d4a017, #f1c40f); color: #1a0f07;
-            border-color: #ffffff; animation-delay: 1s;
-        }
-        .btn-christmas-silver {
-            background: linear-gradient(135deg, #7f8c8d, #bdc3c7); color: #111;
-            border-color: #ffffff; animation-delay: 2s;
-        }
+        .btn-back:hover { transform: translateY(-3px) scale(1.05); background: #ffffff; }
 
-        .btn-christmas-action:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.35);
-        }
-
-        @keyframes christmasPulse {
-            0%, 100% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.03); filter: brightness(1.15); }
-        }
-
-        #reply-modal-overlay {
+        /* OVERLAY TRANSLUCIDE */
+        #day-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
-            z-index: 500; display: none; justify-content: center; align-items: center;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
+            z-index: 200; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
         }
 
-        .reply-modal-card {
-            background: #fffdf5; border: 2px solid #8e5a31; border-radius: 20px;
-            padding: 25px; width: 85%; max-width: 450px; text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5); font-family: 'Poppins', sans-serif;
-            animation: smoothSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        #day-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .day-spawn-card {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            transform: scale(0.3); transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .view-section { display: none; flex-direction: column; align-items: center; width: 100%; opacity: 0; }
-        .active-view { display: flex; opacity: 1; animation: smoothSlideUp 0.5s ease forwards; }
+        #day-overlay.active .day-spawn-card { transform: scale(1); }
 
-        .admin-textarea, .admin-input { 
-            padding: 8px 12px; width: 85%; border-radius: 10px; border: 1.5px solid #8e5a31; 
-            margin: 4px 0; font-size: 0.88rem; text-align: center; background: #fffdf8;
-            font-family: 'Poppins', sans-serif; box-sizing: border-box;
+        .day-big-title {
+            font-family: 'Cinzel', serif; font-size: 8.5rem; font-weight: 900;
+            color: #ffffff !important; 
+            text-shadow: 0 0 35px rgba(255, 255, 255, 1), 0 8px 25px rgba(0,0,0,0.9);
+            margin: 0; letter-spacing: 3px;
         }
-        .admin-textarea { height: 85px; text-align: left; resize: none; }
 
-        .theme-menu h1 { color: #555555; }
+        .day-sub-date {
+            font-size: 2.2rem; font-weight: 800; color: #ffffff !important;
+            margin-top: 10px; margin-bottom: 40px; letter-spacing: 2px;
+            text-transform: uppercase; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(0,0,0,0.8);
+        }
 
-        @keyframes smoothSlideUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-action-day {
+            background: linear-gradient(135deg, #800c19, #e60000);
+            color: #ffffff !important; border: 3px solid #ffffff; padding: 20px 45px;
+            border-radius: 50px; font-size: 1.35rem; font-weight: 800; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(230, 0, 0, 0.6), 0 0 20px rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease; animation: pulseBtn 2s infinite;
+        }
+
+        .btn-action-day:hover {
+            transform: scale(1.08); box-shadow: 0 15px 40px rgba(230, 0, 0, 0.9), 0 0 30px rgba(255, 255, 255, 0.9);
+        }
+
+        @keyframes pulseBtn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-close-overlay {
+            position: absolute; top: 25px; right: 35px;
+            background: rgba(255, 255, 255, 0.15); border: 1.5px solid #ffffff;
+            color: #ffffff !important; width: 50px; height: 50px; border-radius: 50%;
+            font-size: 1.5rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-close-overlay:hover { background: rgba(255, 255, 255, 0.35); transform: rotate(90deg); }
+
+        /* Modal simple de verrouillage */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            z-index: 300;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-card {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            border: 2.5px solid #ffffff; border-radius: 20px;
+            padding: 30px; text-align: center; max-width: 420px; width: 90%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 25px rgba(255, 255, 255, 0.3);
+            color: #ffffff !important;
+        }
+        .modal-title { font-family: 'Cinzel', serif; font-size: 1.6rem; color: #ffffff !important; margin-bottom: 12px; font-weight: 800; }
+        .modal-text { font-size: 1rem; color: #dddddd; font-weight: 600; margin-bottom: 25px; }
+        .modal-btn {
+            background: linear-gradient(135deg, #800c19, #b30000);
+            color: #ffffff !important; border: 1.5px solid #ffffff; padding: 12px 30px;
+            border-radius: 25px; font-weight: 700; cursor: pointer;
+        }
     </style>
 </head>
-<body class="theme-menu">
+<body>
 
-<div id="login-overlay">
-    <div class="floating-bg-item item-1">🎁</div>
-    <div class="floating-bg-item item-2">⭐</div>
-    <div class="floating-bg-item item-3">🎄</div>
-    <div class="floating-bg-item item-4">✨</div>
+    <!-- Canvas Neige -->
+    <canvas id="snow-canvas"></canvas>
 
-    <div class="login-card">
-        <h1>Lettre de Noël</h1>
-        <p style="color:#ffffff; font-size:0.92rem; margin-bottom:20px; font-weight:300; opacity:0.95;">
-            Connecte-toi avec Google pour recevoir ta lettre personnalisée et relever les défis !
-        </p>
-        
-        <button onclick="loginWithGoogle()" class="btn-google">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google">
-            Se connecter avec Google
-        </button>
+    <!-- Vue Principale -->
+    <div id="main-view">
+        <div class="header-banner" id="banner">
+            <div class="header-title" id="header-title">📅 CALENDRIER DE L'AVENT</div>
+        </div>
 
-        <div class="bypass-box">
-            <p style="color:#ffd700; font-size:0.88rem; margin:0 0 8px 0; font-weight:600; letter-spacing:0.5px;">Bypass the connection</p>
-            <input type="text" id="bypass-code-input" class="bypass-input" placeholder="Entre ton code de lettre..." autocomplete="off">
-            <button class="btn-question btn-gold" style="width:100%; padding:10px; font-size:0.85rem; margin:0;" onclick="accessByCode()">Accéder à ma lettre</button>
+        <div class="admin-panel" id="admin-panel">
+            <div class="admin-tag">👑 MODO / ADMIN : <span id="admin-email">asselinj24@emm.qc.ca</span></div>
+            <div class="admin-btns">
+                <button class="btn-admin" onclick="toggleBypass()">🔓 Activer/Désactiver Bypass</button>
+                <button class="btn-admin" onclick="resetProgress()">🔄 Réinitialiser la progression</button>
+            </div>
+        </div>
+
+        <div class="calendar-container" id="calendar-grid"></div>
+
+        <button class="btn-back" onclick="window.location.href='index.html'">⬅️ RETOUR AU MENU</button>
+    </div>
+
+    <!-- Vue Écran Géant -->
+    <div id="day-overlay">
+        <button class="btn-close-overlay" onclick="closeDayOverlay()">✕</button>
+        <div class="day-spawn-card">
+            <h1 class="day-big-title" id="spawn-title">JOUR 1</h1>
+            <div class="day-sub-date" id="spawn-date">1 DÉCEMBRE</div>
+            <button class="btn-action-day" id="spawn-btn" onclick="goToDayPage()">ACCÉDER AUX QUESTIONS DU JOUR 1 ➔</button>
         </div>
     </div>
-</div>
 
-<div id="user-header">
-    <div id="user-avatar-slot"></div>
-    <span id="user-name-slot" style="font-weight: 500; font-size: 0.85rem;"></span>
-    <button onclick="logout()" class="btn-header-logout">Déconnexion</button>
-</div>
-
-<div id="reply-modal-overlay">
-    <div class="reply-modal-card">
-        <h2 style="font-family:'Cinzel', serif; color:#800c19; margin-top:0;">✉️ Répondre au Père Noël</h2>
-        <textarea id="modal-reply-input" class="admin-textarea" style="width:100%; height:110px; text-align:left;" placeholder="Écris ton message ici..."></textarea>
-        <button class="btn-question btn-green" style="width:100%; margin-top:10px;" onclick="sendReplyFromModal()">Envoyer mon message</button>
-        <button class="btn-question btn-silver" style="width:100%; margin-top:5px;" onclick="closeReplyModal()">Fermer</button>
-    </div>
-</div>
-
-<div class="container" id="main-container">
-    <div id="list-view">
-        <img id="main-scroll-bg" src="https://i.postimg.cc/RhR1YFdd/pngtree-vintage-scroll-banner-illustration-png-image-16419425-removebg-preview.png" class="parchemin-img">
-        
-        <div class="scroll-box">
-            
-            <div id="view-main-menu" class="view-section active-view">
-                <h1>MENU PRINCIPAL</h1>
-                <button class="btn-question btn-silver" onclick="window.location.href='Question.html'">🎁 QUESTIONS</button>
-                <button class="btn-question btn-silver" onclick="window.location.href='Avantage.html'">✨ AVANTAGES</button>
-                <button class="btn-question btn-silver" onclick="window.location.href='calendrier.html'">📅 CALENDRIER DE L'AVENT</button>
-                <button id="btn-admin-menu" class="btn-question btn-gold" style="display:none;" onclick="showAdminUserList()">⚙️ ADMINISTRATEUR</button>
-                <button class="btn-question btn-gold" onclick="showUserLetter()">✉️ MA LETTRE DE NOËL</button>
-                
-                <button class="btn-question btn-red" style="margin-top: 10px;" onclick="returnToLogin()">🔒 Se déconnecter / Connexion Google</button>
-            </div>
-
-            <div id="view-user-letter" class="view-section" onclick="launchConfetti(event)">
-                <h1 style="font-family:'Great Vibes', cursive; font-size:2.4rem; color:#800c19; margin:0 0 5px 0;">Lettre de Noël</h1>
-                
-                <div id="user-letter-content" class="lettre-ancienne">Chargement...</div>
-                
-                <div class="letter-buttons-row">
-                    <button class="btn-christmas-action btn-christmas-green" onclick="openReplyModal(event)">✉️ Répondre</button>
-                    <button class="btn-christmas-action btn-christmas-gold" onclick="returnToLogin()">🔒 Connexion</button>
-                    <button class="btn-christmas-action btn-christmas-silver" onclick="backToMain()">⬅️ Retour</button>
-                </div>
-            </div>
-
-            <div id="view-admin-list" class="view-section">
-                <h1 class="titre-or" style="font-size:1.8rem; margin-bottom:10px;">⚙️ ADMINISTRATEUR</h1>
-                
-                <button class="btn-question btn-gold" style="border: 2px solid #ffd700; padding:8px;" onclick="triggerMegaConfettiTest()">🎉 TESTER MÉGA CONFETTIS</button>
-                <button class="btn-question btn-green" style="margin-bottom:10px; padding:8px;" onclick="addNewUserPrompt()">➕ ÉCRIRE À UN NOUVEL EMAIL</button>
-                <button class="btn-question btn-gold" style="margin-bottom:10px; padding:8px;" onclick="window.location.href='progression.html'">📊 SUIVRE LA PROGRESSION</button>
-                
-                <!-- Section pour débloquer/rebloquer les cases -->
-                <div style="background: rgba(255, 255, 255, 0.4); padding: 10px; border-radius: 12px; border: 1px solid #d4a017; margin-bottom: 10px; width: 90%;">
-                    <p style="font-size: 0.8rem; font-weight: bold; margin: 0 0 5px 0; color: #3d240b;">🔓 GESTION DES CASES DÉBLOQUÉES</p>
-                    <input type="email" id="unlock-email-input" class="admin-input" placeholder="Adresse courriel" style="width: 95%;">
-                    <input type="number" id="unlock-day-input" class="admin-input" placeholder="Jour (Ex: 1)" min="1" max="25" style="width: 95%;">
-                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 5px;">
-                        <button class="btn-question btn-green" style="padding: 6px 12px; font-size: 0.75rem; margin:0;" onclick="adminUnlockDay()">🔓 Débloquer</button>
-                        <button class="btn-question btn-red" style="padding: 6px 12px; font-size: 0.75rem; margin:0;" onclick="adminLockDay()">🔒 Rebloquer</button>
-                    </div>
-                </div>
-
-                <div id="admin-user-buttons-container" style="width: 100%; max-height:160px; overflow-y:auto;"></div>
-
-                <button class="btn-question btn-silver" style="margin-top:10px; padding:8px;" onclick="backToMain()">RETOUR</button>
-            </div>
-
-            <div id="view-admin-edit-user" class="view-section">
-                <h1 class="titre-or" style="font-size:1.4rem; margin-bottom:5px;">Profil & Lettre</h1>
-                
-                <p style="font-size:0.75rem; color:#3d240b; margin:0;">Nom / Prénom :</p>
-                <input type="text" id="admin-edit-name-input" class="admin-input" placeholder="Nom de l'utilisateur">
-
-                <p style="font-size:0.75rem; color:#3d240b; margin:2px 0 0 0;">Adresse Email :</p>
-                <input type="email" id="admin-edit-email-input" class="admin-input" placeholder="email@exemple.com">
-
-                <p style="font-size:0.75rem; color:#3d240b; margin:2px 0 0 0;">Code de contournement (Bypass) :</p>
-                <input type="text" id="admin-code-input" class="admin-input" placeholder="Ex: NOEL123">
-
-                <p style="font-size:0.75rem; color:#3d240b; margin:2px 0 0 0;">Lettre personnalisée :</p>
-                <textarea id="admin-letter-text" class="admin-textarea" placeholder="Rédige la lettre ici..."></textarea>
-                
-                <div id="admin-view-reply" style="font-family:'Poppins', sans-serif; font-size:0.78rem; color:#800c19; margin:4px 0; font-style:italic; font-weight:600;"></div>
-
-                <button class="btn-question btn-green" style="padding:8px;" onclick="saveSelectedUserLetter()">💾 ENREGISTRER</button>
-                <button class="btn-question btn-red" style="margin-top:4px; padding:8px;" onclick="deleteUserLetter()">🗑️ SUPPRIMER CETTE PERSONNE</button>
-                <button class="btn-question btn-silver" style="margin-top:4px; padding:8px;" onclick="switchView('view-admin-list')">RETOUR À LA LISTE</button>
-            </div>
-
+    <!-- Modal d'avertissement -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-title" id="modal-title">🔒 Porte Verrouillée</div>
+            <div class="modal-text" id="modal-text">Patience ! Cette porte n'est pas encore disponible.</div>
+            <button class="modal-btn" onclick="closeModal()">COMPRIS</button>
         </div>
     </div>
-</div>
 
 <script>
-    const ADMIN_EMAILS = ["asselinj24@emm.qc.ca", "josh.asselin15@gmail.com"];
-    let currentUserEmail = "";
-    let isBypassUser = false;
-    let activeEditingEmail = "";
-
     const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjEwMDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
-
     const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-    async function loginWithGoogle() {
-      if (!supabaseClient) return alert("Erreur Supabase");
-      await supabaseClient.auth.signInWithOAuth({
-        provider: 'google', options: { redirectTo: 'https://christmasss2026.vercel.app' }
-      });
-    }
+    const ADMIN_EMAILS = ["asselinj24@emm.qc.ca", "josh.asselin15@gmail.com"];
+    let currentUserEmail = "";
+    let isBypassed = false;
+    let openedDoors = [];
+    let customUnlockedDays = [];
+    let currentSelectedDay = 1;
 
-    async function logout() {
-      if (supabaseClient) { await supabaseClient.auth.signOut(); }
-      window.location.reload();
-    }
-
-    function returnToLogin() {
-      logout();
-    }
-
-    function handleSession(session) {
-      const overlay = document.getElementById('login-overlay');
-      const userHeader = document.getElementById('user-header');
-
-      if (session && !isBypassUser) {
-        if (overlay) overlay.style.display = 'none';
-        if (userHeader) userHeader.style.display = 'flex';
-
-        const user = session.user;
-        currentUserEmail = user.email ? user.email.toLowerCase() : "";
-        const metadata = user.user_metadata || {};
-        const name = metadata.full_name || metadata.name || currentUserEmail;
-        const avatarUrl = metadata.avatar_url || metadata.picture;
-
-        document.getElementById('user-name-slot').innerText = name;
-        const avatarSlot = document.getElementById('user-avatar-slot');
-
-        if (avatarUrl) {
-          avatarSlot.innerHTML = `<img src="${avatarUrl}" class="avatar-img" alt="Avatar">`;
-        } else {
-          avatarSlot.innerHTML = `<div class="avatar-circle">${name.charAt(0).toUpperCase()}</div>`;
-        }
-
-        const isAdmin = ADMIN_EMAILS.includes(currentUserEmail);
-        document.getElementById('btn-admin-menu').style.display = isAdmin ? 'block' : 'none';
-
-        registerUserLocally(currentUserEmail, name);
-      }
-    }
-
-    function registerUserLocally(email, name) {
-        let users = JSON.parse(localStorage.getItem('noel_users_list') || "{}");
-        email = email.toLowerCase();
-        if (!users[email]) {
-            users[email] = name || email;
-            localStorage.setItem('noel_users_list', JSON.stringify(users));
-        }
-    }
-
-    async function accessByCode() {
-        const codeInput = document.getElementById('bypass-code-input').value.trim();
-        if (!codeInput) return alert("Entre ton code !");
-        if (!supabaseClient) return alert("Erreur Supabase");
-
-        const { data, error } = await supabaseClient
-            .from('user_letters')
-            .select('email')
-            .ilike('bypass_code', codeInput)
-            .maybeSingle();
-
-        if (error) {
-            console.error(error);
-            return alert("Erreur lors de la vérification du code.");
-        }
-
-        if (data && data.email) {
-            isBypassUser = true;
-            currentUserEmail = data.email.toLowerCase();
-            document.getElementById('login-overlay').style.display = 'none';
-            showUserLetter();
-        } else {
-            alert("Code invalide ou introuvable ! Demande ton code à l'administrateur.");
-        }
-    }
-
-    function showAdminUserList() {
-        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) {
-            alert("⛔ Accès refusé : Seul l'administrateur principal peut accéder à cette section.");
-            return;
-        }
-
-        const container = document.getElementById('admin-user-buttons-container');
-        container.innerHTML = "";
-        
-        let users = JSON.parse(localStorage.getItem('noel_users_list') || "{}");
-        
-        for (let email in users) {
-            let btn = document.createElement('button');
-            btn.className = "btn-question btn-gold";
-            btn.style.padding = "8px";
-            btn.innerText = `✉️ ${users[email]}`;
-            btn.onclick = () => openUserEditor(email, users[email]);
-            container.appendChild(btn);
-        }
-        
-        switchView('view-admin-list');
-    }
-
-    async function adminUnlockDay() {
-        const email = document.getElementById('unlock-email-input').value.trim().toLowerCase();
-        const day = parseInt(document.getElementById('unlock-day-input').value);
-
-        if (!email || !email.includes('@') || !day) return alert("Veuillez saisir une adresse courriel et un numéro de jour valides.");
-
-        const { error } = await supabaseClient
-            .from('unlocked_days')
-            .upsert({ user_email: email, day: day }, { onConflict: 'user_email,day' });
-
-        if (error) alert("Erreur : " + error.message);
-        else alert(`La case du Jour ${day} a été DÉBLOQUÉE pour ${email} !`);
-    }
-
-    async function adminLockDay() {
-        const email = document.getElementById('unlock-email-input').value.trim().toLowerCase();
-        const day = parseInt(document.getElementById('unlock-day-input').value);
-
-        if (!email || !email.includes('@') || !day) return alert("Veuillez saisir une adresse courriel et un numéro de jour valides.");
-
-        const { error } = await supabaseClient
-            .from('unlocked_days')
-            .delete()
-            .eq('user_email', email)
-            .eq('day', day);
-
-        if (error) alert("Erreur : " + error.message);
-        else alert(`La case du Jour ${day} a été REBLOQUÉE pour ${email} !`);
-    }
-
-    function addNewUserPrompt() {
-        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) return;
-        const email = prompt("Entre l'adresse courriel de la personne :");
-        if (!email || !email.includes('@')) return alert("Adresse email invalide !");
-        
-        const name = prompt("Son nom ou prénom :") || email;
-        registerUserLocally(email.toLowerCase(), name);
-        showAdminUserList();
-    }
-
-    async function openUserEditor(email, name) {
-        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) return;
-        activeEditingEmail = email.toLowerCase();
-        
-        document.getElementById('admin-edit-name-input').value = name;
-        document.getElementById('admin-edit-email-input').value = activeEditingEmail;
-
-        const { data } = await supabaseClient
-            .from('user_letters')
-            .select('*')
-            .eq('email', activeEditingEmail)
-            .maybeSingle();
-
-        document.getElementById('admin-letter-text').value = data ? (data.letter_text || "") : "";
-        document.getElementById('admin-code-input').value = data ? (data.bypass_code || "") : "";
-        
-        const replyText = data ? data.user_reply : null;
-        document.getElementById('admin-view-reply').innerText = replyText ? "📩 Réponse reçue : " + replyText : "Aucune réponse reçue.";
-
-        switchView('view-admin-edit-user');
-    }
-
-    async function saveSelectedUserLetter() {
-        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) return;
-        if (!activeEditingEmail) return;
-
-        const newName = document.getElementById('admin-edit-name-input').value.trim();
-        const newEmail = document.getElementById('admin-edit-email-input').value.trim().toLowerCase();
-        const letterText = document.getElementById('admin-letter-text').value;
-        const codeText = document.getElementById('admin-code-input').value.trim();
-
-        if (!newEmail || !newEmail.includes('@')) return alert("Adresse courriel invalide !");
-
-        let users = JSON.parse(localStorage.getItem('noel_users_list') || "{}");
-        if (activeEditingEmail !== newEmail) {
-            delete users[activeEditingEmail];
-            await supabaseClient.from('user_letters').delete().eq('email', activeEditingEmail);
-        }
-        users[newEmail] = newName || newEmail;
-        localStorage.setItem('noel_users_list', JSON.stringify(users));
-
-        const { error } = await supabaseClient
-            .from('user_letters')
-            .upsert({
-                email: newEmail,
-                letter_text: letterText,
-                bypass_code: codeText,
-                updated_at: new Date()
-            }, { onConflict: 'email' });
-
-        if (error) {
-            alert("Erreur d'enregistrement : " + error.message);
-        } else {
-            alert("Modifications enregistrées avec succès !");
-            showAdminUserList();
-        }
-    }
-
-    async function deleteUserLetter() {
-        if (isBypassUser || !ADMIN_EMAILS.includes(currentUserEmail)) return;
-        if (!activeEditingEmail) return;
-
-        if (confirm("Es-tu sûr de vouloir SUPPRIMER cette personne et sa lettre de la liste ?")) {
-            const { error } = await supabaseClient
-                .from('user_letters')
-                .delete()
-                .eq('email', activeEditingEmail);
-
-            if (error) {
-                console.error("Erreur Supabase : ", error);
+    async function loadUserProgress() {
+        if (!supabaseClient) return;
+        try {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session && session.user) {
+                currentUserEmail = session.user.email.toLowerCase();
+            } else {
+                currentUserEmail = localStorage.getItem('last_active_email') || "guest@local";
             }
 
-            let users = JSON.parse(localStorage.getItem('noel_users_list') || "{}");
-            delete users[activeEditingEmail];
-            localStorage.setItem('noel_users_list', JSON.stringify(users));
+            if (ADMIN_EMAILS.includes(currentUserEmail)) {
+                isBypassed = true;
+                document.getElementById('admin-panel').classList.add('visible');
+                document.getElementById('admin-email').innerText = currentUserEmail;
+            }
 
-            alert("La personne et sa lettre ont été complètement supprimées !");
-            showAdminUserList();
+            // Charger les portes ouvertes par l'utilisateur
+            const { data } = await supabaseClient
+                .from('advent_progress')
+                .select('opened_doors')
+                .eq('email', currentUserEmail)
+                .maybeSingle();
+
+            if (data && data.opened_doors) {
+                openedDoors = data.opened_doors;
+            } else {
+                openedDoors = JSON.parse(localStorage.getItem(`advent_doors_${currentUserEmail}`) || "[]");
+            }
+
+            // Charger les déblocages personnalisés enregistrés par l'admin
+            const { data: unlockedDaysData } = await supabaseClient
+                .from('unlocked_days')
+                .select('day')
+                .eq('user_email', currentUserEmail);
+
+            if (unlockedDaysData) {
+                customUnlockedDays = unlockedDaysData.map(d => Number(d.day));
+            }
+        } catch (e) {
+            console.error(e);
+            openedDoors = JSON.parse(localStorage.getItem(`advent_doors_guest@local`) || "[]");
+        }
+
+        createCalendar();
+    }
+
+    async function saveUserProgress(doorIndex) {
+        if (!openedDoors.includes(doorIndex)) {
+            openedDoors.push(doorIndex);
+        }
+
+        localStorage.setItem(`advent_doors_${currentUserEmail}`, JSON.stringify(openedDoors));
+
+        if (supabaseClient && currentUserEmail) {
+            await supabaseClient
+                .from('advent_progress')
+                .upsert({
+                    email: currentUserEmail,
+                    opened_doors: openedDoors,
+                    updated_at: new Date()
+                }, { onConflict: 'email' });
         }
     }
 
-    function triggerMegaConfettiTest() {
-        if (typeof confetti === 'function') {
-            confetti({
-                particleCount: 120, spread: 120, startVelocity: 70, scalar: 3.5, origin: { y: 0.8 },
-                colors: ['#ffd700', '#b30000', '#2d5a27', '#ffffff']
-            });
-        }
-    }
-
-    async function showUserLetter() {
-        const displayBox = document.getElementById('user-letter-content');
-        displayBox.innerText = "Chargement depuis le Pôle Nord...";
-
-        const { data } = await supabaseClient
-            .from('user_letters')
-            .select('letter_text')
-            .eq('email', currentUserEmail)
-            .maybeSingle();
-
-        if (data && data.letter_text && data.letter_text.trim() !== "") {
-            displayBox.innerText = data.letter_text;
-        } else {
-            displayBox.innerText = "Hop hop hop !\nTa lettre de Noël est en préparation par le Père Noël...\n\nReviens très bientôt ! 🎄";
-        }
-
-        switchView('view-user-letter');
-        checkChristmasConfetti();
-    }
-
-    function openReplyModal(e) {
-        if(e) e.stopPropagation();
-        if (isBypassUser) {
-            return alert("Tu es connecté via un code. Pour répondre au Père Noël, connecte-toi avec Google !");
-        }
-        document.getElementById('modal-reply-input').value = "";
-        document.getElementById('reply-modal-overlay').style.display = 'flex';
-    }
-
-    function closeReplyModal() { document.getElementById('reply-modal-overlay').style.display = 'none'; }
-
-    async function sendReplyFromModal() {
-        const text = document.getElementById('modal-reply-input').value.trim();
-        if (!text) return alert("Écris un message avant d'envoyer !");
-
-        const { error } = await supabaseClient
-            .from('user_letters')
-            .upsert({
-                email: currentUserEmail,
-                user_reply: text,
-                updated_at: new Date()
-            }, { onConflict: 'email' });
-
-        if (error) {
-            alert("Erreur d'envoi : " + error.message);
-        } else {
-            alert("Ta réponse a bien été envoyée au Père Noël ! 🎅✨");
-            closeReplyModal();
-        }
-    }
-
-    function checkChristmasConfetti() {
+    function createCalendar() {
+        const grid = document.getElementById('calendar-grid');
+        grid.innerHTML = '';
         const today = new Date();
-        const isChristmas = (today.getMonth() === 11 && today.getDate() === 25);
-        if (isChristmas) triggerMegaConfettiTest();
-        else launchConfetti();
-    }
+        const currentMonth = today.getMonth(); // 11 = Décembre
+        const currentDay = today.getDate();
 
-    function launchConfetti(event) {
-        if(event && (event.target.tagName === 'BUTTON' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'INPUT')) return;
-        if (typeof confetti === 'function') {
-            confetti({
-                particleCount: 60, spread: 70, origin: { y: 0.9 },
-                colors: ['#d4a017', '#b30000', '#2d5a27', '#ffffff']
+        for (let i = 1; i <= 25; i++) {
+            const frame = document.createElement('div');
+            frame.className = 'door-frame';
+
+            const isUnlockedByAdmin = customUnlockedDays.includes(i);
+            const isAvailable = isBypassed || isUnlockedByAdmin || (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
+
+            if (!isAvailable) {
+                frame.classList.add('locked');
+            }
+
+            frame.innerHTML = `
+                <div class="door-content" id="content-${i}">
+                    <div class="day-label-opened">JOUR ${i}</div>
+                </div>
+                <div class="door-front">
+                    <div class="day-title">JOUR ${i}</div>
+                </div>
+            `;
+
+            const front = frame.querySelector('.door-front');
+            const content = frame.querySelector('.door-content');
+
+            if (openedDoors.includes(i)) {
+                frame.classList.add('open');
+            }
+
+            front.addEventListener('click', () => {
+                if (frame.classList.contains('locked') && !isBypassed) {
+                    frame.classList.add('shake');
+                    setTimeout(() => frame.classList.remove('shake'), 400);
+                    showModal('🔒 Porte Verrouillée', `Patience ! La porte du Jour ${i} s'ouvrira le ${i} Décembre.`);
+                    return;
+                }
+
+                if (!frame.classList.contains('open')) {
+                    frame.classList.add('open');
+                    saveUserProgress(i);
+                }
+                
+                openDayOverlay(i);
             });
+
+            content.addEventListener('click', () => {
+                if (frame.classList.contains('open')) {
+                    openDayOverlay(i);
+                }
+            });
+
+            grid.appendChild(frame);
         }
     }
 
-    function switchView(viewId) {
-        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active-view'));
-        document.getElementById(viewId).classList.add('active-view');
+    function openDayOverlay(dayNumber) {
+        currentSelectedDay = dayNumber;
+        
+        document.getElementById('spawn-title').innerText = `JOUR ${dayNumber}`;
+        document.getElementById('spawn-date').innerText = `${dayNumber} DÉCEMBRE`;
+        document.getElementById('spawn-btn').innerText = `ACCÉDER AUX QUESTIONS DU JOUR ${dayNumber} ➔`;
+
+        document.getElementById('main-view').classList.add('hidden-view');
+
+        setTimeout(() => {
+            document.getElementById('day-overlay').classList.add('active');
+            triggerUniqueConfetti(dayNumber);
+        }, 300);
     }
 
-    function backToMain() { switchView('view-main-menu'); }
+    function closeDayOverlay() {
+        document.getElementById('day-overlay').classList.remove('active');
+        setTimeout(() => {
+            document.getElementById('main-view').classList.remove('hidden-view');
+        }, 300);
+    }
 
-    window.addEventListener('DOMContentLoaded', async () => {
-      if (!supabaseClient) return;
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      handleSession(session);
-      supabaseClient.auth.onAuthStateChange((_event, session) => { handleSession(session); });
+    function goToDayPage() {
+        window.location.href = `calendrier${currentSelectedDay}.html`;
+    }
+
+    function triggerUniqueConfetti(day) {
+        if (typeof confetti !== 'function') return;
+
+        const duration = 10 * 1000;
+        const animationEnd = Date.now() + duration;
+
+        const interval = setInterval(() => {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            const defaultOptions = { zIndex: 999999 };
+
+            switch (day % 5) {
+                case 1:
+                    confetti({ ...defaultOptions, particleCount: 15, spread: 80, origin: { y: 0.6 }, colors: ['#ffffff', '#ff0000', '#ffd700'] });
+                    break;
+                case 2:
+                    confetti({ ...defaultOptions, particleCount: 10, angle: 60, spread: 55, origin: { x: 0 } });
+                    confetti({ ...defaultOptions, particleCount: 10, angle: 120, spread: 55, origin: { x: 1 } });
+                    break;
+                case 3:
+                    confetti({ ...defaultOptions, particleCount: 20, spread: 100, startVelocity: 30, origin: { y: 0.8 }, colors: ['#00ffcc', '#ffffff', '#ff00ff'] });
+                    break;
+                case 4:
+                    confetti({ ...defaultOptions, particleCount: 15, scalar: 1.2, shapes: ['circle'], origin: { x: Math.random(), y: Math.random() - 0.2 } });
+                    break;
+                case 0:
+                    confetti({ ...defaultOptions, particleCount: 15, scalar: 1.5, shapes: ['star'], colors: ['#ffffff', '#ffd700', '#ffae00'] });
+                    break;
+            }
+        }, 250);
+    }
+
+    function toggleBypass() {
+        isBypassed = !isBypassed;
+        showModal('Mode Admin', `Mode Bypass ${isBypassed ? "ACTIVÉ 🔓" : "DÉSACTIVÉ 🔒"}`);
+        createCalendar();
+    }
+
+    async function resetProgress() {
+        if (!confirm("Voulez-vous vraiment réinitialiser toutes les portes ouvertes ?")) return;
+        openedDoors = [];
+        localStorage.removeItem(`advent_doors_${currentUserEmail}`);
+
+        if (supabaseClient && currentUserEmail) {
+            await supabaseClient
+                .from('advent_progress')
+                .upsert({ email: currentUserEmail, opened_doors: [], updated_at: new Date() });
+        }
+
+        showModal('Réinitialisation', 'Toutes les portes sont refermées !');
+        createCalendar();
+    }
+
+    function showModal(title, text) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-text').innerText = text;
+        document.getElementById('modal-overlay').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('modal-overlay').classList.remove('active');
+    }
+
+    function setupHeaderAnimation() {
+        const banner = document.getElementById('banner');
+        const title = document.getElementById('header-title');
+        const defaultText = "📅 CALENDRIER DE L'AVENT";
+        
+        const today = new Date();
+        const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+        const dateText = `📆 ${today.getDate()} ${months[today.getMonth()].toUpperCase()}`;
+
+        let isAnimating = false;
+
+        banner.addEventListener('mouseenter', () => {
+            if (isAnimating) return;
+            isAnimating = true;
+            title.innerText = dateText;
+            title.classList.add('flashing');
+            setTimeout(() => title.classList.remove('flashing'), 2000);
+        });
+
+        banner.addEventListener('mouseleave', () => {
+            title.innerText = defaultText;
+            title.classList.remove('flashing');
+            isAnimating = false;
+        });
+    }
+
+    let secretInput = "";
+    window.addEventListener('keydown', (e) => {
+        secretInput += e.key.toLowerCase();
+        if (secretInput.length > 15) secretInput = secretInput.slice(-15);
+
+        if (secretInput.includes("christmas")) {
+            isBypassed = true;
+            secretInput = "";
+            document.getElementById('admin-panel').classList.add('visible');
+            showModal("🎄 Code Secret Activé !", "Toutes les portes du calendrier sont déverrouillées !");
+            createCalendar();
+        }
+    });
+
+    function initSnow() {
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const flakes = Array.from({ length: 75 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 3 + 1,
+            d: Math.random() * 1 + 0.5
+        }));
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+            ctx.beginPath();
+            for (let f of flakes) {
+                ctx.moveTo(f.x, f.y);
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+            }
+            ctx.fill();
+            update();
+            requestAnimationFrame(draw);
+        }
+
+        function update() {
+            for (let f of flakes) {
+                f.y += Math.cos(f.d) + 1 + f.r / 2;
+                f.x += Math.sin(f.d) * 0.5;
+                if (f.y > canvas.height) {
+                    f.y = -10;
+                    f.x = Math.random() * canvas.width;
+                }
+            }
+        }
+        draw();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        loadUserProgress();
+        setupHeaderAnimation();
+        initSnow();
     });
 </script>
 </body>
