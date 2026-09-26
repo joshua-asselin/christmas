@@ -17,7 +17,6 @@
         body, html {
             margin: 0; padding: 0; min-height: 100vh; width: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            /* BACKGROUND FIXE ET VISIBLE */
             background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), 
                               url('https://i.postimg.cc/PxR6NvbB/a2781225b39a14644c5673928f1b8f0b.jpg');
             background-size: cover; background-position: center; background-attachment: fixed;
@@ -185,7 +184,7 @@
         }
         .btn-back:hover { transform: translateY(-3px) scale(1.05); background: #ffffff; }
 
-        /* OVERLAY TRANSLUCIDE (OPACITÉ À 45% + PREMIER PLAN POUR LE TEXTE) */
+        /* OVERLAY TRANSLUCIDE */
         #day-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.45);
@@ -203,7 +202,6 @@
 
         #day-overlay.active .day-spawn-card { transform: scale(1); }
 
-        /* TEXTE DU JOUR EN BLANC PUR ET TRÈS GROS */
         .day-big-title {
             font-family: 'Cinzel', serif; font-size: 8.5rem; font-weight: 900;
             color: #ffffff !important; 
@@ -293,7 +291,7 @@
         <button class="btn-back" onclick="window.location.href='index.html'">⬅️ RETOUR AU MENU</button>
     </div>
 
-    <!-- Vue Écran Géant (Spawn Jour + Redirection) -->
+    <!-- Vue Écran Géant -->
     <div id="day-overlay">
         <button class="btn-close-overlay" onclick="closeDayOverlay()">✕</button>
         <div class="day-spawn-card">
@@ -317,10 +315,11 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjEwMDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
     const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-    const ADMIN_EMAILS = ["asselinj24@emm.qc.ca"];
+    const ADMIN_EMAILS = ["asselinj24@emm.qc.ca", "josh.asselin15@gmail.com"];
     let currentUserEmail = "";
     let isBypassed = false;
     let openedDoors = [];
+    let customUnlockedDays = [];
     let currentSelectedDay = 1;
 
     async function loadUserProgress() {
@@ -339,6 +338,7 @@
                 document.getElementById('admin-email').innerText = currentUserEmail;
             }
 
+            // Charger les portes ouvertes par l'utilisateur
             const { data } = await supabaseClient
                 .from('advent_progress')
                 .select('opened_doors')
@@ -349,6 +349,16 @@
                 openedDoors = data.opened_doors;
             } else {
                 openedDoors = JSON.parse(localStorage.getItem(`advent_doors_${currentUserEmail}`) || "[]");
+            }
+
+            // Charger les déblocages personnalisés enregistrés par l'admin
+            const { data: unlockedDaysData } = await supabaseClient
+                .from('unlocked_days')
+                .select('day')
+                .eq('user_email', currentUserEmail);
+
+            if (unlockedDaysData) {
+                customUnlockedDays = unlockedDaysData.map(d => Number(d.day));
             }
         } catch (e) {
             console.error(e);
@@ -387,7 +397,8 @@
             const frame = document.createElement('div');
             frame.className = 'door-frame';
 
-            const isAvailable = isBypassed || (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
+            const isUnlockedByAdmin = customUnlockedDays.includes(i);
+            const isAvailable = isBypassed || isUnlockedByAdmin || (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
 
             if (!isAvailable) {
                 frame.classList.add('locked');
@@ -409,7 +420,6 @@
                 frame.classList.add('open');
             }
 
-            // Événement pour ouvrir une nouvelle case
             front.addEventListener('click', () => {
                 if (frame.classList.contains('locked') && !isBypassed) {
                     frame.classList.add('shake');
@@ -426,7 +436,6 @@
                 openDayOverlay(i);
             });
 
-            // Événement pour retourner sur une case DÉJÀ ouverte
             content.addEventListener('click', () => {
                 if (frame.classList.contains('open')) {
                     openDayOverlay(i);
@@ -437,7 +446,6 @@
         }
     }
 
-    /* VUE PLEIN ÉCRAN POUR LE JOUR */
     function openDayOverlay(dayNumber) {
         currentSelectedDay = dayNumber;
         
@@ -464,11 +472,10 @@
         window.location.href = `calendrier${currentSelectedDay}.html`;
     }
 
-    /* ANIMATIONS DE CONFETTIS AU PREMIER PLAN (Z-INDEX SUPERIEUR) */
     function triggerUniqueConfetti(day) {
         if (typeof confetti !== 'function') return;
 
-        const duration = 10 * 1000; // 10 secondes
+        const duration = 10 * 1000;
         const animationEnd = Date.now() + duration;
 
         const interval = setInterval(() => {
@@ -478,10 +485,7 @@
                 return clearInterval(interval);
             }
 
-            // Options par défaut pour mettre les confettis tout devant
-            const defaultOptions = {
-                zIndex: 999999
-            };
+            const defaultOptions = { zIndex: 999999 };
 
             switch (day % 5) {
                 case 1:
@@ -504,7 +508,6 @@
         }, 250);
     }
 
-    /* Actions Admin & Modals */
     function toggleBypass() {
         isBypassed = !isBypassed;
         showModal('Mode Admin', `Mode Bypass ${isBypassed ? "ACTIVÉ 🔓" : "DÉSACTIVÉ 🔒"}`);
@@ -562,7 +565,6 @@
         });
     }
 
-    /* Bypass Clavier "christmas" */
     let secretInput = "";
     window.addEventListener('keydown', (e) => {
         secretInput += e.key.toLowerCase();
@@ -577,7 +579,6 @@
         }
     });
 
-    /* Neige Animée */
     function initSnow() {
         const canvas = document.getElementById('snow-canvas');
         const ctx = canvas.getContext('2d');
