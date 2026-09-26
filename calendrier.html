@@ -17,20 +17,17 @@
         body, html {
             margin: 0; padding: 0; min-height: 100vh; width: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            /* BACKGROUND FIXE ET VISIBLE */
             background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), 
                               url('https://i.postimg.cc/PxR6NvbB/a2781225b39a14644c5673928f1b8f0b.jpg');
             background-size: cover; background-position: center; background-attachment: fixed;
             font-family: 'Poppins', sans-serif; overflow-x: hidden; color: #ffffff !important;
         }
 
-        /* Canvas Chute de Neige */
         #snow-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 10;
         }
 
-        /* Vue principale du calendrier */
         #main-view {
             width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center;
             justify-content: space-between; padding: 20px;
@@ -41,7 +38,6 @@
             opacity: 0; pointer-events: none; transform: scale(0.95);
         }
 
-        /* Bannière supérieure */
         .header-banner {
             width: 98%; height: 110px;
             background-image: url('https://i.postimg.cc/Kc7F8rdr/53a6d70e-6093-4bdd-a3d0-3b43e8c70781-885x590.jpg');
@@ -70,7 +66,6 @@
         }
         .header-title.flashing { animation: flashAnim 0.5s ease-in-out 4; }
 
-        /* Section Admin */
         .admin-panel {
             display: none;
             width: 98%; margin-top: 10px;
@@ -90,7 +85,6 @@
         }
         .btn-admin:hover { background: #b30000; transform: scale(1.04); }
 
-        /* Conteneur du Calendrier Plein Écran */
         .calendar-container {
             margin-top: 15px; margin-bottom: 15px; width: 98%; flex-grow: 1;
             background: rgba(0, 0, 0, 0.45);
@@ -113,7 +107,6 @@
             .day-big-title { font-size: 3.2rem !important; }
         }
 
-        /* Portes du calendrier */
         .door-frame {
             position: relative; min-height: 100px; height: 100%; perspective: 1000px;
             border-radius: 12px; overflow: hidden;
@@ -185,7 +178,6 @@
         }
         .btn-back:hover { transform: translateY(-3px) scale(1.05); background: #ffffff; }
 
-        /* OVERLAY TRANSLUCIDE (OPACITÉ À 45% + PREMIER PLAN POUR LE TEXTE) */
         #day-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.45);
@@ -203,7 +195,6 @@
 
         #day-overlay.active .day-spawn-card { transform: scale(1); }
 
-        /* TEXTE DU JOUR EN BLANC PUR ET TRÈS GROS */
         .day-big-title {
             font-family: 'Cinzel', serif; font-size: 8.5rem; font-weight: 900;
             color: #ffffff !important; 
@@ -243,7 +234,6 @@
         }
         .btn-close-overlay:hover { background: rgba(255, 255, 255, 0.35); transform: rotate(90deg); }
 
-        /* Modal simple de verrouillage */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
@@ -271,10 +261,8 @@
 </head>
 <body>
 
-    <!-- Canvas Neige -->
     <canvas id="snow-canvas"></canvas>
 
-    <!-- Vue Principale -->
     <div id="main-view">
         <div class="header-banner" id="banner">
             <div class="header-title" id="header-title">📅 CALENDRIER DE L'AVENT</div>
@@ -293,7 +281,6 @@
         <button class="btn-back" onclick="window.location.href='index.html'">⬅️ RETOUR AU MENU</button>
     </div>
 
-    <!-- Vue Écran Géant (Spawn Jour + Redirection) -->
     <div id="day-overlay">
         <button class="btn-close-overlay" onclick="closeDayOverlay()">✕</button>
         <div class="day-spawn-card">
@@ -303,7 +290,6 @@
         </div>
     </div>
 
-    <!-- Modal d'avertissement -->
     <div class="modal-overlay" id="modal-overlay">
         <div class="modal-card">
             <div class="modal-title" id="modal-title">🔒 Porte Verrouillée</div>
@@ -317,10 +303,11 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjEwMDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
     const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-    const ADMIN_EMAILS = ["asselinj24@emm.qc.ca"];
+    const ADMIN_EMAILS = ["asselinj24@emm.qc.ca", "josh.asselin15@gmail.com"];
     let currentUserEmail = "";
     let isBypassed = false;
     let openedDoors = [];
+    let adminUnlockedDays = [];
     let currentSelectedDay = 1;
 
     async function loadUserProgress() {
@@ -339,6 +326,7 @@
                 document.getElementById('admin-email').innerText = currentUserEmail;
             }
 
+            // Récupérer la progression générale de l'utilisateur
             const { data } = await supabaseClient
                 .from('advent_progress')
                 .select('opened_doors')
@@ -350,6 +338,17 @@
             } else {
                 openedDoors = JSON.parse(localStorage.getItem(`advent_doors_${currentUserEmail}`) || "[]");
             }
+
+            // Récupérer les jours spécifiquement débloqués par l'admin pour ce courriel
+            const { data: unlockedData } = await supabaseClient
+                .from('unlocked_days')
+                .select('day')
+                .eq('user_email', currentUserEmail);
+
+            if (unlockedData) {
+                adminUnlockedDays = unlockedData.map(u => u.day);
+            }
+
         } catch (e) {
             console.error(e);
             openedDoors = JSON.parse(localStorage.getItem(`advent_doors_guest@local`) || "[]");
@@ -387,7 +386,8 @@
             const frame = document.createElement('div');
             frame.className = 'door-frame';
 
-            const isAvailable = isBypassed || (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
+            // Une porte est ouverte si date valide OR mode bypass admin OR débloquée spécifiquement par l'admin
+            const isAvailable = isBypassed || adminUnlockedDays.includes(i) || (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
 
             if (!isAvailable) {
                 frame.classList.add('locked');
@@ -409,9 +409,8 @@
                 frame.classList.add('open');
             }
 
-            // Événement pour ouvrir une nouvelle case
             front.addEventListener('click', () => {
-                if (frame.classList.contains('locked') && !isBypassed) {
+                if (frame.classList.contains('locked') && !isBypassed && !adminUnlockedDays.includes(i)) {
                     frame.classList.add('shake');
                     setTimeout(() => frame.classList.remove('shake'), 400);
                     showModal('🔒 Porte Verrouillée', `Patience ! La porte du Jour ${i} s'ouvrira le ${i} Décembre.`);
@@ -426,7 +425,6 @@
                 openDayOverlay(i);
             });
 
-            // Événement pour retourner sur une case DÉJÀ ouverte
             content.addEventListener('click', () => {
                 if (frame.classList.contains('open')) {
                     openDayOverlay(i);
@@ -437,7 +435,6 @@
         }
     }
 
-    /* VUE PLEIN ÉCRAN POUR LE JOUR */
     function openDayOverlay(dayNumber) {
         currentSelectedDay = dayNumber;
         
@@ -464,11 +461,10 @@
         window.location.href = `calendrier${currentSelectedDay}.html`;
     }
 
-    /* ANIMATIONS DE CONFETTIS AU PREMIER PLAN (Z-INDEX SUPERIEUR) */
     function triggerUniqueConfetti(day) {
         if (typeof confetti !== 'function') return;
 
-        const duration = 10 * 1000; // 10 secondes
+        const duration = 10 * 1000;
         const animationEnd = Date.now() + duration;
 
         const interval = setInterval(() => {
@@ -478,7 +474,6 @@
                 return clearInterval(interval);
             }
 
-            // Options par défaut pour mettre les confettis tout devant
             const defaultOptions = {
                 zIndex: 999999
             };
@@ -504,7 +499,6 @@
         }, 250);
     }
 
-    /* Actions Admin & Modals */
     function toggleBypass() {
         isBypassed = !isBypassed;
         showModal('Mode Admin', `Mode Bypass ${isBypassed ? "ACTIVÉ 🔓" : "DÉSACTIVÉ 🔒"}`);
@@ -562,7 +556,6 @@
         });
     }
 
-    /* Bypass Clavier "christmas" */
     let secretInput = "";
     window.addEventListener('keydown', (e) => {
         secretInput += e.key.toLowerCase();
@@ -577,7 +570,6 @@
         }
     });
 
-    /* Neige Animée */
     function initSnow() {
         const canvas = document.getElementById('snow-canvas');
         const ctx = canvas.getContext('2d');
