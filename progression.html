@@ -1,1 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi de Progression - Les 300 Défis de Noël</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@300;400;600&display=swap');
+
+        body, html {
+            margin: 0; padding: 0; min-height: 100vh; width: 100%;
+            background-image: url('https://i.postimg.cc/rFB7TZN4/pngtree-christmas-background-vector-illustration-space-for-writing-text-picture-image-16035994-(1).png');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            font-family: 'Poppins', sans-serif;
+            color: #1a0f07;
+        }
+
+        .overlay {
+            min-height: 100vh;
+            background: rgba(15, 20, 30, 0.75);
+            backdrop-filter: blur(8px);
+            padding: 30px 15px;
+            box-sizing: border-box;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .container {
+            width: 100%; max-width: 900px;
+            background: rgba(255, 253, 245, 0.95);
+            border: 2px solid #d4a017; border-radius: 24px;
+            padding: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif; color: #800c19;
+            text-align: center; margin-top: 0; font-size: 2rem;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+        }
+
+        .btn-back {
+            display: inline-block; background: linear-gradient(135deg, #d4a017, #aa7c11);
+            color: #200407; border: none; padding: 10px 20px; border-radius: 20px;
+            font-weight: 600; cursor: pointer; text-decoration: none; margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: all 0.2s ease;
+        }
+        .btn-back:hover { transform: translateY(-2px); }
+
+        .loading { text-align: center; font-size: 1.1rem; color: #555; padding: 30px; }
+
+        .user-card {
+            background: #fff; border: 1.5px solid #e8d098;
+            border-radius: 16px; padding: 18px; margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .user-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1.5px solid #f0e0c0; padding-bottom: 10px; margin-bottom: 12px;
+            flex-wrap: wrap; gap: 10px;
+        }
+
+        .user-email { font-weight: 600; font-size: 1.05rem; color: #2c3e50; word-break: break-all; }
+
+        .user-stats {
+            display: flex; gap: 15px; font-weight: 600; font-size: 0.95rem;
+        }
+
+        .badge-stars { background: #fff3cd; color: #856404; padding: 4px 10px; border-radius: 12px; border: 1px solid #ffeeba; }
+        .badge-attempts { background: #e2e3e5; color: #383d41; padding: 4px 10px; border-radius: 12px; }
+
+        .days-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px; margin-top: 10px;
+        }
+
+        .day-box {
+            border-radius: 10px; padding: 8px 10px; text-align: center;
+            font-size: 0.85rem; font-weight: 500;
+        }
+
+        .day-success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .day-fail { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+
+        .empty-state { text-align: center; color: #777; padding: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="overlay">
+    <div class="container">
+        <button class="btn-back" onclick="window.location.href='index.html'">⬅️ Retour au Menu</button>
+        <h1>📊 Progression des Joueurs</h1>
+
+        <div id="loading-state" class="loading">Chargement des progressions depuis Supabase...</div>
+        <div id="users-container"></div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://frwxwmynjgzbjwwjxscp.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjEwMDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
+
+    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    async function fetchProgressionData() {
+        const loadingEl = document.getElementById('loading-state');
+        const containerEl = document.getElementById('users-container');
+
+        if (!supabaseClient) {
+            loadingEl.innerText = "Erreur de connexion à Supabase.";
+            return;
+        }
+
+        // Récupération de toutes les données de la table des réponses
+        const { data, error } = await supabaseClient
+            .from('user_answers')
+            .select('*');
+
+        if (error) {
+            console.error(error);
+            loadingEl.innerText = "Erreur lors du chargement des données : " + error.message;
+            return;
+        }
+
+        loadingEl.style.display = 'none';
+
+        if (!data || data.length === 0) {
+            containerEl.innerHTML = '<div class="empty-state">Aucune réponse enregistrée pour le moment.</div>';
+            return;
+        }
+
+        // Regroupement des données par utilisateur
+        const usersMap = {};
+
+        data.forEach(entry => {
+            const email = entry.email ? entry.email.toLowerCase() : "Inconnu";
+
+            if (!usersMap[email]) {
+                usersMap[email] = {
+                    totalStars: 0,
+                    totalAttempts: 0,
+                    days: {}
+                };
+            }
+
+            const isCorrect = entry.is_correct || entry.correct || false;
+            const dayNum = entry.day || entry.day_number || "?";
+
+            usersMap[email].totalAttempts += 1;
+            
+            // Si le jour n'a pas encore été marqué réussi pour cette personne
+            if (!usersMap[email].days[dayNum]) {
+                usersMap[email].days[dayNum] = { success: isCorrect, attempts: 1 };
+            } else {
+                usersMap[email].days[dayNum].attempts += 1;
+                if (isCorrect) usersMap[email].days[dayNum].success = true;
+            }
+        });
+
+        // Calcul des étoiles totales (1 étoile par jour réussi)
+        for (let email in usersMap) {
+            let stars = 0;
+            for (let day in usersMap[email].days) {
+                if (usersMap[email].days[day].success) stars++;
+            }
+            usersMap[email].totalStars = stars;
+        }
+
+        // Génération de l'affichage HTML
+        containerEl.innerHTML = "";
+
+        for (let email in usersMap) {
+            const user = usersMap[email];
+
+            let userCard = document.createElement('div');
+            userCard.className = 'user-card';
+
+            let daysHtml = "";
+            const sortedDays = Object.keys(user.days).sort((a, b) => Number(a) - Number(b));
+
+            sortedDays.forEach(day => {
+                const dayData = user.days[day];
+                const statusClass = dayData.success ? 'day-success' : 'day-fail';
+                const statusIcon = dayData.success ? '⭐ Réussi' : '❌ Échoué';
+
+                daysHtml += `
+                    <div class="day-box ${statusClass}">
+                        <div><strong>Jour ${day}</strong></div>
+                        <div>${statusIcon}</div>
+                        <div style="font-size:0.75rem; opacity:0.8;">${dayData.attempts} essai(s)</div>
+                    </div>
+                `;
+            });
+
+            userCard.innerHTML = `
+                <div class="user-header">
+                    <div class="user-email">✉️ ${email}</div>
+                    <div class="user-stats">
+                        <span class="badge-stars">⭐ ${user.totalStars} Étoile(s)</span>
+                        <span class="badge-attempts">🎯 ${user.totalAttempts} Tentative(s)</span>
+                    </div>
+                </div>
+                <div style="font-size:0.85rem; color:#666; margin-bottom:6px;">Questions tentées :</div>
+                <div class="days-grid">
+                    ${daysHtml}
+                </div>
+            `;
+
+            containerEl.appendChild(userCard);
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', fetchProgressionData);
+</script>
+
+</body>
+</html>
