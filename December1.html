@@ -144,7 +144,7 @@
             padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.8rem; font-weight: 700;
         }
 
-        .diff-stars { color: #ffd700; letter-spacing: 2px; }
+        .diff-stars { color: #ffd700; letter-spacing: 2px; font-size: 1.1rem; }
 
         #ui-2-questions {
             position: relative; z-index: 10;
@@ -168,6 +168,7 @@
             font-size: 0.8rem; font-weight: 800; letter-spacing: 1.5px;
             text-transform: uppercase; padding: 6px 16px; border-radius: 20px;
             background: #ffffff; color: #1c1917; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex; align-items: center; gap: 8px;
         }
 
         .btn-delete-q {
@@ -369,51 +370,7 @@
     </div>
 
 <script>
-    const canvas = document.getElementById('snow-canvas');
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-    const flakes = [];
-
-    window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    });
-
-    for (let i = 0; i < 60; i++) {
-        flakes.push({
-            x: Math.random() * width,
-            y: Math.random() * height,
-            r: Math.random() * 3 + 1,
-            d: Math.random() * 1 + 0.5
-        });
-    }
-
-    function drawSnow() {
-        ctx.clearRect(0, 0, width, height);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-        ctx.beginPath();
-        for (let i = 0; i < flakes.length; i++) {
-            const f = flakes[i];
-            ctx.moveTo(f.x, f.y);
-            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
-        }
-        ctx.fill();
-        updateSnow();
-    }
-
-    function updateSnow() {
-        for (let i = 0; i < flakes.length; i++) {
-            const f = flakes[i];
-            f.y += f.d;
-            if (f.y > height) {
-                flakes[i] = { x: Math.random() * width, y: 0, r: f.r, d: f.d };
-            }
-        }
-    }
-
-    setInterval(drawSnow, 30);
-
+    // Configuration du Jour (Modifiez cette valeur pour les autres jours)
     const CURRENT_DAY = 1; 
     const TABLE_NAME = 'advent_questions'; 
 
@@ -421,7 +378,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjEwMDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
     const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-    const ADMIN_EMAILS = ["asselinj24@emm.qc.ca"];
+    const ADMIN_EMAILS = ["asselinj24@emm.qc.ca", "josh.asselin15@gmail.com"];
     let currentUserEmail = "";
     let currentDiff = "easy";
     let activeQuestions = [];
@@ -668,11 +625,11 @@
             }
 
             const deleteBtnHTML = isAdmin ? `<button class="btn-delete-q" onclick="deleteQuestion('${q.id}')">🗑️ Supprimer</button>` : '';
-            const statusBadge = isCompleted ? `<span style="color:#2ecc71; font-weight:800; font-size:1.1rem;">★ Réussie</span>` : `<span>☆ Non réussie</span>`;
+            const statusBadge = isCompleted ? `<span style="color:#2ecc71; font-weight:800;">★ Réussie</span>` : `<span style="color:#aaa;">☆ Non réussie</span>`;
 
             qBox.innerHTML = `
                 <div class="question-card-top">
-                    <span class="question-tag">QUESTION ${qIndex + 1} ${statusBadge}</span>
+                    <span class="question-tag">QUESTION ${qIndex + 1} • ${statusBadge}</span>
                     ${deleteBtnHTML}
                 </div>
                 <div class="question-text">${q.question_text}</div>
@@ -717,15 +674,17 @@
         const newAttempts = currentProg.attempts + 1;
         const newlyCompleted = currentProg.completed || isCorrect;
 
-        await supabaseClient.from('user_progress').upsert({
-            user_email: currentUserEmail,
-            day: CURRENT_DAY,
-            difficulty: q.difficulty,
-            question_id: q.id,
-            attempts: newAttempts,
-            completed: newlyCompleted,
-            updated_at: new Date().toISOString()
-        }, { onConflict: 'user_email,day,difficulty,question_id' });
+        if (supabaseClient) {
+            await supabaseClient.from('user_progress').upsert({
+                user_email: currentUserEmail,
+                day: CURRENT_DAY,
+                difficulty: q.difficulty,
+                question_id: q.id,
+                attempts: newAttempts,
+                completed: newlyCompleted,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'user_email,day,difficulty,question_id' });
+        }
 
         userProgressMap[q.id] = { attempts: newAttempts, completed: newlyCompleted };
 
@@ -768,7 +727,58 @@
         await updateDiffCardsInfo();
     }
 
-    window.addEventListener('DOMContentLoaded', initPage);
+    // Effet de neige
+    function initSnow() {
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        const flakes = [];
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        for (let i = 0; i < 60; i++) {
+            flakes.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                r: Math.random() * 3 + 1,
+                d: Math.random() * 1 + 0.5
+            });
+        }
+
+        function drawSnow() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+            ctx.beginPath();
+            for (let i = 0; i < flakes.length; i++) {
+                const f = flakes[i];
+                ctx.moveTo(f.x, f.y);
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+            }
+            ctx.fill();
+            updateSnow();
+        }
+
+        function updateSnow() {
+            for (let i = 0; i < flakes.length; i++) {
+                const f = flakes[i];
+                f.y += f.d;
+                if (f.y > height) {
+                    flakes[i] = { x: Math.random() * width, y: 0, r: f.r, d: f.d };
+                }
+            }
+        }
+
+        setInterval(drawSnow, 30);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        initPage();
+        initSnow();
+    });
 </script>
 </body>
 </html>
