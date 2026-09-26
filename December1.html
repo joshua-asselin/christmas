@@ -23,13 +23,11 @@
             padding-bottom: 50px;
         }
 
-        /* CANVAS FLOCONS DE NEIGE ANIMÉS */
         #snow-canvas {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: 1;
         }
 
-        /* BANNIÈRE HAUT LUMINEUSE */
         .page-header {
             position: relative; z-index: 10;
             width: 92%; max-width: 950px; margin-top: 25px; padding: 16px 28px;
@@ -51,7 +49,6 @@
             filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
         }
 
-        /* BOUTONS BLANCS ET LUMINEUX */
         .btn-header {
             background: rgba(255, 255, 255, 0.85); 
             color: #1c1917 !important; 
@@ -77,7 +74,6 @@
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
         }
 
-        /* PANNEAU ADMIN */
         .admin-creator-panel {
             position: relative; z-index: 100;
             display: none; width: 92%; max-width: 850px; margin-top: 20px;
@@ -104,7 +100,6 @@
         .option-row { display: flex; gap: 10px; align-items: center; background: rgba(255,255,255,0.03); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .color-picker { width: 38px; height: 38px; border: none; border-radius: 8px; cursor: pointer; background: transparent; }
 
-        /* UI 1 : CHOIX DE DIFFICULTÉ */
         #ui-1-main {
             position: relative; z-index: 10;
             width: 92%; max-width: 950px; margin-top: 35px; display: flex;
@@ -151,7 +146,6 @@
 
         .diff-stars { color: #ffd700; letter-spacing: 2px; }
 
-        /* UI 2 : LES QUESTIONS */
         #ui-2-questions {
             position: relative; z-index: 10;
             display: none; width: 92%; max-width: 850px; margin-top: 30px;
@@ -185,7 +179,6 @@
 
         .question-text { font-size: 1.4rem; font-weight: 800; margin-bottom: 25px; line-height: 1.45; color: #ffffff; text-align: left; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        /* CHOIX DE RÉPONSES MODERNES */
         .answers-grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; width: 100%;
         }
@@ -222,7 +215,6 @@
         }
         .btn-submit-q:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(255, 255, 255, 0.5); background: #f0f0f0; }
 
-        /* OVERLAY BRAVO */
         #bravo-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(5, 5, 12, 0.8); backdrop-filter: blur(12px);
@@ -264,10 +256,8 @@
 </head>
 <body>
 
-    <!-- ANIMATION FLOCONS DE NEIGE -->
     <canvas id="snow-canvas"></canvas>
 
-    <!-- BANNIÈRE PARFAITEMENT CENTRÉE -->
     <div class="page-header">
         <div class="header-left">
             <button class="btn-header" onclick="window.location.href='calendrier.html'">⬅️ CALENDRIER</button>
@@ -280,7 +270,6 @@
         </div>
     </div>
 
-    <!-- PANNEAU MODO / ADMIN : CRÉATEUR DE QUESTIONS -->
     <div class="admin-creator-panel" id="admin-panel">
         <div class="admin-header">
             <h2 class="admin-title">👑 NOUVELLE QUESTION (ADMIN)</h2>
@@ -328,7 +317,6 @@
         </form>
     </div>
 
-    <!-- UI 1 : SELECTION DIFFICULTÉ ET ACCROCHE CENTRÉE -->
     <div id="ui-1-main">
         <div class="section-badge">🎄 ÉPREUVE DU JOUR</div>
         <h2 class="main-tagline">SÉLECTIONNE TA DIFFICULTÉ</h2>
@@ -340,8 +328,8 @@
                     <p style="margin:0; color:#ffffff; font-size: 0.9rem; font-weight: 700;">Niveau Facile</p>
                 </div>
                 <div class="diff-card-footer">
-                    <span>5 Questions</span>
-                    <span class="diff-stars">★☆☆</span>
+                    <span id="count-easy">0 Questions</span>
+                    <span class="diff-stars" id="stars-easy"></span>
                 </div>
             </div>
             <div class="diff-card medium" onclick="loadQuestionsForDiff('medium')">
@@ -350,8 +338,8 @@
                     <p style="margin:0; color:#ffffff; font-size: 0.9rem; font-weight: 700;">Niveau Moyen</p>
                 </div>
                 <div class="diff-card-footer">
-                    <span>5 Questions</span>
-                    <span class="diff-stars">★★☆</span>
+                    <span id="count-medium">0 Questions</span>
+                    <span class="diff-stars" id="stars-medium"></span>
                 </div>
             </div>
             <div class="diff-card hard" onclick="loadQuestionsForDiff('hard')">
@@ -360,20 +348,18 @@
                     <p style="margin:0; color:#ffffff; font-size: 0.9rem; font-weight: 700;">Niveau Difficile</p>
                 </div>
                 <div class="diff-card-footer">
-                    <span>5 Questions</span>
-                    <span class="diff-stars">★★★</span>
+                    <span id="count-hard">0 Questions</span>
+                    <span class="diff-stars" id="stars-hard"></span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- UI 2 : AFFICHAGE DES QUESTIONS -->
     <div id="ui-2-questions">
         <button class="btn-header" onclick="backToUI1()">⬅️ RETOUR AUX DIFFICULTÉS</button>
         <div id="questions-list" style="width:100%; display:flex; flex-direction:column; gap:25px;"></div>
     </div>
 
-    <!-- OVERLAY BRAVO -->
     <div id="bravo-overlay">
         <div class="bravo-card">
             <h1 class="bravo-text">BRAVO !</h1>
@@ -383,7 +369,6 @@
     </div>
 
 <script>
-    /* ANIMATION FLOCONS DE NEIGE */
     const canvas = document.getElementById('snow-canvas');
     const ctx = canvas.getContext('2d');
     let width = canvas.width = window.innerWidth;
@@ -429,7 +414,6 @@
 
     setInterval(drawSnow, 30);
 
-    /* CONFIGURATION DU JOUR ET DE LA TABLE */
     const CURRENT_DAY = 1; 
     const TABLE_NAME = 'advent_questions'; 
 
@@ -437,11 +421,11 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd3h3bXluamd6Ymp3d2p4c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDQ4OTUsImV4cCI6MjEwMDcyMDg5NX0.2Ps0PvrEu0xqyfN1UjAZ2qcPBEZ-ilMYjApi91omQCA';
     const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-    /* VÉRIFICATION DU COMPTE ADMIN */
     const ADMIN_EMAILS = ["asselinj24@emm.qc.ca"];
     let currentUserEmail = "";
     let currentDiff = "easy";
     let activeQuestions = [];
+    let userProgressMap = {};
     let isAdmin = false;
 
     const DEFAULT_COLORS = ['#3498db', '#e74c3c', '#f1c40f', '#2ecc71', '#9b59b6', '#e67e22', '#1abc9c', '#e84393', '#d35400', '#00bec4'];
@@ -464,6 +448,44 @@
             }
         }
         renderOptionBuilder();
+        await updateDiffCardsInfo();
+    }
+
+    async function updateDiffCardsInfo() {
+        if (!supabaseClient) return;
+
+        const { data: questions } = await supabaseClient
+            .from(TABLE_NAME)
+            .select('id, difficulty')
+            .eq('day', CURRENT_DAY);
+
+        const { data: progress } = await supabaseClient
+            .from('user_progress')
+            .select('question_id, completed')
+            .eq('user_email', currentUserEmail)
+            .eq('day', CURRENT_DAY);
+
+        const completedSet = new Set(
+            (progress || []).filter(p => p.completed).map(p => p.question_id)
+        );
+
+        ['easy', 'medium', 'hard'].forEach(diff => {
+            const diffQuestions = (questions || []).filter(q => q.difficulty === diff);
+            const total = diffQuestions.length;
+            
+            document.getElementById(`count-${diff}`).innerText = `${total} Question${total > 1 ? 's' : ''}`;
+
+            let starsHTML = '';
+            diffQuestions.forEach(q => {
+                if (completedSet.has(q.id)) {
+                    starsHTML += '★';
+                } else {
+                    starsHTML += '☆';
+                }
+            });
+
+            document.getElementById(`stars-${diff}`).innerText = starsHTML;
+        });
     }
 
     function toggleAdminPanel() {
@@ -534,17 +556,6 @@
             correctAnswers.push(document.getElementById('q-text-correct').value.trim());
         }
 
-        const { data: existing } = await supabaseClient
-            .from(TABLE_NAME)
-            .select('id')
-            .eq('day', CURRENT_DAY)
-            .eq('difficulty', diff);
-
-        if (existing && existing.length >= 5) {
-            alert(`Limite de 5 questions atteinte pour la difficulté ${diff.toUpperCase()} le Jour ${CURRENT_DAY} !`);
-            return;
-        }
-
         const { error } = await supabaseClient
             .from(TABLE_NAME)
             .insert({
@@ -563,6 +574,7 @@
             document.getElementById('question-form').reset();
             toggleAdminPanel();
             renderOptionBuilder();
+            await updateDiffCardsInfo();
 
             if (document.getElementById('ui-2-questions').classList.contains('visible')) {
                 loadQuestionsForDiff(currentDiff);
@@ -586,6 +598,7 @@
         if (error) {
             alert("Erreur lors de la suppression : " + error.message);
         } else {
+            await updateDiffCardsInfo();
             loadQuestionsForDiff(currentDiff);
         }
     }
@@ -603,8 +616,21 @@
             .select('*')
             .eq('day', CURRENT_DAY)
             .eq('difficulty', diff)
-            .order('id', { ascending: true })
-            .limit(5);
+            .order('id', { ascending: true });
+
+        const { data: userProg } = await supabaseClient
+            .from('user_progress')
+            .select('*')
+            .eq('user_email', currentUserEmail)
+            .eq('day', CURRENT_DAY)
+            .eq('difficulty', diff);
+
+        userProgressMap = {};
+        if (userProg) {
+            userProg.forEach(p => {
+                userProgressMap[p.question_id] = p;
+            });
+        }
 
         if (error || !data || data.length === 0) {
             listCont.innerHTML = `<p style="text-align:center; color:#fff; margin-top:20px;">Aucune question disponible en niveau ${diff.toUpperCase()} pour aujourd'hui.</p>`;
@@ -618,6 +644,9 @@
             const qBox = document.createElement('div');
             qBox.className = 'question-card';
             
+            const prog = userProgressMap[q.id];
+            const isCompleted = prog && prog.completed;
+
             let answerHTML = '';
 
             if (q.question_type === 'single_choice' || q.question_type === 'multiple_choice') {
@@ -639,10 +668,11 @@
             }
 
             const deleteBtnHTML = isAdmin ? `<button class="btn-delete-q" onclick="deleteQuestion('${q.id}')">🗑️ Supprimer</button>` : '';
+            const statusBadge = isCompleted ? `<span style="color:#2ecc71; font-weight:800; font-size:1.1rem;">★ Réussie</span>` : `<span>☆ Non réussie</span>`;
 
             qBox.innerHTML = `
                 <div class="question-card-top">
-                    <span class="question-tag">QUESTION ${qIndex + 1}</span>
+                    <span class="question-tag">QUESTION ${qIndex + 1} ${statusBadge}</span>
                     ${deleteBtnHTML}
                 </div>
                 <div class="question-text">${q.question_text}</div>
@@ -664,7 +694,7 @@
         }
     }
 
-    function validateAnswer(qIndex) {
+    async function validateAnswer(qIndex) {
         const q = activeQuestions[qIndex];
         let isCorrect = false;
 
@@ -683,10 +713,28 @@
             }
         }
 
+        const currentProg = userProgressMap[q.id] || { attempts: 0, completed: false };
+        const newAttempts = currentProg.attempts + 1;
+        const newlyCompleted = currentProg.completed || isCorrect;
+
+        await supabaseClient.from('user_progress').upsert({
+            user_email: currentUserEmail,
+            day: CURRENT_DAY,
+            difficulty: q.difficulty,
+            question_id: q.id,
+            attempts: newAttempts,
+            completed: newlyCompleted,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'user_email,day,difficulty,question_id' });
+
+        userProgressMap[q.id] = { attempts: newAttempts, completed: newlyCompleted };
+
         if (isCorrect) {
             triggerBravoAnimation(q.difficulty);
+            await updateDiffCardsInfo();
+            loadQuestionsForDiff(currentDiff);
         } else {
-            alert("Oups ! Mauvaise réponse, réessaie encore !");
+            alert(`Oups ! Mauvaise réponse. Tentative #${newAttempts}. Réessaie encore !`);
         }
     }
 
@@ -714,9 +762,10 @@
         document.getElementById('bravo-overlay').classList.remove('active');
     }
 
-    function backToUI1() {
+    async function backToUI1() {
         document.getElementById('ui-2-questions').classList.remove('visible');
         document.getElementById('ui-1-main').style.display = 'flex';
+        await updateDiffCardsInfo();
     }
 
     window.addEventListener('DOMContentLoaded', initPage);
