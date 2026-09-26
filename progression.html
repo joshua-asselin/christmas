@@ -66,24 +66,42 @@
         .user-email { font-weight: 600; font-size: 1.05rem; color: #2c3e50; word-break: break-all; }
 
         .user-stats {
-            display: flex; gap: 15px; font-weight: 600; font-size: 0.95rem;
+            display: flex; gap: 10px; font-weight: 600; font-size: 0.9rem;
         }
 
         .badge-stars { background: #fff3cd; color: #856404; padding: 4px 10px; border-radius: 12px; border: 1px solid #ffeeba; }
         .badge-attempts { background: #e2e3e5; color: #383d41; padding: 4px 10px; border-radius: 12px; }
 
-        .days-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 10px; margin-top: 10px;
+        .days-section {
+            display: flex; flex-direction: column; gap: 12px; margin-top: 10px;
         }
 
-        .day-box {
-            border-radius: 10px; padding: 8px 10px; text-align: center;
-            font-size: 0.85rem; font-weight: 500;
+        .day-group {
+            background: #faf7f0; border: 1px solid #e2d8c3; border-radius: 12px; padding: 12px;
         }
 
-        .day-success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
-        .day-fail { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .day-title {
+            font-family: 'Cinzel', serif; font-weight: 800; font-size: 0.95rem; color: #800c19; margin-bottom: 8px;
+        }
+
+        .questions-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px;
+        }
+
+        .q-box {
+            border-radius: 8px; padding: 8px; text-align: center;
+            font-size: 0.8rem; font-weight: 600;
+        }
+
+        .q-success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .q-fail { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+
+        .diff-tag {
+            text-transform: uppercase; font-size: 0.7rem; font-weight: 800; display: inline-block; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px;
+        }
+        .diff-easy { background: #2ecc71; color: #fff; }
+        .diff-medium { background: #f39c12; color: #fff; }
+        .diff-hard { background: #e74c3c; color: #fff; }
 
         .empty-state { text-align: center; color: #777; padding: 20px; }
     </style>
@@ -92,7 +110,7 @@
 
 <div class="overlay">
     <div class="container">
-        <button class="btn-back" onclick="window.location.href='index.html'">⬅️ Retour au Menu</button>
+        <button class="btn-back" onclick="window.location.href='calendrier.html'">⬅️ Retour au Calendrier</button>
         <h1>📊 Progression des Joueurs</h1>
 
         <div id="loading-state" class="loading">Chargement des progressions depuis Supabase...</div>
@@ -115,10 +133,11 @@
             return;
         }
 
-        // Récupération de toutes les données de la table des réponses
+        // Lecture depuis la table user_progress (conforme au script SQL créé)
         const { data, error } = await supabaseClient
-            .from('user_answers')
-            .select('*');
+            .from('user_progress')
+            .select('*')
+            .order('day', { ascending: true });
 
         if (error) {
             console.error(error);
@@ -129,15 +148,15 @@
         loadingEl.style.display = 'none';
 
         if (!data || data.length === 0) {
-            containerEl.innerHTML = '<div class="empty-state">Aucune réponse enregistrée pour le moment.</div>';
+            containerEl.innerHTML = '<div class="empty-state">Aucune tentative ou progression enregistrée pour le moment.</div>';
             return;
         }
 
-        // Regroupement des données par utilisateur
+        // Regroupement par utilisateur
         const usersMap = {};
 
         data.forEach(entry => {
-            const email = entry.email ? entry.email.toLowerCase() : "Inconnu";
+            const email = entry.user_email ? entry.user_email.toLowerCase() : "Inconnu";
 
             if (!usersMap[email]) {
                 usersMap[email] = {
@@ -147,28 +166,18 @@
                 };
             }
 
-            const isCorrect = entry.is_correct || entry.correct || false;
-            const dayNum = entry.day || entry.day_number || "?";
+            const dayNum = entry.day || "?";
 
-            usersMap[email].totalAttempts += 1;
-            
-            // Si le jour n'a pas encore été marqué réussi pour cette personne
             if (!usersMap[email].days[dayNum]) {
-                usersMap[email].days[dayNum] = { success: isCorrect, attempts: 1 };
-            } else {
-                usersMap[email].days[dayNum].attempts += 1;
-                if (isCorrect) usersMap[email].days[dayNum].success = true;
+                usersMap[email].days[dayNum] = [];
+            }
+
+            usersMap[email].days[dayNum].push(entry);
+            usersMap[email].totalAttempts += (entry.attempts || 1);
+            if (entry.completed) {
+                usersMap[email].totalStars += 1;
             }
         });
-
-        // Calcul des étoiles totales (1 étoile par jour réussi)
-        for (let email in usersMap) {
-            let stars = 0;
-            for (let day in usersMap[email].days) {
-                if (usersMap[email].days[day].success) stars++;
-            }
-            usersMap[email].totalStars = stars;
-        }
 
         // Génération de l'affichage HTML
         containerEl.innerHTML = "";
@@ -179,19 +188,33 @@
             let userCard = document.createElement('div');
             userCard.className = 'user-card';
 
-            let daysHtml = "";
+            let daysSectionHtml = "";
             const sortedDays = Object.keys(user.days).sort((a, b) => Number(a) - Number(b));
 
             sortedDays.forEach(day => {
-                const dayData = user.days[day];
-                const statusClass = dayData.success ? 'day-success' : 'day-fail';
-                const statusIcon = dayData.success ? '⭐ Réussi' : '❌ Échoué';
+                const dayEntries = user.days[day];
 
-                daysHtml += `
-                    <div class="day-box ${statusClass}">
-                        <div><strong>Jour ${day}</strong></div>
-                        <div>${statusIcon}</div>
-                        <div style="font-size:0.75rem; opacity:0.8;">${dayData.attempts} essai(s)</div>
+                let questionsHtml = "";
+                dayEntries.forEach((qProg, idx) => {
+                    const statusClass = qProg.completed ? 'q-success' : 'q-fail';
+                    const statusIcon = qProg.completed ? '★ Réussi' : '☆ Non réussi';
+                    const diffClass = `diff-${qProg.difficulty.toLowerCase()}`;
+
+                    questionsHtml += `
+                        <div class="q-box ${statusClass}">
+                            <span class="diff-tag ${diffClass}">${qProg.difficulty}</span>
+                            <div>${statusIcon}</div>
+                            <div style="font-size:0.75rem; opacity:0.85; margin-top:2px;">${qProg.attempts || 1} essai(s)</div>
+                        </div>
+                    `;
+                });
+
+                daysSectionHtml += `
+                    <div class="day-group">
+                        <div class="day-title">📆 Jour ${day}</div>
+                        <div class="questions-grid">
+                            ${questionsHtml}
+                        </div>
                     </div>
                 `;
             });
@@ -200,13 +223,12 @@
                 <div class="user-header">
                     <div class="user-email">✉️ ${email}</div>
                     <div class="user-stats">
-                        <span class="badge-stars">⭐ ${user.totalStars} Étoile(s)</span>
-                        <span class="badge-attempts">🎯 ${user.totalAttempts} Tentative(s)</span>
+                        <span class="badge-stars">★ ${user.totalStars} Question(s) Réussie(s)</span>
+                        <span class="badge-attempts">🎯 ${user.totalAttempts} Essai(s) Total</span>
                     </div>
                 </div>
-                <div style="font-size:0.85rem; color:#666; margin-bottom:6px;">Questions tentées :</div>
-                <div class="days-grid">
-                    ${daysHtml}
+                <div class="days-section">
+                    ${daysSectionHtml}
                 </div>
             `;
 
