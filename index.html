@@ -115,11 +115,10 @@
             filter: drop-shadow(0px 20px 40px rgba(0,0,0,0.6));
         }
 
-        /* Boîte principale de défilement */
         .scroll-box {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 50%; height: 60%; 
-            overflow-y: auto; /* Active la barre de défilement verticale */
+            overflow-y: auto;
             overflow-x: hidden;
             padding: 15px;
             text-align: center; font-family: 'Cinzel', serif; z-index: 5;
@@ -127,7 +126,6 @@
             box-sizing: border-box;
         }
 
-        /* Personnalisation de la barre de défilement (Scrollbar) */
         .scroll-box::-webkit-scrollbar {
             width: 8px;
         }
@@ -350,7 +348,7 @@
 
                 <button class="btn-question btn-green" style="padding:8px;" onclick="saveSelectedUserLetter()">💾 ENREGISTRER</button>
                 <button class="btn-question btn-red" style="margin-top:4px; padding:8px;" onclick="deleteUserLetter()">🗑️ SUPPRIMER CETTE PERSONNE</button>
-                <button class="btn-question btn-silver" style="margin-top:4px; padding:8px; margin-bottom: 15px;" onclick="switchView('view-admin-list')">⬅️ RETOUR À LA LISTE</button>
+                <button class="btn-question btn-silver" style="margin-top:4px; padding:8px; margin-bottom: 15px;" onclick="switchView('view-admin-list')">⬅️️ RETOUR À LA LISTE</button>
             </div>
 
         </div>
@@ -478,6 +476,8 @@
 
         if (!email || !email.includes('@') || !day) return alert("Veuillez saisir une adresse courriel et un numéro de jour valides.");
 
+        console.log("Tentative de déblocage pour :", email, "Jour :", day);
+
         const { error } = await supabaseClient
             .from('unlocked_days')
             .upsert({ user_email: email, day: day }, { onConflict: 'user_email,day' });
@@ -491,6 +491,8 @@
         const day = parseInt(document.getElementById('unlock-day-input').value);
 
         if (!email || !email.includes('@') || !day) return alert("Veuillez saisir une adresse courriel et un numéro de jour valides.");
+
+        console.log("Tentative de reblocage pour :", email, "Jour :", day);
 
         const { error } = await supabaseClient
             .from('unlocked_days')
