@@ -671,7 +671,9 @@
         }
 
         const currentProg = userProgressMap[q.id] || { attempts: 0, completed: false };
-        const newAttempts = currentProg.attempts + 1;
+        
+        // Bloquer l'incrémentation du nombre d'essais si la question est déjà réussie
+        const newAttempts = currentProg.completed ? currentProg.attempts : currentProg.attempts + 1;
         const newlyCompleted = currentProg.completed || isCorrect;
 
         if (supabaseClient) {
