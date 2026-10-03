@@ -339,14 +339,16 @@
                 openedDoors = JSON.parse(localStorage.getItem(`advent_doors_${currentUserEmail}`) || "[]");
             }
 
-            // Récupérer les jours spécifiquement débloqués par l'admin pour ce courriel
-            const { data: unlockedData } = await supabaseClient
-                .from('unlocked_days')
-                .select('day')
-                .eq('user_email', currentUserEmail);
+            // Récupérer les jours débloqués par l'admin depuis Supabase pour cette adresse
+            if (currentUserEmail && currentUserEmail !== "guest@local") {
+                const { data: unlockedData } = await supabaseClient
+                    .from('unlocked_days')
+                    .select('day')
+                    .eq('user_email', currentUserEmail);
 
-            if (unlockedData) {
-                adminUnlockedDays = unlockedData.map(u => u.day);
+                if (unlockedData) {
+                    adminUnlockedDays = unlockedData.map(u => u.day);
+                }
             }
 
         } catch (e) {
@@ -364,7 +366,7 @@
 
         localStorage.setItem(`advent_doors_${currentUserEmail}`, JSON.stringify(openedDoors));
 
-        if (supabaseClient && currentUserEmail) {
+        if (supabaseClient && currentUserEmail && currentUserEmail !== "guest@local") {
             await supabaseClient
                 .from('advent_progress')
                 .upsert({
@@ -510,7 +512,7 @@
         openedDoors = [];
         localStorage.removeItem(`advent_doors_${currentUserEmail}`);
 
-        if (supabaseClient && currentUserEmail) {
+        if (supabaseClient && currentUserEmail && currentUserEmail !== "guest@local") {
             await supabaseClient
                 .from('advent_progress')
                 .upsert({ email: currentUserEmail, opened_doors: [], updated_at: new Date() });
