@@ -188,7 +188,7 @@
         const { data: progressData, error: progressError } = await supabaseClient
             .from('user_progress')
             .select('*')
-            .order('created_at', { ascending: true }); // Trier par date pour fusionner les doublons dans l'ordre
+            .order('day', { ascending: true });
 
         if (progressError) {
             console.error(progressError);
@@ -227,7 +227,7 @@
                 matchedQuestion = questionsMap[key];
             }
 
-            // Ignorer si la question a été supprimée du calendrier
+            // Ignorer si la question n'existe plus dans la table advent_questions
             if (!matchedQuestion) return;
 
             entry.question_text = matchedQuestion.question_text || matchedQuestion.question || "Question";
@@ -236,11 +236,10 @@
             const qUniqueId = entry.question_id || key;
             const uniqueKey = `${userEmail}_${entry.day}_${qUniqueId}`;
 
-            // Si l'entrée existe déjà pour cet utilisateur, on fusionne pour supprimer le doublon d'affichage
+            // Fusionner les entrées doublons s'il y en a
             if (!uniqueProgressMap[uniqueKey]) {
                 uniqueProgressMap[uniqueKey] = { ...entry };
             } else {
-                // On met à jour avec le dernier statut et on additionne/met à jour le nombre d'essais
                 const existing = uniqueProgressMap[uniqueKey];
                 existing.completed = existing.completed || entry.completed;
                 existing.attempts = Math.max(existing.attempts || 1, entry.attempts || 1);
