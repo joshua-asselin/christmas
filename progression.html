@@ -173,31 +173,69 @@
             return;
         }
 
-        // On effectue une jointure pour récupérer le texte de la question associée
-        const { data, error } = await supabaseClient
+        // 1. Récupération des données de progression
+        const { data: progressData, error: progressError } = await supabaseClient
             .from('user_progress')
-            .select('*, advent_questions(question_text)')
+            .select('*')
             .order('day', { ascending: true });
 
-        if (error) {
-            console.error(error);
-            loadingEl.innerText = "Erreur lors du chargement des données : " + error.message;
+        if (progressError) {
+            console.error(progressError);
+            loadingEl.innerText = "Erreur lors du chargement des progressions : " + progressError.message;
+            return;
+        }
+
+        // 2. Récupération des questions existantes pour lier le texte et valider si la question existe toujours
+        const { data: questionsData, error: questionsError } = await supabaseClient
+            .from('advent_questions')
+            .select('*');
+
+        if (questionsError) {
+            console.error(questionsError);
+            loadingEl.innerText = "Erreur lors du chargement des questions : " + questionsError.message;
             return;
         }
 
         loadingEl.style.display = 'none';
 
-        // Filtrer les entrées dont la question a été supprimée
-        const validData = (data || []).filter(entry => entry.advent_questions !== null);
+        // Créer un dictionnaire pour rechercher rapidement une question par son ID ou par Jour/Difficulté
+        const questionsMap = {};
+        (questionsData || []).forEach(q => {
+            if (q.id) {
+                questionsMap[q.id] = q;
+            }
+            // Clé de secours par jour et difficulté si 'question_id' n'est pas utilisé
+            const key = `${q.day}_${(q.difficulty || '').toLowerCase()}`;
+            questionsMap[key] = q;
+        });
 
-        if (validData.length === 0) {
+        // 3. Filtrer et enrichir les progressions avec la question
+        const validProgress = [];
+        (progressData || []).forEach(entry => {
+            let matchedQuestion = null;
+
+            if (entry.question_id && questionsMap[entry.question_id]) {
+                matchedQuestion = questionsMap[entry.question_id];
+            } else {
+                const key = `${entry.day}_${(entry.difficulty || '').toLowerCase()}`;
+                matchedQuestion = questionsMap[key];
+            }
+
+            // Si la question existe encore dans la table advent_questions, on garde la progression
+            if (matchedQuestion) {
+                entry.question_text = matchedQuestion.question_text || matchedQuestion.question || "Question";
+                validProgress.push(entry);
+            }
+        });
+
+        if (validProgress.length === 0) {
             containerEl.innerHTML = '<div class="empty-state">Aucune tentative ou progression enregistrée pour le moment.</div>';
             return;
         }
 
         const usersMap = {};
 
-        validData.forEach(entry => {
+        validProgress.forEach(entry => {
             const email = entry.user_email ? entry.user_email.toLowerCase() : "Inconnu";
 
             if (!usersMap[email]) {
@@ -240,7 +278,7 @@
                     const statusClass = qProg.completed ? 'q-success' : 'q-fail';
                     const statusIcon = qProg.completed ? '★ Réussi' : '☆ Non réussi';
                     const diffClass = `diff-${qProg.difficulty ? qProg.difficulty.toLowerCase() : 'easy'}`;
-                    const questionText = qProg.advent_questions ? qProg.advent_questions.question_text : "Question";
+                    const questionText = qProg.question_text || "Question";
 
                     questionsHtml += `
                         <div class="q-box ${statusClass}">
@@ -252,7 +290,6 @@
                     `;
                 });
 
-                // Le dernier jour enregistré reste ouvert par défaut
                 const isLastDay = index === sortedDays.length - 1;
                 const dayOpenAttr = isLastDay ? 'open' : '';
 
