@@ -270,7 +270,7 @@
 
 <div id="reply-modal-overlay">
     <div class="reply-modal-card">
-        <h2 style="font-family:'Cinzel', serif; color:#800c19; margin-top:0;">✉️ Répondre au Père Noël</h2>
+        <h2 style="font-family:'Cinzel', serif; color:#800c19; margin-top:0;">✉️️ Répondre au Père Noël</h2>
         <textarea id="modal-reply-input" class="admin-textarea" style="width:100%; height:110px; text-align:left;" placeholder="Écris ton message ici..."></textarea>
         <button class="btn-question btn-green" style="width:100%; margin-top:10px;" onclick="sendReplyFromModal()">Envoyer mon message</button>
         <button class="btn-question btn-silver" style="width:100%; margin-top:5px;" onclick="closeReplyModal()">Fermer</button>
@@ -348,7 +348,7 @@
 
                 <button class="btn-question btn-green" style="padding:8px;" onclick="saveSelectedUserLetter()">💾 ENREGISTRER</button>
                 <button class="btn-question btn-red" style="margin-top:4px; padding:8px;" onclick="deleteUserLetter()">🗑️ SUPPRIMER CETTE PERSONNE</button>
-                <button class="btn-question btn-silver" style="margin-top:4px; padding:8px; margin-bottom: 15px;" onclick="switchView('view-admin-list')">⬅️️ RETOUR À LA LISTE</button>
+                <button class="btn-question btn-silver" style="margin-top:4px; padding:8px; margin-bottom: 15px;" onclick="switchView('view-admin-list')">⬅ RETOUR À LA LISTE</button>
             </div>
 
         </div>
@@ -494,14 +494,34 @@
 
         console.log("Tentative de reblocage pour :", email, "Jour :", day);
 
-        const { error } = await supabaseClient
+        // 1. Supprimer le déblocage manuel de l'administrateur
+        const { error: errUnlocked } = await supabaseClient
             .from('unlocked_days')
             .delete()
             .eq('user_email', email)
             .eq('day', day);
 
-        if (error) alert("Erreur : " + error.message);
-        else alert(`La case du Jour ${day} a été REBLOQUÉE pour ${email} !`);
+        if (errUnlocked) {
+            alert("Erreur lors de la suppression du déblocage : " + errUnlocked.message);
+            return;
+        }
+
+        // 2. Nettoyer aussi la progression de l'utilisateur s'il l'avait déjà ouverte
+        const { data: progressData } = await supabaseClient
+            .from('advent_progress')
+            .select('opened_doors')
+            .eq('user_email', email)
+            .maybeSingle();
+
+        if (progressData && progressData.opened_doors) {
+            const updatedDoors = progressData.opened_doors.filter(d => d !== day);
+            await supabaseClient
+                .from('advent_progress')
+                .update({ opened_doors: updatedDoors })
+                .eq('user_email', email);
+        }
+
+        alert(`La case du Jour ${day} a été REBLOQUÉE pour ${email} !`);
     }
 
     function addNewUserPrompt() {
