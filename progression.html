@@ -108,13 +108,29 @@
         summary.day-title:hover { background: #f3ede0; }
 
         .questions-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px;
             padding: 10px 14px 14px 14px; border-top: 1px dashed #e2d8c3;
         }
 
         .q-box {
-            border-radius: 8px; padding: 8px; text-align: center;
+            border-radius: 10px; padding: 10px 8px; text-align: center;
             font-size: 0.8rem; font-weight: 600;
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+        }
+
+        .q-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #2c3e50;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: break-word;
+            max-height: 2.4em;
         }
 
         .q-success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
@@ -157,9 +173,10 @@
             return;
         }
 
+        // On effectue une jointure pour récupérer le texte de la question associée
         const { data, error } = await supabaseClient
             .from('user_progress')
-            .select('*')
+            .select('*, advent_questions(question_text)')
             .order('day', { ascending: true });
 
         if (error) {
@@ -170,14 +187,17 @@
 
         loadingEl.style.display = 'none';
 
-        if (!data || data.length === 0) {
+        // Filtrer les entrées dont la question a été supprimée
+        const validData = (data || []).filter(entry => entry.advent_questions !== null);
+
+        if (validData.length === 0) {
             containerEl.innerHTML = '<div class="empty-state">Aucune tentative ou progression enregistrée pour le moment.</div>';
             return;
         }
 
         const usersMap = {};
 
-        data.forEach(entry => {
+        validData.forEach(entry => {
             const email = entry.user_email ? entry.user_email.toLowerCase() : "Inconnu";
 
             if (!usersMap[email]) {
@@ -219,10 +239,12 @@
                 dayEntries.forEach((qProg) => {
                     const statusClass = qProg.completed ? 'q-success' : 'q-fail';
                     const statusIcon = qProg.completed ? '★ Réussi' : '☆ Non réussi';
-                    const diffClass = `diff-${qProg.difficulty.toLowerCase()}`;
+                    const diffClass = `diff-${qProg.difficulty ? qProg.difficulty.toLowerCase() : 'easy'}`;
+                    const questionText = qProg.advent_questions ? qProg.advent_questions.question_text : "Question";
 
                     questionsHtml += `
                         <div class="q-box ${statusClass}">
+                            <div class="q-title" title="${questionText}">${questionText}</div>
                             <span class="diff-tag ${diffClass}">${qProg.difficulty}</span>
                             <div>${statusIcon}</div>
                             <div style="font-size:0.75rem; opacity:0.85; margin-top:2px;">${qProg.attempts || 1} essai(s)</div>
