@@ -51,7 +51,6 @@
 
         .loading { text-align: center; font-size: 1.1rem; color: #555; padding: 30px; }
 
-        /* Style des Accordéons principaux (Joueurs) */
         details.user-card {
             background: #fff; border: 1.5px solid #e8d098;
             border-radius: 16px; margin-bottom: 15px;
@@ -92,7 +91,6 @@
             margin-top: 5px;
         }
 
-        /* Style des Sous-accordéons (Jours) */
         details.day-group {
             background: #faf7f0; border: 1px solid #e2d8c3; border-radius: 10px;
             overflow: hidden; margin-top: 8px;
@@ -213,7 +211,7 @@
             questionsMap[key] = q;
         });
 
-        // 3. Filtrer et dédoublonner la progression par utilisateur et par question
+        // 3. Filtrer et dédoublonner la progression
         const uniqueProgressMap = {};
 
         (progressData || []).forEach(entry => {
@@ -227,22 +225,21 @@
                 matchedQuestion = questionsMap[key];
             }
 
-            // Ignorer si la question n'existe plus dans la table advent_questions
             if (!matchedQuestion) return;
 
             entry.question_text = matchedQuestion.question_text || matchedQuestion.question || "Question";
 
             const userEmail = entry.user_email ? entry.user_email.toLowerCase() : "inconnu";
-            const qUniqueId = entry.question_id || key;
-            const uniqueKey = `${userEmail}_${entry.day}_${qUniqueId}`;
+            // Clef unique par utilisateur, par jour ET par difficulté
+            const uniqueKey = `${userEmail}_day${entry.day}_diff${diffLower}`;
 
-            // Fusionner les entrées doublons s'il y en a
             if (!uniqueProgressMap[uniqueKey]) {
                 uniqueProgressMap[uniqueKey] = { ...entry };
             } else {
+                // En cas de doublon, on prend le meilleur résultat et le nombre minimal d'essais valide
                 const existing = uniqueProgressMap[uniqueKey];
                 existing.completed = existing.completed || entry.completed;
-                existing.attempts = Math.max(existing.attempts || 1, entry.attempts || 1);
+                existing.attempts = Math.min(existing.attempts || 1, entry.attempts || 1);
             }
         });
 
