@@ -326,7 +326,19 @@
                 document.getElementById('admin-email').innerText = currentUserEmail;
             }
 
-            // Récupérer la progression générale de l'utilisateur
+            // Récupérer les jours débloqués par l'admin depuis Supabase
+            if (currentUserEmail && currentUserEmail !== "guest@local") {
+                const { data: unlockedData } = await supabaseClient
+                    .from('unlocked_days')
+                    .select('day')
+                    .eq('user_email', currentUserEmail);
+
+                if (unlockedData) {
+                    adminUnlockedDays = unlockedData.map(u => u.day);
+                }
+            }
+
+            // Récupérer la progression générale
             const { data } = await supabaseClient
                 .from('advent_progress')
                 .select('opened_doors')
@@ -339,16 +351,9 @@
                 openedDoors = JSON.parse(localStorage.getItem(`advent_doors_${currentUserEmail}`) || "[]");
             }
 
-            // Récupérer les jours débloqués par l'admin depuis Supabase pour cette adresse
-            if (currentUserEmail && currentUserEmail !== "guest@local") {
-                const { data: unlockedData } = await supabaseClient
-                    .from('unlocked_days')
-                    .select('day')
-                    .eq('user_email', currentUserEmail);
-
-                if (unlockedData) {
-                    adminUnlockedDays = unlockedData.map(u => u.day);
-                }
+            // Synchroniser : Si le jour n'est plus autorisé par l'admin, on le retire des ouvertures
+            if (!isBypassed) {
+                openedDoors = openedDoors.filter(d => adminUnlockedDays.includes(d));
             }
 
         } catch (e) {
@@ -380,16 +385,13 @@
     function createCalendar() {
         const grid = document.getElementById('calendar-grid');
         grid.innerHTML = '';
-        const today = new Date();
-        const currentMonth = today.getMonth(); // 11 = Décembre
-        const currentDay = today.getDate();
 
         for (let i = 1; i <= 25; i++) {
             const frame = document.createElement('div');
             frame.className = 'door-frame';
 
-            // Une porte est ouverte si date valide OR mode bypass admin OR débloquée spécifiquement par l'admin
-            const isAvailable = isBypassed || adminUnlockedDays.includes(i) || (currentMonth === 11 && i <= currentDay) || currentMonth > 11;
+            // Une porte est disponible SEULEMENT en mode bypass ou si explicitement débloquée dans la DB
+            const isAvailable = isBypassed || adminUnlockedDays.includes(i);
 
             if (!isAvailable) {
                 frame.classList.add('locked');
@@ -407,7 +409,7 @@
             const front = frame.querySelector('.door-front');
             const content = frame.querySelector('.door-content');
 
-            if (openedDoors.includes(i)) {
+            if (isAvailable && openedDoors.includes(i)) {
                 frame.classList.add('open');
             }
 
@@ -415,7 +417,7 @@
                 if (frame.classList.contains('locked') && !isBypassed && !adminUnlockedDays.includes(i)) {
                     frame.classList.add('shake');
                     setTimeout(() => frame.classList.remove('shake'), 400);
-                    showModal('🔒 Porte Verrouillée', `Patience ! La porte du Jour ${i} s'ouvrira le ${i} Décembre.`);
+                    showModal('🔒 Porte Verrouillée', `Cette porte est verrouillée par le professeur ou n'est pas encore disponible.`);
                     return;
                 }
 
