@@ -173,7 +173,18 @@
             return;
         }
 
-        // 1. Récupération des données de progression
+        // 1. Récupération des questions existantes dans la base de données
+        const { data: questionsData, error: questionsError } = await supabaseClient
+            .from('advent_questions')
+            .select('*');
+
+        if (questionsError) {
+            console.error(questionsError);
+            loadingEl.innerText = "Erreur lors du chargement des questions : " + questionsError.message;
+            return;
+        }
+
+        // 2. Récupération des données de progression
         const { data: progressData, error: progressError } = await supabaseClient
             .from('user_progress')
             .select('*')
@@ -185,43 +196,36 @@
             return;
         }
 
-        // 2. Récupération des questions existantes pour lier le texte et valider si la question existe toujours
-        const { data: questionsData, error: questionsError } = await supabaseClient
-            .from('advent_questions')
-            .select('*');
-
-        if (questionsError) {
-            console.error(questionsError);
-            loadingEl.innerText = "Erreur lors du chargement des questions : " + questionsError.message;
-            return;
-        }
-
         loadingEl.style.display = 'none';
 
-        // Créer un dictionnaire pour rechercher rapidement une question par son ID ou par Jour/Difficulté
+        // Indexer les questions pour vérifier rapidement si une question existe encore
+        const validQuestionIds = new Set();
+        const validQuestionKeys = new Set();
         const questionsMap = {};
+
         (questionsData || []).forEach(q => {
             if (q.id) {
+                validQuestionIds.add(q.id);
                 questionsMap[q.id] = q;
             }
-            // Clé de secours par jour et difficulté si 'question_id' n'est pas utilisé
             const key = `${q.day}_${(q.difficulty || '').toLowerCase()}`;
+            validQuestionKeys.add(key);
             questionsMap[key] = q;
         });
 
-        // 3. Filtrer et enrichir les progressions avec la question
+        // 3. Filtrer strictement les progressions (ne garder QUE celles dont la question existe toujours)
         const validProgress = [];
         (progressData || []).forEach(entry => {
             let matchedQuestion = null;
+            const key = `${entry.day}_${(entry.difficulty || '').toLowerCase()}`;
 
-            if (entry.question_id && questionsMap[entry.question_id]) {
+            if (entry.question_id && validQuestionIds.has(entry.question_id)) {
                 matchedQuestion = questionsMap[entry.question_id];
-            } else {
-                const key = `${entry.day}_${(entry.difficulty || '').toLowerCase()}`;
+            } else if (validQuestionKeys.has(key)) {
                 matchedQuestion = questionsMap[key];
             }
 
-            // Si la question existe encore dans la table advent_questions, on garde la progression
+            // Si la question existe encore dans advent_questions, on la prend en compte
             if (matchedQuestion) {
                 entry.question_text = matchedQuestion.question_text || matchedQuestion.question || "Question";
                 validProgress.push(entry);
@@ -283,7 +287,7 @@
                     questionsHtml += `
                         <div class="q-box ${statusClass}">
                             <div class="q-title" title="${questionText}">${questionText}</div>
-                            <span class="diff-tag ${diffClass}">${qProg.difficulty}</span>
+                            <span class="diff-tag ${diffClass}">${qProg.difficulty || ''}</span>
                             <div>${statusIcon}</div>
                             <div style="font-size:0.75rem; opacity:0.85; margin-top:2px;">${qProg.attempts || 1} essai(s)</div>
                         </div>
