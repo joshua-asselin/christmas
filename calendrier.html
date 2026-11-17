@@ -271,6 +271,29 @@
             color: #ffffff !important; border: 1.5px solid #ffffff; padding: 12px 30px;
             border-radius: 25px; font-weight: 700; cursor: pointer;
         }
+        .modal-btn {
+            background: linear-gradient(135deg, #800c19, #b30000);
+            color: #ffffff !important; border: 1.5px solid #ffffff; padding: 12px 30px;
+            border-radius: 25px; font-weight: 700; cursor: pointer;
+        }
+
+        /* --- COLLER LE CODE IPHONE JUSTE ICI --- */
+        @media (max-width: 768px) {
+            #main-view { padding: 10px !important; }
+            .header-banner { height: 75px !important; width: 100% !important; }
+            .header-title { font-size: 1.1rem !important; padding: 8px 16px !important; }
+            .calendar-container {
+                width: 100% !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 8px !important;
+                padding: 10px !important;
+            }
+            .door-frame { min-height: 75px !important; }
+            .door-front .day-title { font-size: 1rem !important; }
+            .day-big-title { font-size: 3.5rem !important; }
+            .day-sub-date { font-size: 1.3rem !important; margin-bottom: 25px !important; }
+            .btn-action-day { font-size: 1rem !important; padding: 14px 24px !important; width: 90% !important; }
+        }
     </style>
 </head>
 <body>
